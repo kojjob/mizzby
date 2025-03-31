@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Mizzby" %></title>
+    <title><%= content_for(:title) || "Digital Store - Sell Digital & Physical Products" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="<%= content_for(:meta_description) || "The complete platform for selling digital products online. Secure delivery, seamless payments, and powerful analytics to grow your business." %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -20,11 +21,28 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <!-- Alpine.js for dropdowns and interactive components -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Initialize mobile menu state -->
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.store('layout', {
+          mobileMenuOpen: false
+        });
+      });
+    </script>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="flex flex-col min-h-screen" x-data="{ mobileMenuOpen: false }">
+    <%= render "layouts/header" %>
+    <%# <%= render "layouts/flash" %>
+    <%#= render "layouts/notifications" %>
+    <main class="flex-grow">
       <%= yield %>
     </main>
+    <%= render "layouts/footer" %>
+    <%#= render "layouts/modals" %>
   </body>
 </html>

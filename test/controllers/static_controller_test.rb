@@ -2,32 +2,38 @@ require "test_helper"
 
 class StaticControllerTest < ActionDispatch::IntegrationTest
   test "should get home" do
-    get static_home_url
+    get root_path
     assert_response :success
+    assert_template 'static/home'
   end
 
   test "should get contact" do
-    get static_contact_url
+    get contact_path
     assert_response :success
+    assert_template 'static/contact'
   end
 
   test "should get about" do
-    get static_about_url
+    get about_path
     assert_response :success
+    assert_template 'static/about'
   end
 
   test "should get help_center" do
-    get static_help_center_url
+    get help_center_path
     assert_response :success
+    assert_template 'static/help_center'
   end
 
   test "should get privacy_policy" do
-    get static_privacy_policy_url
+    get privacy_policy_path
     assert_response :success
+    assert_template 'static/privacy_policy'
   end
 
   test "should get term_of_service" do
-    get static_term_of_service_url
+    get term_of_service_path
     assert_response :success
+    assert_template 'static/term_of_service'
   end
 end
