@@ -1,0 +1,123 @@
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center">
+  <div class="mx-auto w-full max-w-6xl">
+    <div class="flex rounded-xl shadow-xl overflow-hidden bg-white">
+      <!-- Left side - Image -->
+      <div class="hidden md:block md:w-1/2 bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-12">
+        <div class="h-full flex flex-col justify-between">
+          <div>
+            <h2 class="text-3xl font-bold">Reset Your Password</h2>
+            <p class="mt-4 text-indigo-100 text-lg">Create a new secure password for your Digital Store account.</p>
+            
+            <div class="mt-8 space-y-4">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-300 bg-opacity-30 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span class="ml-2 text-indigo-100">Choose a strong, unique password</span>
+              </div>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-300 bg-opacity-30 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span class="ml-2 text-indigo-100">Mix letters, numbers, and symbols</span>
+              </div>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-300 bg-opacity-30 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span class="ml-2 text-indigo-100">Avoid using common words or phrases</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Decorative SVG illustration -->
+          <div class="relative h-64 mt-8">
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.2">
+                <circle cx="150" cy="150" r="100" fill="white" />
+                <circle cx="280" cy="180" r="60" fill="white" />
+                <path d="M340 120C340 142.091 322.091 160 300 160C277.909 160 260 142.091 260 120C260 97.9086 277.909 80 300 80C322.091 80 340 97.9086 340 120Z" fill="white" />
+                <path d="M120 230C120 252.091 102.091 270 80 270C57.9086 270 40 252.091 40 230C40 207.909 57.9086 190 80 190C102.091 190 120 207.909 120 230Z" fill="white" />
+              </g>
+              <!-- Lock and Shield icon -->
+              <rect x="120" y="80" width="160" height="160" rx="8" fill="white" opacity="0.6" />
+              <path d="M200 100C179.532 100 162.992 116.54 162.992 137.008C162.992 150.659 170.442 162.552 181.5 168.75V181.5C181.5 188.953 187.547 195 195 195H205C212.453 195 218.5 188.953 218.5 181.5V168.75C229.558 162.552 237.008 150.659 237.008 137.008C237.008 116.54 220.468 100 200 100ZM200 112.5C213.826 112.5 224.508 123.182 224.508 137.008C224.508 150.834 213.826 161.517 200 161.517C186.174 161.517 175.492 150.834 175.492 137.008C175.492 123.182 186.174 112.5 200 112.5ZM206 173.75C206 176.926 203.426 179.5 200.25 179.5C197.074 179.5 194.5 176.926 194.5 173.75C194.5 170.574 197.074 168 200.25 168C203.426 168 206 170.574 206 173.75Z" fill="white" />
+            </svg>
+          </div>
+          
+          <div class="mt-8">
+            <div class="flex space-x-4">
+              <span class="text-indigo-100">Remember your password?</span>
+              <%= link_to "Sign in", new_session_path(resource_name), class: "text-white font-semibold hover:text-indigo-200" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right side - Form -->
+      <div class="w-full md:w-1/2 p-8 md:p-12">
+        <div class="max-w-md mx-auto">
+          <div class="text-center md:text-left">
+            <h2 class="text-2xl font-bold text-gray-900">Change your password</h2>
+            <p class="mt-2 text-sm text-gray-600">Enter your new password below</p>
+          </div>
+          
+          <%= render "devise/shared/error_messages", resource: resource %>
+          
+          <div class="mt-8">
+            <%= form_for(resource, as: resource_name, url: password_path(resource_name), 
+                          html: { method: :put, class: "space-y-6" }) do |f| %>
+              <%= f.hidden_field :reset_password_token %>
+              
+              <div>
+                <%= f.label :password, "New password", class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                  <%= f.password_field :password, autofocus: true, autocomplete: "new-password", 
+                                     class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+                                     placeholder: "Enter your new password" %>
+                </div>
+                <% if @minimum_password_length %>
+                  <p class="mt-1 text-xs text-gray-500">Must be at least <%= @minimum_password_length %> characters</p>
+                <% end %>
+              </div>
+              
+              <div>
+                <%= f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                  <%= f.password_field :password_confirmation, autocomplete: "new-password", 
+                                     class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+                                     placeholder: "Confirm your new password" %>
+                </div>
+              </div>
+              
+              <div>
+                <%= f.submit "Change my password", class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-700 hover:to-violet-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform transition duration-200 hover:translate-y-[-1px]" %>
+              </div>
+            <% end %>
+            
+            <div class="mt-6 text-center">
+              <div class="flex flex-col space-y-2">
+                <%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name), class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+                <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name), class: "text-sm text-indigo-600 hover:text-indigo-500" if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) %>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mobile sign in link -->
+        <div class="mt-8 text-center md:hidden">
+          <p class="text-sm text-gray-600">
+            Remember your password? 
+            <%= link_to "Sign in", new_session_path(resource_name), class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,2 @@
+json.extract! product, :id, :name, :description, :price, :discounted_price, :stock_quantity, :sku, :barcode, :weight, :dimensions, :condition, :brand, :featured, :currency, :country_of_origin, :available_in_ghana, :available_in_nigeria, :shipping_time, :category_id, :seller_id, :published, :published_at, :meta_title, :meta_description, :is_digital, :status, :created_at, :updated_at
+json.url product_url(product, format: :json)

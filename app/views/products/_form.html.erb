@@ -1,0 +1,142 @@
+<%= form_with(model: product, class: "contents") do |form| %>
+  <% if product.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% product.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:name].none?, "border-red-400 focus:outline-red-600": product.errors[:name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description %>
+    <%= form.textarea :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:description].none?, "border-red-400 focus:outline-red-600": product.errors[:description].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :price %>
+    <%= form.text_field :price, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:price].none?, "border-red-400 focus:outline-red-600": product.errors[:price].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :discounted_price %>
+    <%= form.text_field :discounted_price, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:discounted_price].none?, "border-red-400 focus:outline-red-600": product.errors[:discounted_price].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :stock_quantity %>
+    <%= form.number_field :stock_quantity, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:stock_quantity].none?, "border-red-400 focus:outline-red-600": product.errors[:stock_quantity].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :sku %>
+    <%= form.text_field :sku, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:sku].none?, "border-red-400 focus:outline-red-600": product.errors[:sku].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :barcode %>
+    <%= form.text_field :barcode, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:barcode].none?, "border-red-400 focus:outline-red-600": product.errors[:barcode].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :weight %>
+    <%= form.text_field :weight, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:weight].none?, "border-red-400 focus:outline-red-600": product.errors[:weight].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :dimensions %>
+    <%= form.text_field :dimensions, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:dimensions].none?, "border-red-400 focus:outline-red-600": product.errors[:dimensions].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :condition %>
+    <%= form.text_field :condition, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:condition].none?, "border-red-400 focus:outline-red-600": product.errors[:condition].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :brand %>
+    <%= form.text_field :brand, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:brand].none?, "border-red-400 focus:outline-red-600": product.errors[:brand].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :featured %>
+    <%= form.checkbox :featured, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:featured].none?, "border-red-400 focus:outline-red-600": product.errors[:featured].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :currency %>
+    <%= form.text_field :currency, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:currency].none?, "border-red-400 focus:outline-red-600": product.errors[:currency].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :country_of_origin %>
+    <%= form.text_field :country_of_origin, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:country_of_origin].none?, "border-red-400 focus:outline-red-600": product.errors[:country_of_origin].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :available_in_ghana %>
+    <%= form.checkbox :available_in_ghana, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:available_in_ghana].none?, "border-red-400 focus:outline-red-600": product.errors[:available_in_ghana].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :available_in_nigeria %>
+    <%= form.checkbox :available_in_nigeria, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:available_in_nigeria].none?, "border-red-400 focus:outline-red-600": product.errors[:available_in_nigeria].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :shipping_time %>
+    <%= form.text_field :shipping_time, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:shipping_time].none?, "border-red-400 focus:outline-red-600": product.errors[:shipping_time].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :category_id %>
+    <%= form.text_field :category_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:category_id].none?, "border-red-400 focus:outline-red-600": product.errors[:category_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :seller_id %>
+    <%= form.text_field :seller_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:seller_id].none?, "border-red-400 focus:outline-red-600": product.errors[:seller_id].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :published %>
+    <%= form.checkbox :published, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:published].none?, "border-red-400 focus:outline-red-600": product.errors[:published].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :published_at %>
+    <%= form.datetime_field :published_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:published_at].none?, "border-red-400 focus:outline-red-600": product.errors[:published_at].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :meta_title %>
+    <%= form.text_field :meta_title, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:meta_title].none?, "border-red-400 focus:outline-red-600": product.errors[:meta_title].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :meta_description %>
+    <%= form.textarea :meta_description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:meta_description].none?, "border-red-400 focus:outline-red-600": product.errors[:meta_description].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :is_digital %>
+    <%= form.checkbox :is_digital, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:is_digital].none?, "border-red-400 focus:outline-red-600": product.errors[:is_digital].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :status %>
+    <%= form.text_field :status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:status].none?, "border-red-400 focus:outline-red-600": product.errors[:status].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

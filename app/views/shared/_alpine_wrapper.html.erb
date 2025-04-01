@@ -1,0 +1,37 @@
+<%# 
+  Alpine.js wrapper to ensure proper initialization of tabs and other Alpine features
+  
+  Usage: 
+  <%= render 'shared/alpine_wrapper', default_tab: 'popular' do %>
+    <!-- Your content with Alpine.js directives here -->
+  <% end %>
+%>
+
+<div x-data="{ 
+  activeTab: '<%= local_assigns[:default_tab] || 'popular' %>', 
+  setTab(tab) { 
+    this.activeTab = tab;
+    if (window.Alpine && window.Alpine.store('tabs')) {
+      window.Alpine.store('tabs').activeTab = tab;
+    } 
+  }
+}">
+  <%= yield %>
+</div>
+
+<% if local_assigns[:javascript] %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure Alpine is ready
+      if (window.Alpine) {
+        // Update the global store
+        window.Alpine.store('tabs', {
+          activeTab: '<%= local_assigns[:default_tab] || 'popular' %>',
+          setActiveTab(tab) {
+            this.activeTab = tab;
+          }
+        });
+      }
+    });
+  </script>
+<% end %>

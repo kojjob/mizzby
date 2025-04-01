@@ -1,0 +1,77 @@
+/* Flash Message Animations */
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseHighlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+/* Flash message entrance animation */
+[data-flash-msg-target="message"] {
+  animation: slideInRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Flash message exit animation (applied by JS) */
+[data-flash-msg-target="message"].opacity-0.translate-x-full {
+  animation: slideOutRight 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+}
+
+/* Hover effects */
+[data-flash-msg-target="message"]:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Attention animation for important messages */
+[data-flash-msg-target="message"][data-type="error"],
+[data-flash-msg-target="message"][data-type="warning"] {
+  animation: 
+    slideInRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both,
+    pulseHighlight 2s infinite;
+}
+
+/* Base transition for all flash messages */
+[data-flash-msg-target="message"] {
+  transition: 
+    transform 0.3s ease, 
+    opacity 0.3s ease, 
+    box-shadow 0.3s ease;
+}
+
+/* Progress bar related styles */
+[data-flash-msg-target="progressBar"] {
+  transform-origin: left;
+}
+
+/* For creating new messages dynamically */
+[data-flash-msg-target="message"].animate-in {
+  animation: slideInRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}

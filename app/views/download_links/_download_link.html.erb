@@ -1,0 +1,34 @@
+<div id="<%= dom_id download_link %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Product:</strong>
+    <%= download_link.product_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">User:</strong>
+    <%= download_link.user_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Token:</strong>
+    <%= download_link.token %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Expires at:</strong>
+    <%= download_link.expires_at %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Download count:</strong>
+    <%= download_link.download_count %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Download limit:</strong>
+    <%= download_link.download_limit %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Active:</strong>
+    <%= download_link.active? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Order:</strong>
+    <%= download_link.order_id %>
+  </div>
+</div>

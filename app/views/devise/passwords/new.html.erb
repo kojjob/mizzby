@@ -1,0 +1,82 @@
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center">
+  <div class="mx-auto w-full max-w-6xl">
+    <div class="flex rounded-xl shadow-xl overflow-hidden bg-white">
+      <!-- Left side - Image -->
+      <div class="hidden md:block md:w-1/2 bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-12">
+        <div class="h-full flex flex-col justify-between">
+          <div>
+            <h2 class="text-3xl font-bold">Reset Your Password</h2>
+            <p class="mt-4 text-indigo-100 text-lg">Enter your email address and we'll send you instructions to reset your password.</p>
+          </div>
+          
+          <!-- Decorative SVG illustration -->
+          <div class="relative h-64 mt-8">
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.2">
+                <circle cx="150" cy="150" r="100" fill="white" />
+                <circle cx="280" cy="180" r="60" fill="white" />
+                <path d="M340 120C340 142.091 322.091 160 300 160C277.909 160 260 142.091 260 120C260 97.9086 277.909 80 300 80C322.091 80 340 97.9086 340 120Z" fill="white" />
+                <path d="M120 230C120 252.091 102.091 270 80 270C57.9086 270 40 252.091 40 230C40 207.909 57.9086 190 80 190C102.091 190 120 207.909 120 230Z" fill="white" />
+              </g>
+              <!-- Lock icon -->
+              <rect x="120" y="80" width="160" height="160" rx="8" fill="white" opacity="0.6" />
+              <path d="M216 140h-4v-12c0-13.2-10.8-24-24-24s-24 10.8-24 24v12h-4c-6.6 0-12 5.4-12 12v48c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-48c0-6.6-5.4-12-12-12zm-32-12c0-8.8 7.2-16 16-16s16 7.2 16 16v12h-32v-12zm22 62c0 3.3-2.7 6-6 6s-6-2.7-6-6v-16c0-3.3 2.7-6 6-6s6 2.7 6 6v16z" fill="white" />
+            </svg>
+          </div>
+          
+          <div class="mt-8">
+            <div class="flex space-x-4">
+              <span class="text-indigo-100">Remember your password?</span>
+              <%= link_to "Sign in", new_session_path(resource_name), class: "text-white font-semibold hover:text-indigo-200" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right side - Form -->
+      <div class="w-full md:w-1/2 p-8 md:p-12">
+        <div class="max-w-md mx-auto">
+          <div class="text-center md:text-left">
+            <h2 class="text-2xl font-bold text-gray-900">Forgot your password?</h2>
+            <p class="mt-2 text-sm text-gray-600">No worries! Enter your email and we'll send you reset instructions</p>
+          </div>
+          
+          <div class="mt-8">
+            <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-6" }) do |f| %>
+              <%= render "devise/shared/error_messages", resource: resource %>
+              
+              <div>
+                <%= f.label :email, class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                  <%= f.email_field :email, autofocus: true, autocomplete: "email", 
+                                   class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+                                   placeholder: "your@email.com" %>
+                </div>
+              </div>
+              
+              <div>
+                <%= f.submit "Send reset instructions", class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-700 hover:to-violet-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform transition duration-200 hover:translate-y-[-1px]" %>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="mt-8 text-center border-t border-gray-200 pt-6">
+            <div class="flex flex-col space-y-4 items-center justify-center">
+              <%= link_to "Back to sign in", new_session_path(resource_name), class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+              
+              <%= link_to "Create an account", new_registration_path(resource_name), class: "text-sm text-gray-600 hover:text-gray-900" %>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mobile sign in link -->
+        <div class="mt-8 text-center md:hidden">
+          <p class="text-sm text-gray-600">
+            Remember your password? 
+            <%= link_to "Sign in", new_session_path(resource_name), class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,405 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-bold">Sales Analytics</h1>
+    <%= link_to "Back to Analytics", admin_analytics_path, class: "text-indigo-600 hover:text-indigo-900" %>
+  </div>
+  
+  <!-- Date Range Filter -->
+  <div class="bg-white rounded-lg shadow p-6 mb-8">
+    <%= form_with url: sales_admin_analytics_path, method: :get, local: true, class: "flex flex-wrap items-end gap-4" do |f| %>
+      <div>
+        <%= f.label :start_date, "Start Date", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.date_field :start_date, value: @start_date, class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+      
+      <div>
+        <%= f.label :end_date, "End Date", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.date_field :end_date, value: @end_date, class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+      
+      <div>
+        <%= f.submit "Apply Filter", class: "bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      </div>
+      
+      <%= link_to "Reset", sales_admin_analytics_path, class: "text-gray-500 hover:text-gray-700 text-sm font-medium py-2" %>
+    <% end %>
+  </div>
+  
+  <!-- Monthly Comparison Chart -->
+  <div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium">Monthly Sales Comparison</h2>
+    </div>
+    <div class="p-6">
+      <div id="monthly-comparison-chart" class="h-96"></div>
+    </div>
+  </div>
+  
+  <!-- Two Column Layout for Payment Processors and Product Types -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Sales by Payment Processor -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium">Sales by Payment Processor</h2>
+      </div>
+      <div class="p-6">
+        <div id="payment-processor-chart" class="h-64"></div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Processor</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @sales_by_processor.present? %>
+              <% total_sales = @sales_by_processor.values.sum %>
+              <% @sales_by_processor.each do |processor, amount| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <%= processor.titleize %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= number_to_currency(amount) %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= number_to_percentage((amount / total_sales) * 100, precision: 1) %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="3" class="px-6 py-4 text-sm text-gray-500 text-center">No data available</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Sales by Product Type -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium">Sales by Product Type</h2>
+      </div>
+      <div class="p-6">
+        <div id="product-type-chart" class="h-64"></div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Type</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @sales_by_type.present? %>
+              <% total_sales = @sales_by_type.values.sum %>
+              <% @sales_by_type.each do |type, amount| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <%= type %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= number_to_currency(amount) %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= number_to_percentage((amount / total_sales) * 100, precision: 1) %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="3" class="px-6 py-4 text-sm text-gray-500 text-center">No data available</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Daily Sales Breakdown -->
+  <div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium">Daily Sales Breakdown</h2>
+    </div>
+    <div class="p-6">
+      <div id="daily-sales-chart" class="h-80"></div>
+    </div>
+  </div>
+  
+  <!-- Export Section -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium">Export Sales Data</h2>
+    </div>
+    <div class="p-6">
+      <p class="text-sm text-gray-500 mb-4">Download detailed sales data for the selected period.</p>
+      <%= link_to "Export Sales Data", export_admin_analytics_path(report_type: "sales", start_date: @start_date, end_date: @end_date), class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    </div>
+  </div>
+</div>
+
+<!-- Charts.js -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Monthly Sales Comparison Chart
+  const monthlySalesData = {
+    // Parse the data from Rails variables
+    currentYear: <%= raw @monthly_sales_current_year.to_json %>,
+    previousYear: <%= raw @monthly_sales_previous_year.to_json %>
+  };
+  
+  // Format monthly labels and data
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const currentYearData = new Array(12).fill(0);
+  const previousYearData = new Array(12).fill(0);
+  
+  // Process current year data
+  Object.entries(monthlySalesData.currentYear).forEach(([dateStr, value]) => {
+    const date = new Date(dateStr);
+    currentYearData[date.getMonth()] = value;
+  });
+  
+  // Process previous year data
+  Object.entries(monthlySalesData.previousYear).forEach(([dateStr, value]) => {
+    const date = new Date(dateStr);
+    previousYearData[date.getMonth()] = value;
+  });
+  
+  // Create monthly comparison chart
+  const monthlyComparisonCtx = document.getElementById('monthly-comparison-chart').getContext('2d');
+  const monthlyComparisonChart = new Chart(monthlyComparisonCtx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: 'Current Year',
+          data: currentYearData,
+          backgroundColor: 'rgba(79, 70, 229, 0.7)',
+          borderColor: 'rgba(79, 70, 229, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Previous Year',
+          data: previousYearData,
+          backgroundColor: 'rgba(156, 163, 175, 0.7)',
+          borderColor: 'rgba(156, 163, 175, 1)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Sales Amount ($)'
+          },
+          ticks: {
+            callback: function(value) {
+              return '$' + value;
+            }
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Month'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              label += '$' + context.parsed.y;
+              return label;
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Payment Processor Chart
+  const paymentProcessorData = <%= raw @sales_by_processor.to_json %>;
+  const paymentLabels = Object.keys(paymentProcessorData).map(key => key.charAt(0).toUpperCase() + key.slice(1));
+  const paymentValues = Object.values(paymentProcessorData);
+  
+  const paymentProcessorCtx = document.getElementById('payment-processor-chart').getContext('2d');
+  const paymentProcessorChart = new Chart(paymentProcessorCtx, {
+    type: 'doughnut',
+    data: {
+      labels: paymentLabels,
+      datasets: [{
+        data: paymentValues,
+        backgroundColor: [
+          'rgba(79, 70, 229, 0.7)',
+          'rgba(245, 158, 11, 0.7)',
+          'rgba(16, 185, 129, 0.7)',
+          'rgba(239, 68, 68, 0.7)'
+        ],
+        borderColor: [
+          'rgba(79, 70, 229, 1)',
+          'rgba(245, 158, 11, 1)',
+          'rgba(16, 185, 129, 1)',
+          'rgba(239, 68, 68, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: $${value} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Product Type Chart
+  const productTypeData = <%= raw @sales_by_type.to_json %>;
+  const typeLabels = Object.keys(productTypeData);
+  const typeValues = Object.values(productTypeData);
+  
+  const productTypeCtx = document.getElementById('product-type-chart').getContext('2d');
+  const productTypeChart = new Chart(productTypeCtx, {
+    type: 'pie',
+    data: {
+      labels: typeLabels,
+      datasets: [{
+        data: typeValues,
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.7)',
+          'rgba(239, 68, 68, 0.7)'
+        ],
+        borderColor: [
+          'rgba(16, 185, 129, 1)',
+          'rgba(239, 68, 68, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: $${value} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Daily Sales Breakdown Chart
+  const dailySalesData = <%= raw @daily_sales.to_json %>;
+  
+  // Format the dates and values
+  const dailyLabels = [];
+  const dailyValues = [];
+  
+  // Sort the dates chronologically
+  const sortedDates = Object.keys(dailySalesData).sort();
+  
+  sortedDates.forEach(date => {
+    const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    dailyLabels.push(formattedDate);
+    dailyValues.push(dailySalesData[date]);
+  });
+  
+  const dailySalesCtx = document.getElementById('daily-sales-chart').getContext('2d');
+  const dailySalesChart = new Chart(dailySalesCtx, {
+    type: 'bar',
+    data: {
+      labels: dailyLabels,
+      datasets: [{
+        label: 'Daily Sales',
+        data: dailyValues,
+        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+        borderColor: 'rgba(79, 70, 229, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Sales Amount ($)'
+          },
+          ticks: {
+            callback: function(value) {
+              return '$' + value;
+            }
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              label += '$' + context.parsed.y;
+              return label;
+            }
+          }
+        }
+      }
+    }
+  });
+});
+</script>
