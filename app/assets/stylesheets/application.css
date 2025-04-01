@@ -8,3 +8,8 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/*= require flash_messages */
+/*= require components/dropdowns */
+/*= require components/enhanced_dropdowns */
+/*= require components/tabs */

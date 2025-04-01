@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Import component styles */
+@import "../stylesheets/components/dropdowns.css";
+@import "../stylesheets/components/enhanced_dropdowns.css";
+@import "../stylesheets/components/tabs.css";
 
 
 @keyframes blob {

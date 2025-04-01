@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Digital Store Admin</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <div class="hidden md:flex md:flex-shrink-0">
+        <div class="flex flex-col w-64">
+          <!-- Sidebar component -->
+          <div class="flex flex-col flex-grow pb-4 bg-indigo-800 overflow-y-auto">
+            <div class="flex items-center flex-shrink-0 px-4 py-4">
+              <a href="<%= admin_root_path %>" class="text-white text-2xl font-bold">
+                Digital Store <span class="text-indigo-300 text-sm ml-1">Admin</span>
+              </a>
+            </div>
+            <div class="mt-5 flex-grow flex flex-col">
+              <nav class="flex-1 px-2 space-y-1">
+                <%= render "admin/shared/sidebar" %>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main content -->
+      <div class="flex flex-col flex-1 overflow-hidden">
+        <!-- Top navbar -->
+        <div class="z-10 flex-shrink-0 flex h-16 bg-white shadow">
+          <button type="button" class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden">
+            <span class="sr-only">Open sidebar</span>
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+          </button>
+          
+          <div class="flex-1 flex justify-between px-4">
+            <div class="flex-1 flex">
+              <h1 class="text-2xl font-semibold text-gray-900 self-center">
+                <%= yield(:page_title) || 'Dashboard' %>
+              </h1>
+            </div>
+            
+            <div class="ml-4 flex items-center md:ml-6">
+              <!-- Admin badge -->
+              <span class="<%= current_user.super_admin? ? 'bg-purple-100 text-purple-800' : 'bg-indigo-100 text-indigo-800' %> inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium mr-4">
+                <%= current_user.super_admin? ? 'Super Admin' : 'Admin' %>
+              </span>
+              
+              <!-- Profile dropdown -->
+              <div class="ml-3 relative" x-data="{ open: false }">
+                <div>
+                  <button type="button" class="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="open = !open">
+                    <span class="sr-only">Open user menu</span>
+                    <% if current_user.profile_picture.attached? %>
+                      <%= image_tag current_user.profile_picture, class: "h-8 w-8 rounded-full object-cover" %>
+                    <% else %>
+                      <div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
+                        <%= current_user.initials %>
+                      </div>
+                    <% end %>
+                  </button>
+                </div>
+                
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-100" 
+                     x-transition:enter-start="transform opacity-0 scale-95" 
+                     x-transition:enter-end="transform opacity-100 scale-100" 
+                     x-transition:leave="transition ease-in duration-75" 
+                     x-transition:leave-start="transform opacity-100 scale-100" 
+                     x-transition:leave-end="transform opacity-0 scale-95" 
+                     class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5" 
+                     style="display: none;"
+                     @click.away="open = false">
+                  
+                  <a href="<%= edit_user_registration_path %>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Your Profile
+                  </a>
+                  
+                  <a href="<%= admin_settings_path if defined?(admin_settings_path) %>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Settings
+                  </a>
+                  
+                  <%= button_to destroy_user_session_path, method: :delete, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                    Sign out
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content area -->
+        <main class="flex-1 relative overflow-y-auto focus:outline-none">
+          <div class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+              <!-- Flash messages -->
+              <%= render "shared/flash_msg" %>
+              
+              <!-- Page content -->
+              <div class="py-4">
+                <%= yield %>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

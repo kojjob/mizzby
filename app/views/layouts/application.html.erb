@@ -21,11 +21,8 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-
-    <!-- Alpine.js for dropdowns and interactive components -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-    <!-- Initialize mobile menu state -->
+    <!-- Initialize Alpine.js stores -->
     <script>
       document.addEventListener('alpine:init', () => {
         Alpine.store('layout', {
@@ -36,13 +33,14 @@
   </head>
 
   <body class="flex flex-col min-h-screen" x-data="{ mobileMenuOpen: false }">
-    <%= render "layouts/header" %>
-    <%# <%= render "layouts/flash" %>
+    <%= render "shared/header" %>
+    <!-- Add this line where you want the flash messages to appear, typically just after the opening body tag or inside your main content container -->
+    <%= render 'shared/flash_msg' %>
     <%#= render "layouts/notifications" %>
     <main class="flex-grow">
       <%= yield %>
     </main>
-    <%= render "layouts/footer" %>
-    <%#= render "layouts/modals" %>
+    <%= render "shared/footer" %>
+    <%= render "shared/modals" %>
   </body>
 </html>

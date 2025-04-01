@@ -1,0 +1,78 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# Regular user
+regular_user:
+  email: "user@example.com"
+  first_name: "Regular"
+  last_name: "User"
+  # For Devise, we need to use encrypted passwords
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.current %>
+  admin: false
+  super_admin: false
+  active: true
+
+# Admin user
+admin:
+  email: "admin@example.com" 
+  first_name: "Admin"
+  last_name: "User"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.current %>
+  admin: true
+  super_admin: false
+  active: true
+
+# Super admin user
+super_admin:
+  email: "superadmin@example.com"
+  first_name: "Super"
+  last_name: "Admin"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.current %>
+  admin: true
+  super_admin: true
+  active: true
+
+# Seller user
+seller:
+  email: "seller@example.com"
+  first_name: "Seller"
+  last_name: "User"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.current %>
+  admin: false
+  super_admin: false
+  active: true
+
+# Unconfirmed user
+unconfirmed:
+  email: "unconfirmed@example.com"
+  first_name: "Unconfirmed"
+  last_name: "User"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: 
+  confirmation_sent_at: <%= 2.days.ago %>
+  active: true
+
+# Inactive user
+inactive:
+  email: "inactive@example.com"
+  first_name: "Inactive"
+  last_name: "User"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.current %>
+  admin: false
+  super_admin: false
+  active: false
+
+# Locked user
+locked:
+  email: "locked@example.com"
+  first_name: "Locked"
+  last_name: "User"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.current %>
+  locked_at: <%= Time.current %>
+  failed_attempts: 5
+  active: true

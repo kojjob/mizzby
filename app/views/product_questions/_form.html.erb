@@ -1,0 +1,52 @@
+<%= form_with(model: product_question, class: "contents") do |form| %>
+  <% if product_question.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(product_question.errors.count, "error") %> prohibited this product_question from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% product_question.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :product_id %>
+    <%= form.text_field :product_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:product_id].none?, "border-red-400 focus:outline-red-600": product_question.errors[:product_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :user_id %>
+    <%= form.text_field :user_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:user_id].none?, "border-red-400 focus:outline-red-600": product_question.errors[:user_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :asked_by %>
+    <%= form.text_field :asked_by, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:asked_by].none?, "border-red-400 focus:outline-red-600": product_question.errors[:asked_by].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :question %>
+    <%= form.textarea :question, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:question].none?, "border-red-400 focus:outline-red-600": product_question.errors[:question].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :answer %>
+    <%= form.textarea :answer, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:answer].none?, "border-red-400 focus:outline-red-600": product_question.errors[:answer].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :answered_by %>
+    <%= form.text_field :answered_by, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:answered_by].none?, "border-red-400 focus:outline-red-600": product_question.errors[:answered_by].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :answered_at %>
+    <%= form.datetime_field :answered_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product_question.errors[:answered_at].none?, "border-red-400 focus:outline-red-600": product_question.errors[:answered_at].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
