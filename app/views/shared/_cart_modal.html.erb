@@ -1,0 +1,177 @@
+<div 
+  id="cartModal"
+  class="fixed inset-0 z-[2000] hidden"
+  data-controller="cart-modal"
+  data-cart-modal-target="modal"
+>
+  <!-- Backdrop -->
+  <div 
+    class="absolute inset-0 bg-gray-900 transition-opacity duration-300 ease-out opacity-0"
+    data-cart-modal-target="backdrop"
+  ></div>
+  
+  <!-- Modal Content -->
+  <div class="relative z-10 flex items-center justify-end min-h-screen">
+    <div 
+      class="w-full max-w-md h-screen bg-white shadow-xl transition-all duration-300 ease-out transform translate-y-8 opacity-0 overflow-y-auto"
+      data-cart-modal-target="content"
+    >
+      <!-- Close Button -->
+      <button 
+        class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 focus:outline-none"
+        data-action="click->cart-modal#close"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 text-white p-6">
+        <div class="flex items-center space-x-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <h2 class="text-2xl font-bold">Your Cart</h2>
+        </div>
+        <% if @cart&.cart_items&.count&.positive? %>
+          <p class="text-indigo-100 mt-2"><%= @cart.cart_items.count %> <%= 'item'.pluralize(@cart.cart_items.count) %> in your cart</p>
+        <% else %>
+          <p class="text-indigo-100 mt-2">Your cart is empty</p>
+        <% end %>
+      </div>
+      
+      <!-- Cart Items -->
+      <div class="p-4">
+        <% if @cart&.cart_items&.count&.positive? %>
+          <div class="space-y-4">
+            <% @cart.cart_items.each do |item| %>
+              <div 
+                class="flex items-start border-b border-gray-100 pb-4 transition-opacity duration-300"
+                data-cart-item
+              >
+                <!-- Product Image -->
+                <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-md overflow-hidden">
+                  <% if item.product.product_images.any? %>
+                    <%= image_tag item.product.product_images.first.image, class: "w-full h-full object-cover" %>
+                  <% else %>
+                    <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  <% end %>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="ml-4 flex-1">
+                  <!-- Product Name and Remove Button -->
+                  <div class="flex justify-between">
+                    <h3 class="text-sm font-medium text-gray-900">
+                      <%= link_to item.product.name, product_path(item.product), class: "hover:text-indigo-600" %>
+                    </h3>
+                    <button 
+                      class="text-gray-400 hover:text-red-500 focus:outline-none"
+                      data-action="click->cart-modal#removeItem"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <!-- Digital Badge -->
+                  <% if item.product.is_digital %>
+                    <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Digital
+                    </span>
+                  <% end %>
+                  
+                  <!-- Price and Quantity -->
+                  <div class="mt-2 flex justify-between items-center">
+                    <div>
+                      <% if item.product.on_sale? %>
+                        <p class="text-sm text-gray-500 line-through"><%= number_to_currency(item.product.price) %></p>
+                        <p class="text-sm font-medium text-gray-900"><%= number_to_currency(item.product.discounted_price) %></p>
+                      <% else %>
+                        <p class="text-sm font-medium text-gray-900"><%= number_to_currency(item.product.price) %></p>
+                      <% end %>
+                    </div>
+                    
+                    <!-- Quantity Controls -->
+                    <div class="flex items-center border border-gray-300 rounded-md">
+                      <button 
+                        class="px-2 py-1 text-gray-600 hover:bg-gray-100 focus:outline-none"
+                        data-action="click->cart-modal#decrementQuantity"
+                      >-</button>
+                      <input 
+                        type="number" 
+                        class="w-12 text-center border-0 focus:outline-none focus:ring-0" 
+                        value="<%= item.quantity || 1 %>" 
+                        min="1" 
+                        max="99"
+                        readonly
+                      >
+                      <button 
+                        class="px-2 py-1 text-gray-600 hover:bg-gray-100 focus:outline-none"
+                        data-action="click->cart-modal#incrementQuantity"
+                      >+</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <!-- Cart Summary -->
+          <div class="mt-8 space-y-4">
+            <div class="border-t border-b py-4">
+              <div class="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Subtotal</span>
+                <span><%= number_to_currency(@cart.cart_items.sum { |item| item.product.discounted_price * (item.quantity || 1) }) %></span>
+              </div>
+              <div class="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Taxes</span>
+                <span>Calculated at checkout</span>
+              </div>
+              <div class="flex justify-between font-semibold mt-4">
+                <span>Total</span>
+                <span class="text-indigo-600"><%= number_to_currency(@cart.cart_items.sum { |item| item.product.discounted_price * (item.quantity || 1) }) %></span>
+              </div>
+            </div>
+            
+            <!-- Checkout Button -->
+            <%= link_to checkout_path, class: "block w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center font-medium rounded-md hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors" do %>
+              Proceed to Checkout
+            <% end %>
+            
+            <!-- Continue Shopping Button -->
+            <button 
+              class="block w-full py-3 px-4 bg-gray-100 text-gray-800 text-center font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+              data-action="click->cart-modal#close"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        <% else %>
+          <!-- Empty Cart -->
+          <div class="text-center py-12">
+            <div class="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+            <p class="text-gray-500 mb-6">Looks like you haven't added any products to your cart yet.</p>
+            <%= link_to products_path, class: "inline-block py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors" do %>
+              Browse Products
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

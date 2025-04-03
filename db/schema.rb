@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "total_price"
+    t.string "status"
+    t.string "cart_id"
     t.index ["user_id"], name: "index_carts_on_user_id"
   end
 
@@ -99,6 +102,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.string "icon_color"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "products_count", default: 0, null: false
     t.index ["parent_id"], name: "index_categories_on_parent_id"
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
@@ -135,6 +139,39 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
+  create_table "order_items", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "product_id", null: false
+    t.integer "quantity", default: 1, null: false
+    t.integer "status", default: 0, null: false
+    t.string "shipping_address", null: false
+    t.string "shipping_method", null: false
+    t.decimal "shipping_cost", precision: 10, scale: 2, default: "0.0"
+    t.string "payment_method", null: false
+    t.string "payment_status", default: "pending"
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "0.0"
+    t.decimal "tax_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "discount_rate", precision: 5, scale: 2, default: "0.0"
+    t.decimal "discount_amount", precision: 10, scale: 2, default: "0.0"
+    t.string "product_name", null: false
+    t.string "product_sku", null: false
+    t.string "product_image_url"
+    t.text "product_description"
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.text "customization_notes"
+    t.boolean "is_gift", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_order_items_on_created_at"
+    t.index ["order_id", "product_id"], name: "index_order_items_on_order_id_and_product_id", unique: true
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["payment_status"], name: "index_order_items_on_payment_status"
+    t.index ["product_id"], name: "index_order_items_on_product_id"
+    t.index ["shipping_method"], name: "index_order_items_on_shipping_method"
+    t.index ["status"], name: "index_order_items_on_status"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "product_id", null: false
@@ -155,6 +192,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.index ["discount"], name: "index_orders_on_discount"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["shipping_cost"], name: "index_orders_on_shipping_cost"
+    t.index ["status", "created_at"], name: "index_orders_on_status_and_created_at"
     t.index ["status"], name: "index_orders_on_status"
     t.index ["total_amount"], name: "index_orders_on_total_amount"
     t.index ["user_id"], name: "index_orders_on_user_id"
@@ -242,6 +280,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "active"
+    t.boolean "on_sale", default: false, null: false
+    t.text "specifications", default: [], array: true
+    t.integer "product_type", default: 0
+    t.integer "sale_status", default: 0
     t.index ["available_in_ghana"], name: "index_products_on_available_in_ghana"
     t.index ["available_in_nigeria"], name: "index_products_on_available_in_nigeria"
     t.index ["barcode"], name: "index_products_on_barcode", unique: true
@@ -260,9 +302,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.index ["meta_keywords"], name: "index_products_on_meta_keywords", using: :gin
     t.index ["meta_title"], name: "index_products_on_meta_title"
     t.index ["name"], name: "index_products_on_name"
+    t.index ["on_sale"], name: "index_products_on_on_sale"
     t.index ["price"], name: "index_products_on_price"
+    t.index ["product_type"], name: "index_products_on_product_type"
     t.index ["published"], name: "index_products_on_published"
     t.index ["published_at"], name: "index_products_on_published_at"
+    t.index ["sale_status"], name: "index_products_on_sale_status"
     t.index ["seller_id"], name: "index_products_on_seller_id"
     t.index ["shipping_method"], name: "index_products_on_shipping_method"
     t.index ["shipping_time"], name: "index_products_on_shipping_time"
@@ -306,7 +351,44 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.text "mobile_money_details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "store_name"
+    t.string "store_slug"
+    t.string "custom_domain"
+    t.boolean "domain_verified", default: false
+    t.jsonb "store_settings", default: {}
+    t.index ["custom_domain"], name: "index_sellers_on_custom_domain", unique: true
+    t.index ["store_slug"], name: "index_sellers_on_store_slug", unique: true
     t.index ["user_id"], name: "index_sellers_on_user_id"
+  end
+
+  create_table "store_categories", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "name"
+    t.text "description"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_store_categories_on_store_id"
+  end
+
+  create_table "store_settings", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "key"
+    t.text "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_store_settings_on_store_id"
+  end
+
+  create_table "stores", force: :cascade do |t|
+    t.bigint "seller_id", null: false
+    t.string "name"
+    t.string "slug"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["seller_id"], name: "index_stores_on_seller_id"
+    t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
 
   create_table "user_activities", force: :cascade do |t|
@@ -358,6 +440,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
     t.string "timezone"
     t.text "bio"
     t.datetime "last_activity_at"
+    t.jsonb "address", default: {}
     t.index ["active"], name: "index_users_on_active"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["country"], name: "index_users_on_country"
@@ -390,6 +473,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
   add_foreign_key "download_links", "products"
   add_foreign_key "download_links", "users"
   add_foreign_key "notifications", "users"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "products"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
   add_foreign_key "payment_audit_logs", "orders"
@@ -402,6 +487,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_01_165507) do
   add_foreign_key "reviews", "products"
   add_foreign_key "reviews", "users"
   add_foreign_key "sellers", "users"
+  add_foreign_key "store_categories", "stores"
+  add_foreign_key "store_settings", "stores"
+  add_foreign_key "stores", "sellers"
   add_foreign_key "user_activities", "users"
   add_foreign_key "wishlist_items", "products"
   add_foreign_key "wishlist_items", "users"

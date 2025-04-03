@@ -1,0 +1,85 @@
+<header class="store-header <%= store.respond_to?(:theme) ? store.theme : 'default' %>-header">
+  <div class="container mx-auto px-4 py-6">
+    <div class="flex flex-col md:flex-row items-center justify-between">
+      <div class="flex items-center mb-4 md:mb-0">
+        <% if store.respond_to?(:logo) && store.logo.attached? %>
+          <%= image_tag store.logo.variant(resize_to_limit: [200, 80]),
+                       alt: "#{store.name} logo",
+                       class: "h-14 mr-4" %>
+        <% else %>
+          <div class="text-2xl font-bold"><%= store.name %></div>
+        <% end %>
+      </div>
+
+      <div class="flex items-center space-x-6">
+        <nav class="hidden md:flex items-center space-x-6">
+          <%= link_to "Home", store_path(store.slug),
+                     class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+          <%= link_to "Products", store_products_path(store.slug),
+                     class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+          <% if store.respond_to?(:store_categories) && store.store_categories.any? %>
+            <%= link_to "Categories", store_categories_path(store.slug),
+                       class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+          <% end %>
+          <%= link_to "About", store_about_path(store.slug),
+                     class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+          <%= link_to "Contact", store_contact_path(store.slug),
+                     class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+        </nav>
+
+        <div class="flex items-center space-x-4">
+          <% if defined?(user_signed_in?) && user_signed_in? && current_user.present? && !current_user.is_a?(Array) %>
+            <%= link_to current_carts_path, class: "text-gray-700 hover:text-indigo-600 transition relative" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <% if current_user.present? && !current_user.is_a?(Array) && current_user.respond_to?(:cart) && current_user.cart&.cart_items&.count.to_i > 0 %>
+                <span class="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <%= current_user.cart.cart_items.count %>
+                </span>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <button type="button" class="md:hidden text-gray-700" data-controller="mobile-store-menu" data-action="click->mobile-store-menu#toggle">
+            <svg class="h-6 w-6" data-mobile-store-menu-target="openIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg class="h-6 w-6 hidden" data-mobile-store-menu-target="closeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu (hidden by default) -->
+  <div class="md:hidden hidden bg-white border-t border-gray-200" data-mobile-store-menu-target="menu">
+    <nav class="px-4 pt-2 pb-4 space-y-1">
+      <%= link_to "Home", store_path(store.slug),
+                 class: "block px-3 py-2 rounded-md text-gray-700 font-medium hover:bg-gray-100" %>
+      <%= link_to "Products", store_products_path(store.slug),
+                 class: "block px-3 py-2 rounded-md text-gray-700 font-medium hover:bg-gray-100" %>
+      <% if store.store_categories.any? %>
+        <%= link_to "Categories", store_categories_path(store.slug),
+                 class: "block px-3 py-2 rounded-md text-gray-700 font-medium hover:bg-gray-100" %>
+      <% end %>
+      <%= link_to "About", store_about_path(store.slug),
+                 class: "block px-3 py-2 rounded-md text-gray-700 font-medium hover:bg-gray-100" %>
+      <%= link_to "Contact", store_contact_path(store.slug),
+                 class: "block px-3 py-2 rounded-md text-gray-700 font-medium hover:bg-gray-100" %>
+    </nav>
+  </div>
+
+  <% if store.banner_image.attached? %>
+    <div class="relative w-full">
+      <%= image_tag store.banner_image.variant(resize_to_fill: [1200, 300]),
+                   alt: "#{store.name} banner",
+                   class: "w-full h-48 md:h-64 object-cover" %>
+      <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <h1 class="text-3xl md:text-5xl font-bold text-white"><%= store.name %></h1>
+      </div>
+    </div>
+  <% end %>
+</header>

@@ -1,0 +1,299 @@
+<% content_for :page_title, "Products" %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Products Management</h1>
+    <div class="flex space-x-2">
+      <%= link_to new_admin_product_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Add Product
+      <% end %>
+
+      <%= link_to admin_products_path(format: :csv), class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Export CSV
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <%= form_with url: admin_products_path, method: :get, class: "flex flex-col md:flex-row md:items-end gap-4" do |f| %>
+      <div class="flex-1">
+        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+        <%= f.text_field :search, value: params[:search], placeholder: "Search by name, description, or SKU", class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+      </div>
+
+      <div class="w-full md:w-48">
+        <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+        <%= f.select :category_id, Category.all.map { |c| [c.name, c.id] },
+                    {include_blank: 'All Categories', selected: params[:category_id]},
+                    {class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"} %>
+      </div>
+
+      <div class="w-full md:w-48">
+        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <%= f.select :status, [['All Statuses', ''], ['Active', 'active'], ['Inactive', 'inactive'], ['Draft', 'draft']],
+                    {selected: params[:status]},
+                    {class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"} %>
+      </div>
+
+      <div class="w-full md:w-48">
+        <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+        <%= f.select :type, [['All Types', ''], ['Digital', 'digital'], ['Physical', 'physical']],
+                    {selected: params[:type]},
+                    {class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"} %>
+      </div>
+
+      <div class="w-full md:w-48">
+        <label for="featured" class="block text-sm font-medium text-gray-700 mb-1">Featured</label>
+        <%= f.select :featured, [['All Products', ''], ['Featured', 'true'], ['Not Featured', 'false']],
+                    {selected: params[:featured]},
+                    {class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"} %>
+      </div>
+
+      <div>
+        <%= f.submit "Filter", class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium h-10" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Products Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-4">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-indigo-100 mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">Total Products</p>
+          <p class="text-xl font-bold"><%= @total_products || 0 %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-green-100 mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">Active Products</p>
+          <p class="text-xl font-bold"><%= @active_products || 0 %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-yellow-100 mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">Featured Products</p>
+          <p class="text-xl font-bold"><%= @featured_products || 0 %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">Out of Stock</p>
+          <p class="text-xl font-bold"><%= @out_of_stock_products || 0 %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @products.present? %>
+            <% @products.each do |product| %>
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-md bg-gray-200 flex items-center justify-center overflow-hidden">
+                      <% if product.product_images.any? && product.product_images.first.image.attached? %>
+                        <%= image_tag product.product_images.first.image, class: "h-10 w-10 object-cover" %>
+                      <% else %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      <% end %>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900"><%= product.name %></div>
+                      <div class="text-xs text-gray-500">SKU: <%= product.sku || 'N/A' %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900"><%= product.category&.name || 'Uncategorized' %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% if product.discounted_price.present? && product.discounted_price < product.price %>
+                    <div class="text-sm font-medium text-gray-900"><%= number_to_currency(product.discounted_price) %></div>
+                    <div class="text-xs text-gray-500 line-through"><%= number_to_currency(product.price) %></div>
+                  <% else %>
+                    <div class="text-sm font-medium text-gray-900"><%= number_to_currency(product.price) %></div>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% if product.is_digital? %>
+                    <span class="text-sm text-gray-500">Digital</span>
+                  <% else %>
+                    <% stock_class = if product.stock_quantity.to_i <= 0
+                                      'text-red-600 font-medium'
+                                    elsif product.stock_quantity.to_i < 10
+                                      'text-yellow-600 font-medium'
+                                    else
+                                      'text-green-600'
+                                    end
+                    %>
+                    <span class="text-sm <%= stock_class %>"><%= product.stock_quantity.to_i %></span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% status_colors = {
+                    'active' => 'bg-green-100 text-green-800',
+                    'inactive' => 'bg-red-100 text-red-800',
+                    'draft' => 'bg-yellow-100 text-yellow-800'
+                  } %>
+                  <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <%= status_colors[product.status.to_s.downcase] || 'bg-gray-100 text-gray-800' %>">
+                    <%= product.status.present? ? product.status.titleize : 'Unknown' %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <%= product.is_digital? ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' %>">
+                    <%= product.is_digital? ? 'Digital' : 'Physical' %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900"><%= product.seller ? (product.seller.respond_to?(:business_name) ? product.seller.business_name : product.seller.id) : 'N/A' %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end space-x-2">
+                    <%= link_to admin_product_path(product), class: "text-indigo-600 hover:text-indigo-900" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    <% end %>
+
+                    <%= link_to edit_admin_product_path(product), class: "text-blue-600 hover:text-blue-900" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    <% end %>
+
+                    <%= button_to toggle_featured_admin_product_path(product), method: :post, form: { data: { turbo: false } }, class: "text-yellow-600 hover:text-yellow-900 bg-transparent border-0 p-0 cursor-pointer" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                    <% end %>
+
+                    <%= button_to toggle_status_admin_product_path(product), method: :post, form: { data: { turbo: false } }, class: "text-green-600 hover:text-green-900 bg-transparent border-0 p-0 cursor-pointer" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    <% end %>
+
+                    <%= button_to admin_product_path(product), method: :delete, form: { data: { turbo_confirm: "Are you sure you want to delete this product?" } }, class: "text-red-600 hover:text-red-900 bg-transparent border-0 p-0 cursor-pointer" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+                No products found matching your criteria.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @products.respond_to?(:total_pages) && defined?(Kaminari) %>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <nav class="flex items-center justify-between">
+          <div class="flex-1 flex justify-between sm:hidden">
+            <%= link_to_prev_page @products, 'Previous', class: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" rescue nil %>
+            <%= link_to_next_page @products, 'Next', class: "ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" rescue nil %>
+          </div>
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p class="text-sm text-gray-700">
+                <% if @products.total_count > 0 %>
+                  Showing <span class="font-medium"><%= @products.offset_value + 1 %></span> to <span class="font-medium"><%= @products.offset_value + @products.length %></span> of <span class="font-medium"><%= @products.total_count %></span> products
+                <% else %>
+                  No products found
+                <% end %>
+              </p>
+            </div>
+            <div>
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <%= paginate @products rescue nil %>
+              </nav>
+            </div>
+          </div>
+        </nav>
+      </div>
+    <% else %>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="flex justify-between items-center">
+          <p class="text-sm text-gray-700">
+            Showing <%= @products.length %> products
+          </p>
+          <% if @products.length >= 25 %>
+            <div class="flex space-x-2">
+              <% if params[:page].to_i > 1 %>
+                <%= link_to admin_products_path(params.permit!.merge(page: params[:page].to_i - 1)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+                  Previous
+                <% end %>
+              <% end %>
+              <%= link_to admin_products_path(params.permit!.merge(page: (params[:page] || 1).to_i + 1)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+                Next
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

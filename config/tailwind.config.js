@@ -1,28 +1,39 @@
 module.exports = {
-  content: [
-    './app/views/**/*.html.erb',
-    './app/helpers/**/*.rb',
-    './app/assets/stylesheets/**/*.css',
-    './app/javascript/**/*.js'
-  ],
+  // Your existing config...
   theme: {
     extend: {
+      // Your existing extensions...
+      
       animation: {
-        'slide-in-right': 'slide-in-right 0.3s ease-out',
+        'fade-in-down': 'fadeInDown 0.2s ease-out',
+        'fade-out-up': 'fadeOutUp 0.2s ease-in',
       },
       keyframes: {
-        'slide-in-right': {
-          '0%': { 
-            opacity: '0', 
-            transform: 'translateX(100%)' 
+        fadeInDown: {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(-0.5rem)'
           },
-          '100%': { 
-            opacity: '1', 
-            transform: 'translateX(0)' 
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
           },
-        }
-      }
+        },
+        fadeOutUp: {
+          '0%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translateY(-0.5rem)'
+          },
+        },
+      },
+      transitionProperty: {
+        'max-height': 'max-height',
+      },
     },
   },
-  plugins: [],
+  // The rest of your config...
 }

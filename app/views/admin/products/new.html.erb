@@ -1,0 +1,349 @@
+<% content_for :page_title, "New Product" %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Create New Product</h1>
+      <p class="text-gray-600">Add a new product to your catalog</p>
+    </div>
+    <div class="flex space-x-2">
+      <%= link_to admin_products_path, class: "bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+        </svg>
+        Back to Products
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_with(model: [:admin, @product], class: "contents") do |form| %>
+    <% if @product.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-4 py-3 rounded-md mb-6">
+        <div class="flex items-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <h2 class="font-bold"><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
+        </div>
+        <ul class="list-disc pl-5">
+          <% @product.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Main Information Column -->
+      <div class="md:col-span-2 space-y-6">
+        <!-- Basic Information Section -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Basic Information</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :name, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Product Name" %>
+            </div>
+
+            <div>
+              <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :description, rows: 5, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Detailed product description..." %>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <%= form.label :brand, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :brand, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Brand Name" %>
+              </div>
+
+              <div>
+                <%= form.label :condition, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.select :condition, 
+                               options_for_select([
+                                 ["New", "new"], 
+                                 ["Like New", "like_new"], 
+                                 ["Good", "good"], 
+                                 ["Fair", "fair"], 
+                                 ["Used", "used"]
+                               ]), 
+                               { include_blank: "Select Condition" }, 
+                               { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Pricing</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <%= form.label :price, class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">$</span>
+                  </div>
+                  <%= form.number_field :price, step: "0.01", min: "0", class: "py-2 px-3 pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0.00" %>
+                </div>
+              </div>
+
+              <div>
+                <%= form.label :discounted_price, class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">$</span>
+                  </div>
+                  <%= form.number_field :discounted_price, step: "0.01", min: "0", class: "py-2 px-3 pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0.00" %>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <%= form.label :currency, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.select :currency, 
+                             options_for_select([
+                               ["USD ($)", "USD"], 
+                               ["EUR (€)", "EUR"], 
+                               ["GBP (£)", "GBP"], 
+                               ["GHS (₵)", "GHS"], 
+                               ["NGN (₦)", "NGN"]
+                             ], "USD"), 
+                             {}, 
+                             { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Type & Category -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Product Type & Category</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <%= form.label :category_id, "Category", class: "block text-sm font-medium text-gray-700" %>
+                <%= form.collection_select :category_id, 
+                                          Category.all, 
+                                          :id, 
+                                          :name, 
+                                          { include_blank: "Select Category" }, 
+                                          { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+              </div>
+
+              <div>
+                <%= form.label :product_type, "Product Type", class: "block text-sm font-medium text-gray-700 mb-1" %>
+                <div class="flex space-x-4">
+                  <div class="flex items-center">
+                    <%= form.radio_button :is_digital, false, checked: true, class: "h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" %>
+                    <label for="product_is_digital_false" class="ml-2 block text-sm text-gray-700">Physical</label>
+                  </div>
+                  <div class="flex items-center">
+                    <%= form.radio_button :is_digital, true, class: "h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" %>
+                    <label for="product_is_digital_true" class="ml-2 block text-sm text-gray-700">Digital</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div id="physical-product-fields" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <%= form.label :stock_quantity, class: "block text-sm font-medium text-gray-700" %>
+                  <%= form.number_field :stock_quantity, min: "0", class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0" %>
+                </div>
+                
+                <div>
+                  <%= form.label :weight, "Weight (kg)", class: "block text-sm font-medium text-gray-700" %>
+                  <%= form.number_field :weight, step: "0.01", min: "0", class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0.00" %>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <%= form.label :dimensions, "Dimensions (LxWxH cm)", class: "block text-sm font-medium text-gray-700" %>
+                  <%= form.text_field :dimensions, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "20x15x10" %>
+                </div>
+                
+                <div>
+                  <%= form.label :shipping_time, class: "block text-sm font-medium text-gray-700" %>
+                  <%= form.text_field :shipping_time, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "3-5 business days" %>
+                </div>
+              </div>
+              
+              <div>
+                <%= form.label :country_of_origin, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.select :country_of_origin, 
+                               [["United States", "US"], ["United Kingdom", "GB"], ["Canada", "CA"], 
+                                ["Ghana", "GH"], ["Nigeria", "NG"], 
+                                ["Other Countries", "Other"]], 
+                               { include_blank: "Select Country" }, 
+                               { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex items-center">
+                  <%= form.check_box :available_in_ghana, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+                  <%= form.label :available_in_ghana, "Available in Ghana", class: "ml-2 block text-sm text-gray-700" %>
+                </div>
+                
+                <div class="flex items-center">
+                  <%= form.check_box :available_in_nigeria, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+                  <%= form.label :available_in_nigeria, "Available in Nigeria", class: "ml-2 block text-sm text-gray-700" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Images -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Product Images</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :images, "Product Images", class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div class="space-y-1 text-center">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <div class="flex text-sm text-gray-600">
+                    <label for="product_images" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                      <span>Upload images</span>
+                      <%= form.file_field :images, multiple: true, direct_upload: true, class: "py-2 px-3 sr-only" %>
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO Information -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">SEO Information</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :meta_title, "Meta Title", class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :meta_title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Product title for search engines" %>
+              <p class="mt-1 text-xs text-gray-500">Recommended: 50-60 characters</p>
+            </div>
+
+            <div>
+              <%= form.label :meta_description, "Meta Description", class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :meta_description, rows: 3, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Brief description for search results..." %>
+              <p class="mt-1 text-xs text-gray-500">Recommended: 150-160 characters</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Information -->
+      <div class="md:col-span-1 space-y-6">
+        <!-- Publication Settings -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Publication</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.select :status, 
+                             options_for_select([
+                               ["Draft", "draft"], 
+                               ["Active", "active"], 
+                               ["Inactive", "inactive"]
+                             ], "draft"), 
+                             {}, 
+                             { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+            </div>
+
+            <div class="flex items-center">
+              <%= form.check_box :featured, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+              <%= form.label :featured, "Featured Product", class: "ml-2 block text-sm text-gray-700" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Information -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Inventory</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :sku, "SKU (Stock Keeping Unit)", class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :sku, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "PROD12345" %>
+            </div>
+
+            <div>
+              <%= form.label :barcode, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :barcode, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "978020137962" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seller Information -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Seller Information</h3>
+          </div>
+          <div class="p-4">
+            <div>
+              <%= form.label :seller_id, "Seller", class: "block text-sm font-medium text-gray-700" %>
+              <%= form.collection_select :seller_id, 
+                                        Seller.all, 
+                                        :id, 
+                                        :business_name, 
+                                        { include_blank: "Select Seller" }, 
+                                        { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submission Buttons -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="p-4 space-y-3">
+            <%= form.submit "Create Product", class: "w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+            
+            <%= link_to 'Cancel', admin_products_path, class: "block w-full text-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-gray-700 hover:text-gray-500" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle physical/digital product fields
+    const digitalRadio = document.getElementById('product_is_digital_true');
+    const physicalRadio = document.getElementById('product_is_digital_false');
+    const physicalFields = document.getElementById('physical-product-fields');
+    
+    if (digitalRadio && physicalRadio && physicalFields) {
+      digitalRadio.addEventListener('change', function() {
+        if (this.checked) {
+          physicalFields.style.display = 'none';
+        }
+      });
+      
+      physicalRadio.addEventListener('change', function() {
+        if (this.checked) {
+          physicalFields.style.display = 'block';
+        }
+      });
+    }
+  });
+</script>

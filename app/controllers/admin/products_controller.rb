@@ -39,6 +39,17 @@ module Admin
       if params[:max_price].present?
         @products = @products.where("price <= ?", params[:max_price].to_f)
       end
+
+      # Set stats for dashboard cards
+      begin
+        @total_products = Product.count
+        @active_products = Product.where(status: 'active').count
+        @featured_products = Product.where(featured: true).count
+        @out_of_stock_products = Product.where("stock_quantity <= 0").count
+      rescue => e
+        Rails.logger.error("Error fetching product stats: #{e.message}")
+        @total_products = @active_products = @featured_products = @out_of_stock_products = 0
+      end
     end
 
     def show
@@ -58,6 +69,8 @@ module Admin
         # Handle product images if provided
         if params[:product][:images].present?
           params[:product][:images].each do |image|
+            # Skip empty strings that might be in the array
+            next if image.blank? || !image.is_a?(ActionDispatch::Http::UploadedFile)
             @product.product_images.create(image: image)
           end
         end
@@ -65,7 +78,7 @@ module Admin
         flash[:success] = "Product was successfully created."
         redirect_to admin_product_path(@product)
       else
-        flash.now[:error] = "There was a problem creating the product."
+        flash.now[:error] = "There was a problem creating the product: #{@product.errors.full_messages.join(', ')}"
         render :new
       end
     end
@@ -79,6 +92,8 @@ module Admin
         # Handle product images if provided
         if params[:product][:images].present?
           params[:product][:images].each do |image|
+            # Skip empty strings that might be in the array
+            next if image.blank? || !image.is_a?(ActionDispatch::Http::UploadedFile)
             @product.product_images.create(image: image)
           end
         end
@@ -87,7 +102,7 @@ module Admin
         redirect_to admin_product_path(@product)
       else
         @product_images = @product.product_images.order(position: :asc)
-        flash.now[:error] = "There was a problem updating the product."
+        flash.now[:error] = "There was a problem updating the product: #{@product.errors.full_messages.join(', ')}"
         render :edit
       end
     end
@@ -135,13 +150,36 @@ module Admin
     end
 
     def product_params
-      params.require(:product).permit(
+      # Convert checkbox values to boolean
+      params_hash = params.require(:product).permit(
         :name, :description, :price, :discounted_price, :stock_quantity,
         :sku, :barcode, :weight, :dimensions, :condition, :brand, :featured,
         :currency, :country_of_origin, :available_in_ghana, :available_in_nigeria,
         :shipping_time, :category_id, :seller_id, :published, :published_at,
-        :meta_title, :meta_description, :is_digital, :status
+        :meta_title, :meta_description, :is_digital, :status,
+        images: []
       )
+
+      # Convert string values to boolean for boolean attributes
+      [:featured, :published, :available_in_ghana, :available_in_nigeria].each do |attr|
+        if params_hash[attr].present?
+          params_hash[attr] = ActiveModel::Type::Boolean.new.cast(params_hash[attr])
+        end
+      end
+
+      # Convert is_digital from string to boolean if it's present
+      if params_hash[:is_digital].present? && !params_hash[:is_digital].is_a?(TrueClass) && !params_hash[:is_digital].is_a?(FalseClass)
+        params_hash[:is_digital] = (params_hash[:is_digital] == "true")
+      end
+
+      # Ensure status is a valid value
+      if params_hash[:status].present?
+        # Check what valid statuses are available in the Product model
+        valid_statuses = ['active', 'inactive']
+        params_hash[:status] = 'active' unless valid_statuses.include?(params_hash[:status])
+      end
+
+      params_hash
     end
   end
 end

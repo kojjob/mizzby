@@ -48,18 +48,18 @@ module Admin
       @daily_orders_chart = @daily_orders.map { |date, count| { date: date, count: count } }
 
       # Top selling products
-      @top_products = Product.joins(:orders)
+      @top_products = Product.joins(order_items: :order)
                             .where(orders: { status: "completed", created_at: @start_date.beginning_of_day..@end_date.end_of_day })
                             .group("products.id")
-                            .select("products.*, COUNT(orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
+                            .select("products.*, COUNT(DISTINCT orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
                             .order("total_sales DESC")
                             .limit(10)
 
       # Top categories
-      @top_categories = Category.joins(products: :orders)
+      @top_categories = Category.joins(products: {order_items: :order})
                                .where(orders: { status: "completed", created_at: @start_date.beginning_of_day..@end_date.end_of_day })
                                .group("categories.id")
-                               .select("categories.*, COUNT(orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
+                               .select("categories.*, COUNT(DISTINCT orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
                                .order("total_sales DESC")
                                .limit(10)
 
@@ -72,7 +72,7 @@ module Admin
                           .limit(10)
 
       # Top sellers
-      @top_sellers = Seller.joins(products: :orders)
+      @top_sellers = Seller.joins(products: {order_items: :order})
                           .where(orders: { status: "completed", created_at: @start_date.beginning_of_day..@end_date.end_of_day })
                           .group("sellers.id")
                           .select("sellers.*, COUNT(DISTINCT orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
@@ -92,7 +92,7 @@ module Admin
                                  .sum(:total_amount)
 
       # Sales by product type (digital vs physical)
-      @sales_by_type = Order.joins(:product)
+      @sales_by_type = Order.joins(order_items: :product)
                            .where(status: "completed")
                            .where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
                            .group("products.is_digital")
@@ -124,15 +124,18 @@ module Admin
       @start_date = params[:start_date] ? Date.parse(params[:start_date]) : 30.days.ago.to_date
       @end_date = params[:end_date] ? Date.parse(params[:end_date]) : Date.today
 
-      # Products with most views
-      @most_viewed_products = Product.order(views_count: :desc).limit(10)
+      # Products with most recent orders
+      @most_viewed_products = Product.joins(order_items: :order)
+                                    .group("products.id")
+                                    .select("products.*, MAX(orders.created_at) as last_ordered_at")
+                                    .order("last_ordered_at DESC")
+                                    .limit(10)
 
-      # Products with highest conversion rate
-      @best_converting_products = Product.joins(:orders)
+      # Products with highest order count
+      @best_converting_products = Product.joins(order_items: :order)
                                        .group("products.id")
-                                       .select("products.*, COUNT(orders.id) as orders_count, (COUNT(orders.id)::float / products.views_count) * 100 as conversion_rate")
-                                       .where("products.views_count > 0")
-                                       .order("conversion_rate DESC")
+                                       .select("products.*, COUNT(DISTINCT orders.id) as orders_count")
+                                       .order("orders_count DESC")
                                        .limit(10)
 
       # Products with most reviews
@@ -156,10 +159,45 @@ module Admin
       @start_date = params[:start_date] ? Date.parse(params[:start_date]) : 30.days.ago.to_date
       @end_date = params[:end_date] ? Date.parse(params[:end_date]) : Date.today
 
+      # Summary statistics
+      @stats = {
+        total_customers: Order.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                             .distinct.count(:user_id),
+
+        new_users: User.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                      .count,
+
+        repeat_customers: Order.select(:user_id)
+                              .where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                              .group(:user_id)
+                              .having("COUNT(*) > 1")
+                              .count.size,
+
+        avg_orders_per_customer: Order.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                                     .group(:user_id)
+                                     .count
+                                     .values
+                                     .instance_eval { sum.to_f / size rescue 0 },
+
+        avg_order_value: Order.where(status: "completed", created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                            .average(:total_amount).to_f
+      }
+
       # New users by day
       @new_users_by_day = User.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
                              .group("DATE(created_at)")
                              .count
+
+      # Calculate repeat purchase rate
+      total_customers = Order.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                            .distinct.count(:user_id)
+      repeat_customers = @stats[:repeat_customers]
+      @repeat_purchase_rate = total_customers > 0 ? (repeat_customers.to_f / total_customers) * 100 : 0
+
+      # Calculate conversion rate (estimate based on users vs orders)
+      total_users = User.count
+      total_orders = Order.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day).count
+      @conversion_rate = total_users > 0 ? (total_orders.to_f / total_users) * 100 : 0
 
       # Customer lifetime value
       @customer_ltv = User.joins(:orders)
@@ -172,6 +210,11 @@ module Admin
       # Customers by country
       @customers_by_country = User.group(:country)
                                  .count
+
+      # Recent new users
+      @recent_users = User.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
+                         .order(created_at: :desc)
+                         .limit(10)
 
       # Repeat purchase rate
       total_customers = User.joins(:orders).select("DISTINCT users.id").count
@@ -193,7 +236,7 @@ module Admin
       case report_type
       when "sales"
         @data = Order.where(created_at: @start_date.beginning_of_day..@end_date.end_of_day)
-                    .includes(:user, :product)
+                    .includes(:user, order_items: :product)
                     .order(created_at: :desc)
 
         csv_data = generate_sales_csv(@data)
@@ -232,7 +275,7 @@ module Admin
             order.created_at.strftime("%Y-%m-%d %H:%M"),
             order.user&.full_name || "Unknown",
             order.user&.email || "Unknown",
-            order.product&.name || "Unknown",
+            order.order_items.first&.product&.name || "Unknown",
             order.total_amount,
             order.status,
             order.payment_processor

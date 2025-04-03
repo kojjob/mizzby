@@ -1,0 +1,6 @@
+<%# This partial handles the user navigation dropdown %>
+<% if defined?(user_signed_in?) && user_signed_in? && current_user.present? && !current_user.is_a?(Array) %>
+  <%= render 'shared/user_dropdown' %>
+<% else %>
+  <%= render 'shared/auth_user_dropdown' %>
+<% end %>

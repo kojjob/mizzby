@@ -1,0 +1,95 @@
+<div class="store-editor">
+  <h1>Store Settings</h1>
+  
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <%= link_to 'Basic Information', edit_sellers_store_path, class: 'nav-link active' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Theme & Design', theme_sellers_store_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Categories', sellers_store_categories_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Analytics', analytics_sellers_store_path, class: 'nav-link' %>
+    </li>
+  </ul>
+  
+  <div class="card mt-4">
+    <div class="card-body">
+      <%= form_with(model: [:sellers, @store], local: true) do |f| %>
+        <div class="form-group">
+          <%= f.label :name %>
+          <%= f.text_field :name, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :slug %>
+          <div class="input-group">
+            <span class="input-group-text">yourstore.com/stores/</span>
+            <%= f.text_field :slug, class: 'form-control' %>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :description %>
+          <%= f.text_area :description, rows: 5, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :logo %>
+          <div class="custom-file">
+            <%= f.file_field :logo, class: 'custom-file-input' %>
+            <%= f.label :logo, class: 'custom-file-label' %>
+          </div>
+          <% if @store.logo.attached? %>
+            <div class="mt-2">
+              <%= image_tag @store.logo.variant(resize_to_limit: [100, 100]), class: 'img-thumbnail' %>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :banner_image %>
+          <div class="custom-file">
+            <%= f.file_field :banner_image, class: 'custom-file-input' %>
+            <%= f.label :banner_image, class: 'custom-file-label' %>
+          </div>
+          <% if @store.banner_image.attached? %>
+            <div class="mt-2">
+              <%= image_tag @store.banner_image.variant(resize_to_limit: [300, 100]), class: 'img-thumbnail' %>
+            </div>
+          <% end %>
+        </div>
+        
+        <h3 class="mt-4">SEO Settings</h3>
+        
+        <div class="form-group">
+          <%= f.label :meta_title %>
+          <%= f.text_field :meta_title, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :meta_description %>
+          <%= f.text_area :meta_description, rows: 3, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :custom_domain %>
+          <%= f.text_field :custom_domain, class: 'form-control' %>
+          <small class="form-text text-muted">
+            Enter your domain (e.g., mystore.com) and follow the DNS setup instructions.
+          </small>
+        </div>
+        
+        <div class="form-check mt-4">
+          <%= f.check_box :published, class: 'form-check-input' %>
+          <%= f.label :published, class: 'form-check-label' %>
+        </div>
+        
+        <%= f.submit 'Update Store', class: 'btn btn-primary mt-3' %>
+      <% end %>
+    </div>
+  </div>
+</div>

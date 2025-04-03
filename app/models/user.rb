@@ -10,7 +10,8 @@ class User < ApplicationRecord
   # --- Associations ---
 
   # Customer relationships
-  has_one :cart, dependent: :destroy
+  has_one  :cart, dependent: :destroy
+  has_many :cart_items, dependent: :destroy
   has_many :orders, dependent: :restrict_with_error
   has_many :reviews, dependent: :nullify
   has_many :wishlist_items, dependent: :destroy
@@ -24,7 +25,6 @@ class User < ApplicationRecord
   has_one :seller, dependent: :destroy
 
   # --- Enums ---
-
   # User roles (if you have a role column)
   # enum :role, { customer: 0, seller: 1, admin: 2, super_admin: 3 }, default: :customer
 
@@ -48,7 +48,6 @@ class User < ApplicationRecord
   validate :validate_profile_picture, if: :profile_picture_attached?
 
   # --- Callbacks ---
-
   # Create a cart for new users
   after_create :create_cart
 
@@ -56,37 +55,57 @@ class User < ApplicationRecord
   after_initialize :set_default_preferences, if: :new_record?
 
   # --- Delegations ---
-
   # Check if user is a seller
   delegate :present?, to: :seller, prefix: true, allow_nil: true
 
   # --- Methods ---
-
   # Role checking methods
-  def admin?
-    super_admin? || admin
+  def has_role?(role_name)
+    case role_name.to_s
+    when "super_admin" then super_admin?
+    when "admin" then admin?
+    when "seller" then defined?(seller) && seller.present?
+    when "customer" then !super_admin? && !admin? && !(defined?(seller) && seller.present?)
+    else false
+    end
   end
 
-  def super_admin?
-    super_admin == true
+  # Helpful role predicates for cleaner code
+  def customer?
+    !admin? && !super_admin? && !(defined?(seller) && seller.present?)
   end
 
   def seller?
-    seller_present?
+    defined?(seller) && seller.present?
   end
 
-  # Status methods (uncomment if you add a status column)
-  # def active_for_authentication?
-  #   super && active?
-  # end
-  #
-  # def inactive_message
-  #   active? ? super : :account_inactive
-  # end
+  # Status methods
+  def active_for_authentication?
+    super && active?
+  end
+
+  # Return a custom message instead of a translation key
+  def inactive_message
+    active? ? super : "Your account is currently inactive. Please contact support for assistance."
+  end
+
+  # Check if user is active
+  def active?
+    # If there's no active column, assume the user is active unless they're locked
+    return !access_locked? unless respond_to?(:status)
+
+    # If there is a status column, check if it's set to active
+    status == 'active'
+  end
 
   # User name and display methods
   def full_name
-    [ first_name, last_name ].compact.join(" ").presence || email.split("@").first
+    # Use sanitized values to prevent XSS
+    sanitized_first = ActionController::Base.helpers.sanitize(first_name) if first_name.present?
+    sanitized_last = ActionController::Base.helpers.sanitize(last_name) if last_name.present?
+
+    [ sanitized_first, sanitized_last ].compact.join(" ").presence ||
+      ActionController::Base.helpers.sanitize(email.split("@").first)
   end
 
   def display_name
@@ -167,15 +186,52 @@ class User < ApplicationRecord
     false
   end
 
-  # Password validation (uncomment if needed)
-  # validate :password_complexity
-  #
-  # def password_complexity
-  #   return if password.blank? || password =~ /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-  #
-  #   errors.add :password, 'must include at least one lowercase letter, one uppercase letter, one digit, and one special character'
-  # end
+  # Password validation for security
+  validate :password_complexity, if: -> { password.present? }
 
+  def password_complexity
+    # Skip validation if password is blank (handled by Devise) or meets requirements
+    return if password.blank? ||
+              password =~ /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+    errors.add(:password, "must include at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long")
+  end
+
+  # Helper method to get active cart or create one
+  def current_cart
+    cart || create_cart
+  end
+
+  # Method to convert cart to order
+  def checkout_cart
+    return nil unless cart&.cart_items&.any?
+
+    # Start a transaction to ensure data integrity
+    transaction do
+      # Create orders for each product (or group them as needed)
+      orders = []
+
+      cart.cart_items.each do |item|
+        order = orders.build(
+          product: item.product,
+          total_amount: item.subtotal,
+          status: "pending",
+          payment_status: "pending"
+        )
+
+        # Handle digital product delivery if payment is successful
+        if item.product.is_digital
+          # Create download link after payment processing
+          # This would happen in a callback or service
+        end
+      end
+
+      # Mark cart as converted
+      cart.update(status: :converted)
+
+      return orders
+    end
+  end
   private
 
   def profile_picture_attached?

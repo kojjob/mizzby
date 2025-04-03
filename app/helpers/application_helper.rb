@@ -147,4 +147,38 @@ module ApplicationHelper
     # Return default icon if no match
     default_icon.html_safe
   end
+  
+  # Generate SVG icon for a category
+  def category_icon(category)
+    icon_name = category.icon_name.present? ? category.icon_name : "folder"
+    icon_color = category.icon_color.present? ? category.icon_color : "blue"
+    
+    # You can customize this based on your icon system
+    content_tag(:svg, class: "w-5 h-5 mr-2", xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor") do
+      content_tag(:path, nil, 
+        "stroke-linecap": "round", 
+        "stroke-linejoin": "round", 
+        "stroke-width": "2",
+        d: icon_path_for(icon_name)
+      )
+    end
+  end
+  
+  # Return appropriate SVG path based on icon name
+  def icon_path_for(icon_name)
+    case icon_name
+    when "folder"
+      "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+    when "book"  
+      "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+    # Add more icons as needed
+    else
+      "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" # default folder icon
+    end
+  end
+  
+  # Determine if the current page is active
+  def active_class(path)
+    current_page?(path) ? "bg-indigo-700" : ""
+  end
 end

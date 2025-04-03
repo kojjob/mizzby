@@ -1,0 +1,39 @@
+<% @page_title = "Categories" %>
+
+<div class="bg-gray-100 py-8">
+  <div class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @seller.store_name %> - Categories</h1>
+    <p class="text-gray-600">Browse products by category</p>
+  </div>
+</div>
+
+<div class="container mx-auto px-4 py-8">
+  <% if @categories.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <% @categories.each do |category| %>
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+          <div class="h-32 bg-indigo-600 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+          </div>
+          <div class="p-4">
+            <h3 class="text-lg font-medium text-gray-900 truncate"><%= category.name %></h3>
+            <p class="text-sm text-gray-500 mt-1"><%= category.description.truncate(100) if category.description.present? %></p>
+            <div class="mt-4">
+              <%= link_to "View Products", store_category_products_path(@seller.store_slug, category), class: "text-indigo-600 hover:text-indigo-800 font-medium" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+      </svg>
+      <h3 class="mt-4 text-lg font-medium text-gray-900">No categories found</h3>
+      <p class="mt-1 text-gray-500">This store doesn't have any categories yet.</p>
+    </div>
+  <% end %>
+</div>

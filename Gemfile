@@ -66,3 +66,12 @@ end
 
 gem "devise", "~> 4.9"
 gem "view_component", "~> 3.0"
+gem "cancancan"
+# Add this line to your Gemfile
+gem "country_select", "~> 8.0"
+
+# Faker for generating sample data
+gem "faker", "~> 3.2"
+
+# Pagination
+gem "kaminari", "~> 1.2"

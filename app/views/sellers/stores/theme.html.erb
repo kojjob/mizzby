@@ -1,0 +1,123 @@
+<div class="store-theme-editor">
+  <h1>Theme & Design</h1>
+  
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <%= link_to 'Basic Information', edit_sellers_store_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Theme & Design', theme_sellers_store_path, class: 'nav-link active' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Categories', sellers_store_categories_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Analytics', analytics_sellers_store_path, class: 'nav-link' %>
+    </li>
+  </ul>
+  
+  <div class="card mt-4">
+    <div class="card-body">
+      <%= form_with(model: [:sellers, @store], url: update_theme_sellers_store_path, local: true) do |f| %>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <%= f.label :theme %>
+              <%= f.select :theme, 
+                          [
+                            ['Minimalist', 'minimalist'],
+                            ['Bold', 'bold'],
+                            ['Elegant', 'elegant'],
+                            ['Playful', 'playful']
+                          ], 
+                          {}, 
+                          { class: 'form-control', data: { controller: 'theme-preview' } } %>
+            </div>
+            
+            <div class="form-group">
+              <%= f.label :color_scheme %>
+              <%= f.select :color_scheme, 
+                          [
+                            ['Light', 'light'],
+                            ['Dark', 'dark'],
+                            ['Colorful', 'colorful'],
+                            ['Custom', 'custom']
+                          ], 
+                          {}, 
+                          { class: 'form-control' } %>
+            </div>
+            
+            <div id="color-picker" class="<%= 'hidden' unless @store.color_scheme == 'custom' %>">
+              <div class="form-group">
+                <label>Primary Color</label>
+                <input type="color" class="form-control" name="store_setting[primary_color]" 
+                      value="<%= @store.setting('primary_color') || '#4F46E5' %>">
+              </div>
+              
+              <div class="form-group">
+                <label>Secondary Color</label>
+                <input type="color" class="form-control" name="store_setting[secondary_color]" 
+                      value="<%= @store.setting('secondary_color') || '#FBBF24' %>">
+              </div>
+              
+              <div class="form-group">
+                <label>Text Color</label>
+                <input type="color" class="form-control" name="store_setting[text_color]" 
+                      value="<%= @store.setting('text_color') || '#111827' %>">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <%= f.label :theme_images, 'Additional Theme Images' %>
+              <div class="custom-file">
+                <%= f.file_field :theme_images, multiple: true, class: 'custom-file-input' %>
+                <%= f.label :theme_images, class: 'custom-file-label' %>
+              </div>
+              <small class="form-text text-muted">
+                Upload additional images for your store theme (background, patterns, etc.)
+              </small>
+              
+              <% if @store.theme_images.attached? %>
+                <div class="theme-images mt-3">
+                  <% @store.theme_images.each do |image| %>
+                    <div class="theme-image">
+                      <%= image_tag image.variant(resize_to_limit: [100, 100]), class: 'img-thumbnail' %>
+                      <%= link_to '×', delete_theme_image_sellers_store_path(image.id), 
+                                method: :delete, 
+                                class: 'delete-image',
+                                data: { confirm: 'Are you sure?' } %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+            
+            <div class="form-check mt-4">
+              <%= f.check_box :show_featured_products, class: 'form-check-input' %>
+              <%= f.label :show_featured_products, class: 'form-check-label' %>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="form-group">
+              <%= f.label :custom_css, 'Advanced CSS Customization' %>
+              <%= f.text_area :custom_css, rows: 10, class: 'form-control font-monospace' %>
+              <small class="form-text text-muted">
+                Add custom CSS to further customize your store's appearance.
+              </small>
+            </div>
+            
+            <div class="theme-preview">
+              <h5>Theme Preview</h5>
+              <div class="preview-container" data-theme-preview-target="container">
+                <!-- Theme preview will be loaded here via JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <%= f.submit 'Update Theme', class: 'btn btn-primary mt-3' %>
+      <% end %>
+    </div>
+  </div>
+</div>
