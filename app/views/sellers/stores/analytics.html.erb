@@ -1,0 +1,149 @@
+<div class="store-analytics">
+  <h1>Store Analytics</h1>
+  
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <%= link_to 'Basic Information', edit_sellers_store_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Theme & Design', theme_sellers_store_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Categories', sellers_store_categories_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Analytics', analytics_sellers_store_path, class: 'nav-link active' %>
+    </li>
+  </ul>
+  
+  <div class="analytics-dashboard mt-4">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Total Sales</h5>
+            <h2 class="card-subtitle mb-2 text-muted">
+              <%= number_to_currency @store.seller.orders.completed.sum(:total_amount) %>
+            </h2>
+            <p class="card-text">
+              <%= @store.seller.orders.completed.count %> orders
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Store Visits</h5>
+            <h2 class="card-subtitle mb-2 text-muted">
+              <%= @store.visits_count || 0 %>
+            </h2>
+            <p class="card-text">
+              <%= pluralize(@store.unique_visitors_count || 0, 'unique visitor') %>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Conversion Rate</h5>
+            <h2 class="card-subtitle mb-2 text-muted">
+              <%= number_to_percentage((@store.conversion_rate || 0) * 100, precision: 2) %>
+            </h2>
+            <p class="card-text">Industry avg: 2.35%</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Avg. Order Value</h5>
+            <h2 class="card-subtitle mb-2 text-muted">
+              <%= number_to_currency @store.average_order_value || 0 %>
+            </h2>
+            <p class="card-text">
+              <%= pluralize(@store.seller.products.count, 'product') %> in store
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mt-4">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">Sales Over Time</div>
+          <div class="card-body">
+            <canvas id="salesChart" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Top Products</div>
+          <div class="card-body">
+            <div class="list-group">
+              <% @top_products.each do |product| %>
+                <a href="<%= product_path(product) %>" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><%= product.name %></h6>
+                    <small><%= product.orders.count %> sold</small>
+                  </div>
+                  <small><%= number_to_currency product.price %></small>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Recent Orders</div>
+          <div class="card-body">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_orders.each do |order| %>
+                  <tr>
+                    <td><%= link_to order.id, order_path(order) %></td>
+                    <td><%= order.created_at.strftime('%b %d, %Y') %></td>
+                    <td><%= order.user.full_name %></td>
+                    <td><%= number_to_currency order.total_amount %></td>
+                    <td><span class="badge bg-<%= order_status_color(order.status) %>">
+                      <%= order.status.titleize %>
+                    </span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Traffic Sources</div>
+          <div class="card-body">
+            <canvas id="trafficSourcesChart" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

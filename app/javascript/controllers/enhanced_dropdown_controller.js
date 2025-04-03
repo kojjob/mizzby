@@ -3,8 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["button", "menu", "arrow"]
   static values = { 
-    hover: { type: Boolean, default: false },
-    delay: { type: Number, default: 150 }
+    hover: { type: Boolean, default: true },
+    delay: { type: Number, default: 100 }
   }
 
   connect() {
@@ -56,17 +56,32 @@ export default class extends Controller {
   }
   
   mouseEnter() {
-    this.clearTimeouts()
+    this.clearTimeouts();
+    
+    // Make menu visible with display block first to avoid flashing
+    if (this.hasMenuTarget && !this.open) {
+      this.menuTarget.style.display = 'grid';
+    }
+    
     this.hoverTimeouts.open = setTimeout(() => {
-      this.showMenu()
-    }, this.delayValue)
+      this.showMenu();
+    }, this.delayValue);
   }
   
   mouseLeave() {
-    this.clearTimeouts()
+    this.clearTimeouts();
     this.hoverTimeouts.close = setTimeout(() => {
-      this.hideMenu()
-    }, this.delayValue * 1.5) // Slightly longer delay for closing
+      this.hideMenu();
+      
+      // After hiding, reset display style to default
+      if (this.hasMenuTarget) {
+        setTimeout(() => {
+          if (!this.open) {
+            this.menuTarget.style.display = '';
+          }
+        }, 200);
+      }
+    }, this.delayValue * 1.5); // Slightly longer delay for closing
   }
   
   clearTimeouts() {
@@ -75,54 +90,37 @@ export default class extends Controller {
   }
   
   showMenu() {
-    if (this.open) return
+    if (this.open) return;
 
     if (this.hasMenuTarget) {
-      // First make it visible but with opacity 0
-      this.menuTarget.classList.remove('hidden')
-      
-      // Force a reflow to ensure the transition works
-      void this.menuTarget.offsetWidth
-      
-      // Now animate it in
-      this.menuTarget.classList.remove('opacity-0', 'scale-95', '-translate-y-2')
-      this.menuTarget.classList.add('opacity-100', 'scale-100', 'translate-y-0')
+      // Remove invisible classes
+      this.menuTarget.classList.remove('opacity-0', 'invisible', 'scale-95', '-translate-y-2');
+      this.menuTarget.classList.add('opacity-100', 'scale-100', 'translate-y-0');
     }
     
     if (this.hasArrowTarget) {
-      this.arrowTarget.classList.add("rotate-180")
+      this.arrowTarget.classList.add("rotate-180");
     }
     
-    this.buttonTarget.setAttribute("aria-expanded", "true")
-    this.open = true
-    
-    // Add the dropdown arrow element
-    this.addDropdownArrow()
+    this.buttonTarget.setAttribute("aria-expanded", "true");
+    this.open = true;
   }
   
   hideMenu() {
-    if (!this.open) return
+    if (!this.open) return;
     
     if (this.hasMenuTarget) {
-      // Animate out
-      this.menuTarget.classList.remove('opacity-100', 'scale-100', 'translate-y-0')
-      this.menuTarget.classList.add('opacity-0', 'scale-95', '-translate-y-2')
-      
-      // After animation completes, hide it
-      setTimeout(() => {
-        if (!this.open) {
-          this.menuTarget.classList.add('hidden')
-          this.removeDropdownArrow()
-        }
-      }, 150)
+      // Animate out by changing opacity
+      this.menuTarget.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+      this.menuTarget.classList.add('opacity-0', 'invisible');
     }
     
     if (this.hasArrowTarget) {
-      this.arrowTarget.classList.remove("rotate-180")
+      this.arrowTarget.classList.remove("rotate-180");
     }
     
-    this.buttonTarget.setAttribute("aria-expanded", "false")
-    this.open = false
+    this.buttonTarget.setAttribute("aria-expanded", "false");
+    this.open = false;
   }
   
   addDropdownArrow() {

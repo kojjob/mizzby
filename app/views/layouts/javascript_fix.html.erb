@@ -1,0 +1,94 @@
+<%# Include this partial at the end of your layout file, just before </body> %>
+
+<%# Make sure both asset pipeline and modern JavaScript are supported %>
+<% if content_for?(:javascript) %>
+  <%= yield :javascript %>
+<% end %>
+
+<%# Include the asset pipeline JavaScript %>
+<%= javascript_include_tag 'application' %>
+
+<%# Fallback scripts if needed %>
+<script>
+  // Check if critical components were loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, checking JavaScript dependencies");
+    
+    // Initialize dropdowns even without Stimulus
+    if (!window.Stimulus) {
+      console.log("Initializing dropdowns manually");
+      
+      // Initialize dropdowns
+      document.querySelectorAll('[data-controller="dropdown"]').forEach(dropdown => {
+        const button = dropdown.querySelector('[data-action*="dropdown#toggle"]');
+        const menu = dropdown.querySelector('[data-dropdown-target="menu"]');
+        const arrow = dropdown.querySelector('[data-dropdown-arrow], [data-dropdown-target="arrow"]');
+        
+        if (button && menu) {
+          button.addEventListener('click', function(event) {
+            event.stopPropagation();
+            
+            const isHidden = menu.classList.contains('hidden');
+            
+            if (isHidden) {
+              menu.classList.remove('hidden');
+              if (arrow) {
+                arrow.classList.add('transform', 'rotate-180');
+              }
+            } else {
+              menu.classList.add('hidden');
+              if (arrow) {
+                arrow.classList.remove('transform', 'rotate-180');
+              }
+            }
+          });
+        }
+      });
+      
+      // Initialize mobile menu
+      document.querySelectorAll('[data-controller="mobile-menu"]').forEach(mobileMenu => {
+        const button = mobileMenu.querySelector('[data-action*="mobile-menu#toggle"]');
+        const menu = mobileMenu.querySelector('[data-mobile-menu-target="menu"]');
+        const openIcon = mobileMenu.querySelector('[data-mobile-menu-target="openIcon"]');
+        const closeIcon = mobileMenu.querySelector('[data-mobile-menu-target="closeIcon"]');
+        
+        if (button && menu) {
+          button.addEventListener('click', function() {
+            const isHidden = menu.classList.contains('hidden');
+            
+            if (isHidden) {
+              menu.classList.remove('hidden');
+              if (openIcon && closeIcon) {
+                openIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+              }
+              document.body.classList.add('overflow-hidden', 'md:overflow-auto');
+            } else {
+              menu.classList.add('hidden');
+              if (openIcon && closeIcon) {
+                openIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+              }
+              document.body.classList.remove('overflow-hidden', 'md:overflow-auto');
+            }
+          });
+        }
+      });
+      
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', function(event) {
+        document.querySelectorAll('[data-controller="dropdown"]').forEach(dropdown => {
+          const menu = dropdown.querySelector('[data-dropdown-target="menu"]');
+          const arrow = dropdown.querySelector('[data-dropdown-arrow], [data-dropdown-target="arrow"]');
+          
+          if (menu && !dropdown.contains(event.target) && !menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+            if (arrow) {
+              arrow.classList.remove('transform', 'rotate-180');
+            }
+          }
+        });
+      });
+    }
+  });
+</script>

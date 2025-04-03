@@ -1,70 +1,77 @@
 class CartItemsController < ApplicationController
-  before_action :set_cart_item, only: %i[ show edit update destroy ]
-
-  # GET /cart_items or /cart_items.json
-  def index
-    @cart_items = CartItem.all
-  end
-
-  # GET /cart_items/1 or /cart_items/1.json
-  def show
-  end
-
-  # GET /cart_items/new
-  def new
-    @cart_item = CartItem.new
-  end
-
-  # GET /cart_items/1/edit
-  def edit
-  end
-
-  # POST /cart_items or /cart_items.json
+  before_action :authenticate_user!
+  before_action :set_cart
+  before_action :set_cart_item, only: [:update, :destroy]
+  
   def create
-    @cart_item = CartItem.new(cart_item_params)
-
+    @product = Product.find(params[:product_id])
+    @quantity = params[:quantity].to_i || 1
+    
+    # Check if item already exists in cart
+    @cart_item = @cart.cart_items.find_by(product: @product)
+    
+    if @cart_item
+      # Update quantity if item exists
+      @cart_item.update(quantity: @cart_item.quantity + @quantity)
+    else
+      # Create new cart item
+      @cart_item = @cart.cart_items.build(product: @product, quantity: @quantity)
+    end
+    
     respond_to do |format|
       if @cart_item.save
-        format.html { redirect_to @cart_item, notice: "Cart item was successfully created." }
-        format.json { render :show, status: :created, location: @cart_item }
+        format.html { redirect_to cart_path, notice: "#{@product.name} added to your cart." }
+        format.json { render json: @cart_item, status: :created }
+        format.js # For AJAX requests
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { redirect_to product_path(@product), alert: @cart_item.errors.full_messages.join(", ") }
         format.json { render json: @cart_item.errors, status: :unprocessable_entity }
+        format.js { render js: "alert('#{@cart_item.errors.full_messages.join(", ")}');" }
       end
     end
   end
-
-  # PATCH/PUT /cart_items/1 or /cart_items/1.json
+  
   def update
     respond_to do |format|
       if @cart_item.update(cart_item_params)
-        format.html { redirect_to @cart_item, notice: "Cart item was successfully updated." }
-        format.json { render :show, status: :ok, location: @cart_item }
+        format.html { redirect_to cart_path, notice: "Cart updated successfully." }
+        format.json { render json: @cart_item }
+        format.js # For AJAX requests
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to cart_path, alert: @cart_item.errors.full_messages.join(", ") }
         format.json { render json: @cart_item.errors, status: :unprocessable_entity }
+        format.js { render js: "alert('#{@cart_item.errors.full_messages.join(", ")}');" }
       end
     end
   end
-
-  # DELETE /cart_items/1 or /cart_items/1.json
+  
   def destroy
-    @cart_item.destroy!
-
+    @product_name = @cart_item.product.name
+    @cart_item.destroy
+    
     respond_to do |format|
-      format.html { redirect_to cart_items_path, status: :see_other, notice: "Cart item was successfully destroyed." }
+      format.html { redirect_to cart_path, notice: "#{@product_name} removed from your cart." }
       format.json { head :no_content }
+      format.js # For AJAX requests
     end
   end
-
+  
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_cart_item
-      @cart_item = CartItem.find(params.expect(:id))
+  
+  def set_cart
+    @cart = current_user.cart
+    
+    # Create cart if it doesn't exist
+    if @cart.nil?
+      @cart = current_user.create_cart
     end
-
-    # Only allow a list of trusted parameters through.
-    def cart_item_params
-      params.expect(cart_item: [ :cart_id, :product_id, :quantity, :price ])
-    end
+  end
+  
+  def set_cart_item
+    @cart_item = @cart.cart_items.find(params[:id])
+  end
+  
+  def cart_item_params
+    params.require(:cart_item).permit(:quantity)
+  end
 end

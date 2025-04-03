@@ -7,7 +7,8 @@
     <div data-flash-msg-target="message"
          data-type="success"
          data-auto-dismiss="true"
-         data-dismiss-after="6000"
+         data-dismiss-after="3000"
+         data-action="mouseenter->flash-msg#pauseProgress mouseleave->flash-msg#resumeProgress"
          class="transform transition-all duration-500 ease-out 
                 bg-white 
                 border-l-4 border-green-500 
@@ -62,7 +63,8 @@
     <div data-flash-msg-target="message"
          data-type="error"
          data-auto-dismiss="true"
-         data-dismiss-after="8000"
+         data-dismiss-after="4000"
+         data-action="mouseenter->flash-msg#pauseProgress mouseleave->flash-msg#resumeProgress"
          class="transform transition-all duration-500 ease-out 
                 bg-white 
                 border-l-4 border-red-500 
@@ -117,7 +119,8 @@
     <div data-flash-msg-target="message"
          data-type="success"
          data-auto-dismiss="true"
-         data-dismiss-after="6000"
+         data-dismiss-after="3000"
+         data-action="mouseenter->flash-msg#pauseProgress mouseleave->flash-msg#resumeProgress"
          class="transform transition-all duration-500 ease-out 
                 bg-white 
                 border-l-4 border-green-500 
@@ -225,7 +228,7 @@
     <div data-flash-msg-target="message"
          data-type="info"
          data-auto-dismiss="true"
-         data-dismiss-after="6000"
+         data-dismiss-after="3000"
          class="transform transition-all duration-500 ease-out 
                 bg-white 
                 border-l-4 border-blue-500 
@@ -279,7 +282,7 @@
     <div data-flash-msg-target="message"
          data-type="warning"
          data-auto-dismiss="true"
-         data-dismiss-after="7000"
+         data-dismiss-after="3500"
          class="transform transition-all duration-500 ease-out 
                 bg-white 
                 border-l-4 border-yellow-500 

@@ -1,9 +1,46 @@
 class ApplicationController < ActionController::Base
+  # Include Devise helper methods
+  include Devise::Controllers::Helpers
+  helper_method :user_session
+
+  # Override user_signed_in? to work with our custom current_user method
+  def user_signed_in?
+    current_user.present?
+  end
+  helper_method :user_signed_in?
+
+  # Override current_user to ensure it's always a User object
+  def current_user
+    user = super
+    return nil if user.nil?
+    return user unless user.is_a?(Array)
+
+    # If current_user is an Array, try to find the actual user
+    if user.first.is_a?(User)
+      user.first
+    elsif user.first.is_a?(Integer)
+      User.find_by(id: user.first)
+    else
+      nil
+    end
+  end
+  helper_method :current_user
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   # Basic security headers
   before_action :set_security_headers
+
+  # CanCanCan configuration
+  rescue_from CanCan::AccessDenied do |exception|
+    respond_to do |format|
+      format.html do
+        flash[:alert] = exception.message
+        redirect_to root_path
+      end
+      format.json { render json: { error: exception.message }, status: :forbidden }
+    end
+  end
 
   # Devise configuration
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -16,6 +53,12 @@ class ApplicationController < ActionController::Base
 
   # Check for maintenance mode
   before_action :check_maintenance_mode
+
+  # Helper method for seller access
+  def current_seller
+    @current_seller ||= current_user.seller if user_signed_in?
+  end
+  helper_method :current_seller
 
   # Helper method for admin controllers
   def authenticate_admin!
@@ -60,16 +103,16 @@ class ApplicationController < ActionController::Base
     Rails.logger.error("Failed to record user activity: #{e.message}")
   end
 
+  def after_sign_in_path_for(resource)
+    merge_guest_cart_with_user_cart(resource)
+    stored_location_for(resource) || root_path
+  end
+
   protected
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name, :username ])
     devise_parameter_sanitizer.permit(:account_update, keys: [ :first_name, :last_name, :profile_picture, :username ])
-  end
-
-  # Store current location for post-authentication redirect
-  def store_user_location!
-    store_location_for(:user, request.fullpath)
   end
 
   # Only store safe locations to return to after sign-in
@@ -79,6 +122,12 @@ class ApplicationController < ActionController::Base
     !devise_controller? &&
     !request.xhr? &&
     !request.path.match?(/^\/admin/)
+  end
+
+  # Store current location for post-authentication redirect
+  def store_user_location!
+    # Only store the location if it's a storable location
+    store_location_for(:user, request.fullpath) if storable_location?
   end
 
   # Security headers for better protection
@@ -91,8 +140,9 @@ class ApplicationController < ActionController::Base
 
   # Check if user profile is complete
   def check_profile_completion
+    return unless user_signed_in? # Make sure a user is signed in
     return if controller_path.start_with?("devise/") || controller_path.start_with?("admin/")
-    return if current_user.completed_profile? || request.path == edit_user_registration_path
+    return if current_user.nil? || current_user.completed_profile? || request.path == edit_user_registration_path
 
     # Only force profile completion on specific pages
     if force_profile_completion_paths.include?(controller_path)
@@ -117,7 +167,7 @@ class ApplicationController < ActionController::Base
     return unless ENV["MAINTENANCE_MODE"] == "true"
 
     # Allow super admins to access the site during maintenance
-    return if current_user&.super_admin?
+    return if user_signed_in? && current_user&.super_admin?
 
     # Redirect to maintenance page
     render "shared/maintenance", layout: "maintenance" and return
@@ -128,5 +178,30 @@ class ApplicationController < ActionController::Base
     policy_name = exception.policy.class.to_s.underscore
     flash[:error] = t("#{policy_name}.#{exception.query}", scope: "pundit", default: "You are not authorized to perform this action.")
     redirect_to(request.referrer || root_path)
+  end
+
+  private
+
+  def merge_guest_cart_with_user_cart(user)
+    guest_cart = Cart.find_by(cart_id: session[:cart_id])
+
+    if guest_cart && guest_cart.cart_items.any?
+      user_cart = user.cart || user.create_cart
+
+      # Move items from guest cart to user cart
+      guest_cart.cart_items.each do |item|
+        existing_item = user_cart.cart_items.find_by(product_id: item.product_id)
+
+        if existing_item
+          existing_item.update(quantity: existing_item.quantity + item.quantity)
+        else
+          item.update(cart_id: user_cart.id)
+        end
+      end
+
+      # Clean up guest cart
+      guest_cart.destroy
+      session.delete(:cart_id)
+    end
   end
 end

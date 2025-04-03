@@ -1,0 +1,46 @@
+<% @page_title = "About Us" %>
+
+<div class="bg-gray-100 py-8">
+  <div class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">About <%= @seller&.store_name || @store&.name || 'Store' %></h1>
+  </div>
+</div>
+
+<div class="container mx-auto px-4 py-12">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Our Story</h2>
+
+        <div class="prose prose-indigo max-w-none">
+          <% if @seller&.description.present? %>
+            <p><%= @seller.description %></p>
+          <% else %>
+            <p>Welcome to <%= @seller&.store_name || @store&.name || 'our store' %>! We're dedicated to providing high-quality products and excellent customer service.</p>
+            <p>Our mission is to deliver the best shopping experience possible and help you find exactly what you're looking for.</p>
+          <% end %>
+
+          <% if @seller.present? %>
+            <h3>Business Information</h3>
+            <ul>
+              <li><strong>Business Name:</strong> <%= @seller.business_name %></li>
+              <li><strong>Location:</strong> <%= @seller.location %>, <%= @seller.country %></li>
+              <% if @seller.respond_to?(:verified?) && @seller.verified? %>
+                <li><strong>Status:</strong> <span class="text-green-600">Verified Seller</span></li>
+              <% end %>
+            </ul>
+          <% end %>
+
+          <h3>Contact Information</h3>
+          <p>
+            If you have any questions or inquiries, please don't hesitate to contact us:
+          </p>
+          <ul>
+            <li><strong>Phone:</strong> <%= @seller&.phone_number.presence || "Not provided" %></li>
+            <li><strong>Email:</strong> <%= @seller&.user&.email || "Email not provided" %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

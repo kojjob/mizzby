@@ -1,0 +1,120 @@
+<!-- Store Settings Section -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mt-6">
+  <div class="bg-gradient-to-r from-green-600 to-green-500 px-4 py-2 border-b border-gray-200">
+    <h3 class="font-medium text-white">Store Settings</h3>
+  </div>
+  <div class="p-4 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :store_name, class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_field :store_name, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Store Name" %>
+        <p class="mt-1 text-xs text-gray-500">The name of the seller's store that will be displayed to customers.</p>
+      </div>
+      
+      <div>
+        <%= form.label :store_slug, class: "block text-sm font-medium text-gray-700" %>
+        <div class="flex">
+          <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+            <%= request.base_url %>/stores/
+          </span>
+          <%= form.text_field :store_slug, class: "flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 border-gray-300", placeholder: "store-slug" %>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">URL path for the store. Use only lowercase letters, numbers, and hyphens.</p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :custom_domain, class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_field :custom_domain, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "example.com" %>
+        <p class="mt-1 text-xs text-gray-500">Optional. Custom domain for the store (e.g., mystore.com).</p>
+      </div>
+      
+      <div>
+        <div class="flex items-center h-full mt-8">
+          <%= form.check_box :domain_verified, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+          <%= form.label :domain_verified, "Domain Verified", class: "ml-2 block text-sm text-gray-700" %>
+          <div class="ml-2">
+            <% if @seller.custom_domain.present? && @seller.domain_verified? %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Verified</span>
+            <% elsif @seller.custom_domain.present? %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending Verification</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <div class="flex items-center">
+        <%= form.check_box "store_settings[enabled]", { checked: @seller.store_settings["enabled"] == true }, "true", "false", class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+        <%= form.label "store_settings[enabled]", "Enable Store", class: "ml-2 block text-sm text-gray-700" %>
+      </div>
+      <p class="mt-1 text-xs text-gray-500">When enabled, the store will be publicly accessible.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Store Appearance Section -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mt-6">
+  <div class="bg-gradient-to-r from-purple-600 to-purple-500 px-4 py-2 border-b border-gray-200">
+    <h3 class="font-medium text-white">Store Appearance</h3>
+  </div>
+  <div class="p-4 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label "store_settings[logo]", "Logo URL", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_field "store_settings[logo]", value: @seller.store_settings["logo"], class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "https://example.com/logo.png" %>
+        <p class="mt-1 text-xs text-gray-500">URL to the store logo image.</p>
+      </div>
+      
+      <div>
+        <%= form.label "store_settings[banner]", "Banner URL", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_field "store_settings[banner]", value: @seller.store_settings["banner"], class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "https://example.com/banner.jpg" %>
+        <p class="mt-1 text-xs text-gray-500">URL to the store banner image.</p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label "store_settings[primary_color]", "Primary Color", class: "block text-sm font-medium text-gray-700" %>
+        <div class="flex">
+          <%= form.color_field "store_settings[primary_color]", value: @seller.store_settings["primary_color"] || "#4f46e5", class: "h-10 w-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+          <%= form.text_field "store_settings[primary_color]", value: @seller.store_settings["primary_color"] || "#4f46e5", class: "ml-2 flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Main color for the store theme.</p>
+      </div>
+      
+      <div>
+        <%= form.label "store_settings[secondary_color]", "Secondary Color", class: "block text-sm font-medium text-gray-700" %>
+        <div class="flex">
+          <%= form.color_field "store_settings[secondary_color]", value: @seller.store_settings["secondary_color"] || "#818cf8", class: "h-10 w-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+          <%= form.text_field "store_settings[secondary_color]", value: @seller.store_settings["secondary_color"] || "#818cf8", class: "ml-2 flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Accent color for the store theme.</p>
+      </div>
+    </div>
+    
+    <div>
+      <%= form.label "store_settings[font]", "Font Family", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.select "store_settings[font]", 
+                     [
+                       ["Default", ""],
+                       ["Arial", "Arial, sans-serif"],
+                       ["Helvetica", "Helvetica, Arial, sans-serif"],
+                       ["Georgia", "Georgia, serif"],
+                       ["Times New Roman", "Times New Roman, serif"],
+                       ["Courier New", "Courier New, monospace"]
+                     ],
+                     { selected: @seller.store_settings["font"] },
+                     { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+      <p class="mt-1 text-xs text-gray-500">Select a font family for the store.</p>
+    </div>
+    
+    <div>
+      <%= form.label "store_settings[custom_css]", "Custom CSS", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_area "store_settings[custom_css]", value: @seller.store_settings["custom_css"], rows: 5, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 font-mono text-sm" %>
+      <p class="mt-1 text-xs text-gray-500">Advanced: Add custom CSS to further customize the store's appearance.</p>
+    </div>
+  </div>
+</div>

@@ -1,17 +1,661 @@
-<% content_for :title, "Showing product" %>
+<%# app/views/products/show.html.erb %>
 
-<div class="md:w-2/3 w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <%# Breadcrumbs navigation using Turbo Frame %>
+    <%= turbo_frame_tag "breadcrumbs" do %>
+      <nav class="flex items-center text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <div class="flex items-center">
+              <%= link_to "Home", root_path, class: "hover:text-indigo-600 transition" %>
+              <svg class="h-5 w-5 flex-shrink-0 text-gray-400 mx-2" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <%= link_to @product.category.name, category_path(@product.category), class: "hover:text-indigo-600 transition" %>
+              <svg class="h-5 w-5 flex-shrink-0 text-gray-400 mx-2" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </li>
+          <li class="text-indigo-600 font-medium truncate max-w-xs">
+            <%= @product.name %>
+          </li>
+        </ol>
+      </nav>
+    <% end %>
 
-  <h1 class="font-bold text-4xl">Showing product</h1>
+    <%# Hero Section with Product Gallery and Details %>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10">
+      <%# Product Gallery %>
+      <div class="lg:sticky lg:top-6 self-start" data-controller="product-gallery">
+        <%# Main Image with Zoom Effect %>
+        <div class="aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 relative group">
+          <div class="absolute top-4 right-4 z-10 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <% if @product.on_sale? %>
+              <span class="inline-flex items-center bg-red-500 px-2.5 py-1 rounded-full text-xs font-medium text-white">
+                Sale
+              </span>
+            <% end %>
+            <% if @product.featured? %>
+              <span class="inline-flex items-center bg-amber-400 px-2.5 py-1 rounded-full text-xs font-medium text-amber-900">
+                Featured
+              </span>
+            <% end %>
+          </div>
 
-  <%= render @product %>
+          <div data-product-gallery-target="mainImageContainer" class="w-full h-full flex items-center justify-center">
+            <% if @product.product_images.any? && @product.product_images.first.image.attached? %>
+              <%= image_tag rails_blob_url(@product.product_images.first.image),
+                            class: "w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-110",
+                            data: { action: "click->product-gallery#zoomImage" } %>
+            <% else %>
+              <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            <% end %>
+          </div>
+        </div>
 
-  <%= link_to "Edit this product", edit_product_path(@product), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to products", products_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <div class="sm:inline-block mt-2 sm:mt-0 sm:ml-2">
-    <%= button_to "Destroy this product", @product, method: :delete, class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+        <%# Thumbnail Gallery %>
+        <% if @product.product_images.any? %>
+          <div class="grid grid-cols-5 gap-4">
+            <% @product.product_images.each_with_index do |image, index| %>
+              <% if image.image.attached? %>
+                <button
+                  class="aspect-square rounded-lg overflow-hidden border-2 transition-colors duration-200 hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 <%= index == 0 ? 'border-indigo-500' : 'border-transparent' %>"
+                  data-product-gallery-target="thumbnail"
+                  data-action="click->product-gallery#selectImage"
+                  data-index="<%= index %>"
+                  data-image-url="<%= rails_blob_url(image.image) %>"
+                >
+                  <%= image_tag rails_blob_url(image.image), class: "w-full h-full object-cover object-center" %>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Product Details %>
+      <div class="flex flex-col">
+        <%# Product Header %>
+        <div class="mb-6">
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-2">
+            <%= @product.name %>
+          </h1>
+          <div class="flex items-center gap-x-4">
+            <div class="flex items-center">
+              <% full_stars = @product.reviews.average(:rating).to_i rescue 0 %>
+              <% remainder = ((@product.reviews.average(:rating) || 0) - full_stars) * 100 %>
+              <% (1..5).each do |i| %>
+                <% if i <= full_stars %>
+                  <%# Full star %>
+                  <svg class="text-amber-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                <% elsif i == full_stars + 1 && remainder > 0 %>
+                  <%# Partial star %>
+                  <svg class="text-amber-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="partialFill<%= i %>" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="<%= remainder %>%" stop-color="currentColor"></stop>
+                        <stop offset="<%= remainder %>%" stop-color="#e5e7eb"></stop>
+                      </linearGradient>
+                    </defs>
+                    <path fill="url(#partialFill<%= i %>)" fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                <% else %>
+                  <%# Empty star %>
+                  <svg class="text-gray-200 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="text-sm text-gray-500">
+              <a href="#reviews" class="hover:text-indigo-600 transition">
+                <%= @product.reviews.count %> reviews
+              </a>
+            </div>
+            <div>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-green-600" fill="currentColor" viewBox="0 0 8 8">
+                  <circle cx="4" cy="4" r="3" />
+                </svg>
+                In Stock (<%= @product.stock_quantity %>)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <%# Price Section %>
+        <div class="flex items-end gap-4 mb-6">
+          <% if @product.discounted_price.present? && @product.discounted_price < @product.price %>
+            <p class="text-3xl tracking-tight text-gray-900 font-bold">
+              <%= number_to_currency(@product.discounted_price) %>
+            </p>
+            <p class="text-xl text-gray-500 line-through">
+              <%= number_to_currency(@product.price) %>
+            </p>
+            <p class="text-sm font-medium bg-red-100 text-red-800 px-2 py-0.5 rounded-md">
+              <%= number_to_percentage(100 - (@product.discounted_price / @product.price * 100), precision: 0) %> OFF
+            </p>
+          <% else %>
+            <p class="text-3xl tracking-tight text-gray-900 font-bold">
+              <%= number_to_currency(@product.price) %>
+            </p>
+          <% end %>
+        </div>
+
+        <%# Product Description %>
+        <div class="prose prose-indigo max-w-none mb-8">
+          <%= sanitize @product.description %>
+        </div>
+
+        <%# Product Attributes %>
+        <div class="mb-8">
+          <h3 class="text-sm font-medium text-gray-900 mb-4">Highlights</h3>
+          <div class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6">
+            <div class="flex items-center text-sm">
+              <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+              <span class="ml-2 text-gray-500">Brand: <span class="font-medium text-gray-900"><%= @product.brand %></span></span>
+            </div>
+            <div class="flex items-center text-sm">
+              <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+              <span class="ml-2 text-gray-500">SKU: <span class="font-medium text-gray-900"><%= @product.sku %></span></span>
+            </div>
+            <div class="flex items-center text-sm">
+              <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+              <span class="ml-2 text-gray-500">Condition: <span class="font-medium text-gray-900"><%= @product.condition.humanize %></span></span>
+            </div>
+            <div class="flex items-center text-sm">
+              <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+              <span class="ml-2 text-gray-500">Weight: <span class="font-medium text-gray-900"><%= @product.weight %> kg</span></span>
+            </div>
+            <div class="flex items-center text-sm">
+              <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+              <span class="ml-2 text-gray-500"><%= @product.is_digital? ? "Digital Product" : "Physical Product" %></span>
+            </div>
+            <div class="flex items-center text-sm">
+              <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+              <span class="ml-2 text-gray-500">Shipping: <span class="font-medium text-gray-900"><%= @product.shipping_time %></span></span>
+            </div>
+          </div>
+        </div>
+
+        <%# Seller Information %>
+        <div class="border-t border-gray-200 pt-6 mb-8">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <% if @product.seller.user.profile_picture.attached? %>
+                <%= image_tag @product.seller.user.profile_picture, class: "h-10 w-10 rounded-full" %>
+              <% else %>
+                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                  <span class="text-indigo-700 font-medium text-sm"><%= @product.seller.business_name.first(2).upcase %></span>
+                </div>
+              <% end %>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900">
+                <%= link_to @product.seller.business_name, seller_path(@product.seller), class: "hover:text-indigo-600 transition" %>
+                <% if @product.seller.verified? %>
+                  <span class="inline-flex items-center ml-1 rounded-full bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700">
+                    <svg class="-ml-0.5 mr-0.5 h-3 w-3 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                    </svg>
+                    Verified
+                  </span>
+                <% end %>
+              </p>
+              <p class="text-xs text-gray-500">
+                Response in <%= @product.seller.average_response_time || 24 %> hours • <%= @product.seller.acceptance_rate ? "#{@product.seller.acceptance_rate}% acceptance" : "New seller" %>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <%# Product Actions %>
+        <div class="mt-auto space-y-4">
+          <% if @product.is_digital? %>
+            <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-indigo-800">Instant Download</h3>
+                  <p class="mt-1 text-xs text-indigo-700">
+                    This is a digital product. You'll receive a download link immediately after purchase.
+                  </p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <%= form_with url: add_item_to_product_path(@product), method: :post, class: "space-y-4", data: { controller: "product-quantity", "turbo" => false } do |f| %>
+            <div class="flex md:flex-row flex-col gap-4">
+              <div class="w-full md:w-1/3">
+                <label for="quantity" class="sr-only">Quantity</label>
+                <div class="flex border border-gray-300 rounded-md shadow-sm bg-white">
+                  <button type="button" class="p-2 text-gray-500 hover:text-gray-600" data-action="product-quantity#decrement">
+                    <span class="sr-only">Decrease quantity</span>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <%= f.number_field :quantity, value: 1, min: 1, max: @product.stock_quantity, class: "w-full text-center focus:ring-indigo-500 focus:border-indigo-500 border-0", data: { "product-quantity-target" => "input" } %>
+                  <button type="button" class="p-2 text-gray-500 hover:text-gray-600" data-action="product-quantity#increment">
+                    <span class="sr-only">Increase quantity</span>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="w-full md:w-2/3 flex flex-col md:flex-row gap-2">
+                <%= f.submit "Add to Cart", class: "w-full md:w-1/2 px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200" %>
+                <%= link_to "Buy Now", buy_now_path(@product), method: :post, class: "w-full md:w-1/2 px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 text-center" %>
+              </div>
+            </div>
+          <% end %>
+
+          <%# Wishlist and Share buttons %>
+          <div class="flex space-x-4">
+            <%= button_to wishlist_items_path(product_id: @product.id), method: :post, form: { data: { turbo: true }, class: "group flex-1" } do %>
+              <div class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 group-active:scale-95">
+                <svg class="h-5 w-5 mr-2 text-gray-400 group-hover:text-red-500 transition-colors duration-200" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                </svg>
+                Add to Wishlist
+              </div>
+            <% end %>
+
+            <button type="button" class="group flex-1">
+              <div class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 group-active:scale-95">
+                <svg class="h-5 w-5 mr-2 text-gray-400 group-hover:text-indigo-500 transition-colors duration-200" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                </svg>
+                Share
+              </div>
+            </button>
+          </div>
+
+          <div class="text-center md:text-left">
+            <p class="text-xs text-gray-500">Secure payment methods</p>
+            <div class="mt-2 flex space-x-4 justify-center md:justify-start">
+              <svg class="h-8" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="0.5" width="36" height="23" rx="3" fill="white"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.521 9.09h14.958v9.098H10.521V9.09z" fill="#FF5F00"/>
+                <path d="M11.126 13.642c0-1.833.865-3.459 2.205-4.544a5.982 5.982 0 00-3.713-1.293A6.006 6.006 0 003.6 13.887c0 3.322 2.686 6.013 6.018 6.013a5.982 5.982 0 003.713-1.293c-1.34-1.079-2.205-2.71-2.205-4.544v-.421z" fill="#EB001B"/>
+                <path d="M25.8 13.887c0 3.322-2.687 6.013-6.018 6.013a5.982 5.982 0 01-3.713-1.293c1.345-1.079 2.205-2.71 2.205-4.544v-.421c0-1.833-.865-3.459-2.205-4.544a5.982 5.982 0 013.713-1.293A6.006 6.006 0 0125.8 13.887z" fill="#F79E1B"/>
+              </svg>
+              <svg class="h-8" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="0.5" width="36" height="23" rx="3" fill="white"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.245 16.045h2.271l1.417-8.09h-2.27l-1.418 8.09zm10.42-7.901a5.56 5.56 0 00-2.055-.389c-2.262 0-3.852 1.202-3.86 2.921-.016 1.272 1.14 1.98 2.01 2.403.89.433 1.194.714 1.19 1.102-.008.594-.715.865-1.375.865-.918 0-1.408-.135-2.159-.465l-.298-.14-.324 1.993c.54.248 1.538.464 2.575.474 2.432 0 4.008-1.187 4.025-3.025.009-1.008-.605-1.775-1.93-2.407-.805-.408-1.295-.68-1.29-1.092.004-.368.41-.759 1.3-.759.741-.012 1.276.158 1.692.336l.204.1.307-1.918zm5.254-.189h-1.755c-.54 0-.95.154-1.187.722l-3.372 8.024h2.388l.476-1.315h2.916l.276 1.315h2.109l-1.85-8.746zm-3.208 5.605l.908-2.47.523 2.47h-1.431zm-10.726-5.605l-2.222 5.953-.238-1.222-.71-3.588s-.086-.715-.991-.715h-3.298l-.041.15c.842.215 1.803.53 2.378.881.354.21.455.39.572.885l1.921 6.494h2.403l3.51-8.838h-2.284z" fill="#172B85"/>
+              </svg>
+              <svg class="h-8" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="0.5" width="36" height="23" rx="3" fill="white"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M22.297 15.945h-2.248l1.417-8.09h2.247l-1.416 8.09zm-4.09-8.09l-2.164 5.63-.256-1.28-.75-3.785s-.09-.729-1.045-.729h-3.477l-.043.152c.888.22 1.901.54 2.508.9.373.214.48.398.603.9l2.026 6.302h2.534l3.7-8.09h-2.41zm13.19 8.09l-1.95-8.09h-1.712c-.532 0-.931.152-1.165.706l-3.998 7.384h2.534s.462-.849.566-1.034l3.435.01.32 1.024h2.298zm-3.701-2.499l1.06-2.503.596 2.503h-1.656zm-17.625-3.69c-.042.269.535 2.82 2.41 2.82 1.874 0 2.132-1.746 2.132-1.746l-4.542-1.073zm4.65 6.281l.238-1.519s-.612.285-1.484.285c-1.502 0-2.849-.815-2.849-3.023 0-3.167 2.19-3.954 3.568-3.954.884 0 2.116.285 2.116.285l.238-1.43s-1.39-.5-2.563-.5c-2.619 0-5.141 1.126-5.141 5.688 0 3.991 1.95 4.897 4.328 4.897 1.019 0 2.19-.36 2.19-.36s-.618.02-.64-.37z" fill="#FFB600"/>
+              </svg>
+              <svg class="h-8" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="0.5" width="36" height="23" rx="3" fill="white"/>
+                <path d="M21.4 13.55c0 2.12-1.718 3.84-3.838 3.84s-3.838-1.72-3.838-3.84a3.843 3.843 0 013.838-3.84 3.843 3.843 0 013.838 3.84z" fill="#00A1DF"/>
+                <path d="M21.404 13.55c0 2.12-1.718 3.84-3.838 3.84a3.843 3.843 0 01-3.838-3.84 3.843 3.843 0 013.838-3.84 3.843 3.843 0 013.838 3.84zM31.76 11.57v-.26h-.066l-.076.172-.076-.172h-.066v.26h.047v-.196l.07.163h.05l.07-.163v.196h.047zm-.37 0v-.218h.087v-.042h-.222v.042h.088v.218h.047z" fill="#005B9E"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M29.894 17.442h-3.67v-7.3h3.67v7.3zm-7.857-4.434c-.42-.249-.908-.362-1.49-.362h-2.55v5.51h2.555c.597 0 1.083-.119 1.49-.356.41-.242.733-.588.958-1.037.226-.448.34-1.014.34-1.701 0-.664-.113-1.212-.34-1.653a2.262 2.262 0 00-.963-1.4zm-1.28 3.876h-1.505v-3.654h1.506c.5 0 .88.13 1.15.397.297.3.443.78.443 1.446 0 .672-.152 1.157-.449 1.442-.268.246-.648.369-1.145.369zm23.067-6.842h-1.95l-2.615 6.696h1.656l.574-1.566h2.722l.584 1.566h1.705l-2.676-6.696zm-.195 3.858l.883-2.406.892 2.406h-1.775zm-8.088-3.858l-1.368 4.669-1.473-4.669h-1.789l-1.467 4.669-1.363-4.669h-1.723l2.398 6.695h1.806l1.484-4.59 1.473 4.59h1.806l2.392-6.695h-1.676zm-14.602 6.695h-1.656V10.04h1.656v6.696zm10.73-5.51h-2.785v5.51h1.656v-1.948h1.13c.604 0 1.083-.151 1.439-.458.35-.301.53-.732.53-1.306 0-.516-.153-.932-.474-1.283-.337-.369-.84-.515-1.496-.515zm-.09 2.439h-1.039v-1.33h1.063c.285 0 .506.063.653.186.153.13.226.311.226.536 0 .228-.085.402-.248.528-.139.117-.365.08-.655.08z" fill="#005B9E"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Product Details Tabs %>
+    <div class="mt-16 border-t border-gray-200 pt-10" data-controller="tabs">
+      <div class="border-b border-gray-200">
+        <div class="flex -mb-px space-x-8">
+          <button
+            class="text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent tab-active:text-indigo-600 tab-active:border-indigo-500 focus:outline-none"
+            data-tabs-target="tab"
+            data-action="tabs#select"
+            data-tab="specifications"
+            aria-selected="true"
+          >
+            Specifications
+          </button>
+          <button
+            class="text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent tab-active:text-indigo-600 tab-active:border-indigo-500 focus:outline-none"
+            data-tabs-target="tab"
+            data-action="tabs#select"
+            data-tab="shipping"
+          >
+            Shipping Information
+          </button>
+          <button
+            class="text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent tab-active:text-indigo-600 tab-active:border-indigo-500 focus:outline-none"
+            data-tabs-target="tab"
+            data-action="tabs#select"
+            data-tab="reviews"
+            id="reviews"
+          >
+            Reviews (<%= @product.reviews.count %>)
+          </button>
+          <button
+            class="text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent tab-active:text-indigo-600 tab-active:border-indigo-500 focus:outline-none"
+            data-tabs-target="tab"
+            data-action="tabs#select"
+            data-tab="questions"
+          >
+            Questions (<%= @product.product_questions.count %>)
+          </button>
+        </div>
+      </div>
+
+      <%# Specifications Tab %>
+      <div class="py-10 tab-active:block hidden" data-tabs-target="panel" data-panel="specifications">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <% if @product.specifications.present? %>
+            <% @product.specifications.each do |spec| %>
+              <div class="border-b border-gray-200 pb-3">
+                <% key, value = spec.split(':', 2) %>
+                <dt class="text-sm font-medium text-gray-500"><%= key.strip %></dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= value&.strip %></dd>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="md:col-span-2">
+              <div class="rounded-md bg-blue-50 p-4">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <div class="ml-3 flex-1 md:flex md:justify-between">
+                    <p class="text-sm text-blue-700">No detailed specifications available for this product.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Shipping Information Tab %>
+      <div class="py-10 tab-active:block hidden" data-tabs-target="panel" data-panel="shipping">
+        <div class="prose prose-indigo max-w-none">
+          <h3>Shipping Details</h3>
+          <p>This product is shipped with <%= @product.shipping_provider %> via <%= @product.shipping_method %> shipping.</p>
+
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-100">
+              <h4 class="text-base font-medium text-gray-900 mb-2">Delivery Information</h4>
+              <ul class="mt-2 space-y-3">
+                <li class="flex items-start">
+                  <svg class="h-5 w-5 text-green-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Estimated delivery time: <%= @product.shipping_duration %></span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="h-5 w-5 text-green-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Shipping cost: <%= number_to_currency(@product.shipping_cost) %></span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="h-5 w-5 text-green-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Product weight: <%= @product.weight %> kg</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-100">
+              <h4 class="text-base font-medium text-gray-900 mb-2">Availability</h4>
+              <ul class="mt-2 space-y-3">
+                <li class="flex items-start">
+                  <% if @product.available_in_ghana %>
+                    <svg class="h-5 w-5 text-green-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  <% else %>
+                    <svg class="h-5 w-5 text-red-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                  <% end %>
+                  <span>Available in Ghana: <%= @product.available_in_ghana ? "Yes" : "No" %></span>
+                </li>
+                <li class="flex items-start">
+                  <% if @product.available_in_nigeria %>
+                    <svg class="h-5 w-5 text-green-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  <% else %>
+                    <svg class="h-5 w-5 text-red-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                  <% end %>
+                  <span>Available in Nigeria: <%= @product.available_in_nigeria ? "Yes" : "No" %></span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="h-5 w-5 text-green-500 mt-0.5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Country of origin: <%= @product.country_of_origin %></span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <h4 class="text-base font-medium text-gray-900 mb-2">Shipping Policy</h4>
+            <p>Please note that our shipping terms are subject to our full shipping policy. For digital products, delivery is instant via download links.</p>
+          </div>
+        </div>
+      </div>
+
+      <%# Reviews Tab %>
+      <div class="py-10 tab-active:block hidden" data-tabs-target="panel" data-panel="reviews">
+        <div class="max-w-2xl mx-auto lg:max-w-none">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium text-gray-900">Customer Reviews</h3>
+            <% if user_signed_in? && Order.exists?(user_id: current_user.id, product_id: @product.id, status: 'completed') && !Review.exists?(user_id: current_user.id, product_id: @product.id) %>
+              <%= link_to "Write a review", new_product_review_path(@product), class: "ml-4 inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+            <% end %>
+          </div>
+
+          <div class="mt-6 pb-10 border-t border-b border-gray-200 divide-y divide-gray-200 space-y-10">
+            <% if @product.reviews.published.any? %>
+              <% @product.reviews.published.includes(:user).order(created_at: :desc).each do |review| %>
+                <div class="pt-10 lg:grid lg:grid-cols-12 lg:gap-x-8">
+                  <div class="lg:col-span-8 lg:col-start-5 xl:col-span-9 xl:col-start-4 order-2 lg:order-1">
+                    <div class="flex items-start">
+                      <div class="flex-1">
+                        <h4 class="text-sm font-medium text-gray-900"><%= review.user.first_name %> <%= review.user.last_name.first %>.</h4>
+                        <p class="mt-1 text-sm text-gray-500">
+                          <time datetime="<%= review.created_at.iso8601 %>">
+                            <%= review.created_at.strftime("%B %d, %Y") %>
+                          </time>
+                        </p>
+                      </div>
+                      <div class="ml-4 flex">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          Verified Purchase
+                        </span>
+                      </div>
+                    </div>
+                    <div class="mt-4 prose prose-sm max-w-none text-gray-500">
+                      <%= simple_format review.content %>
+                    </div>
+                  </div>
+
+                  <div class="lg:col-span-4 lg:col-start-1 xl:col-span-3 xl:col-start-1 order-1 lg:order-2 mt-6 lg:mt-0">
+                    <h4 class="sr-only">Rating</h4>
+                    <div class="flex items-center">
+                      <div class="flex items-center">
+                        <% (1..5).each do |i| %>
+                          <% if i <= review.rating %>
+                            <svg class="text-amber-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                              <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                            </svg>
+                          <% else %>
+                            <svg class="text-gray-200 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                              <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                            </svg>
+                          <% end %>
+                        <% end %>
+                      </div>
+                      <p class="sr-only"><%= review.rating %> out of 5 stars</p>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="pt-10 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
+                <p class="mt-1 text-sm text-gray-500">Be the first to review this product.</p>
+                <% if user_signed_in? %>
+                  <div class="mt-6">
+                    <%= link_to "Write a review", new_product_review_path(@product), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <%# Questions Tab %>
+      <div class="py-10 tab-active:block hidden" data-tabs-target="panel" data-panel="questions">
+        <div class="max-w-2xl mx-auto lg:max-w-none">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium text-gray-900">Product Questions</h3>
+            <% if user_signed_in? %>
+              <%= link_to "Ask a Question", new_product_question_path(@product), class: "ml-4 inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+            <% end %>
+          </div>
+
+          <div class="mt-6 pb-10 border-t border-b border-gray-200 divide-y divide-gray-200 space-y-10">
+            <% if @product.product_questions.any? %>
+              <% @product.product_questions.order(created_at: :desc).each do |question| %>
+                <div class="pt-10">
+                  <div class="flex items-start">
+                    <div class="flex-1">
+                      <h4 class="text-sm font-medium text-gray-900">Q: <%= question.question %></h4>
+                      <p class="mt-1 text-sm text-gray-500">
+                        <span>Asked by <%= question.asked_by %></span>
+                        <time datetime="<%= question.created_at.iso8601 %>" class="ml-2">
+                          <%= question.created_at.strftime("%B %d, %Y") %>
+                        </time>
+                      </p>
+                    </div>
+                  </div>
+
+                  <% if question.answer.present? %>
+                    <div class="mt-4 ml-8">
+                      <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                          <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100">
+                            <span class="text-sm font-medium leading-none text-indigo-800">A</span>
+                          </span>
+                        </div>
+                        <div class="ml-4">
+                          <div class="text-sm text-gray-700">
+                            <%= simple_format question.answer %>
+                          </div>
+                          <div class="mt-2 text-sm text-gray-500">
+                            <span>Answered by <%= question.answered_by %></span>
+                            <time datetime="<%= question.answered_at&.iso8601 %>" class="ml-2">
+                              <%= question.answered_at&.strftime("%B %d, %Y") %>
+                            </time>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% else %>
+                    <div class="mt-4 ml-8">
+                      <p class="text-sm text-gray-500 italic">This question hasn't been answered yet.</p>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="pt-10 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No questions asked yet</h3>
+                <p class="mt-1 text-sm text-gray-500">Have a question about this product?</p>
+                <% if user_signed_in? %>
+                  <div class="mt-6">
+                    <%= link_to "Ask a Question", new_product_question_path(@product), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Related Products %>
+    <div class="mt-16 sm:mt-24" id="related-products" data-controller="related-products">
+      <div class="mb-8 border-b border-gray-200">
+        <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl pb-4">You may also like</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6 xl:gap-x-8">
+        <% @related_products ||= Product.where(category_id: @product.category_id).where.not(id: @product.id).limit(4) %>
+        <% @related_products.each do |product| %>
+          <%= link_to product_path(product), class: "group" do %>
+            <div class="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75 transition-opacity">
+              <% if product.product_images.any? && product.product_images.first.image.attached? %>
+                <%= image_tag rails_blob_url(product.product_images.first.image), class: "h-full w-full object-cover object-center" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              <% end %>
+            </div>
+            <div class="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
+              <h3 class="text-sm line-clamp-2"><%= product.name %></h3>
+              <% if product.discounted_price.present? && product.discounted_price < product.price %>
+                <p class="text-sm font-medium text-red-600"><%= number_to_currency(product.discounted_price) %></p>
+              <% else %>
+                <p class="text-sm font-medium"><%= number_to_currency(product.price) %></p>
+              <% end %>
+            </div>
+            <p class="mt-1 text-sm text-gray-500 line-clamp-1"><%= product.category.name %></p>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>

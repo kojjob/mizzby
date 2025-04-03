@@ -1,144 +1,147 @@
+class DomainConstraint
+  def self.matches?(request)
+    Seller.exists?(custom_domain: request.host, domain_verified: true)
+  end
+end
+
 Rails.application.routes.draw do
-  resources :action_items
-  resources :user_activities
-  resources :wishlist_items
-  resources :notifications
-  resources :product_questions
-  resources :payment_audit_logs
-  resources :download_links
-  resources :reviews
-  resources :cart_items
-  resources :carts
-
-  # Add this line to create a route for the user dashboard
-  get "dashboard", to: "users#dashboard", as: :dashboard
-
-  # Add this line to create a route for the user profile
-  get "profile", to: "users#profile", as: :profile
-
-  # Add this line to create a route for the current user's cart
-  get "cart", to: "carts#current", as: :current_cart
-
-  resources :orders
-  resources :product_images
-  resources :products
-  resources :categories
-
-  # Seller routes
-  resources :sellers, only: [ :show, :new, :create, :edit, :update ]
-  get "seller/dashboard", to: "sellers#dashboard", as: "seller_dashboard"
-  devise_for :users, controllers: {
-    registrations: "users/registrations"
-  }
-
-  root "static#home"
-
-  get "search", to: "products#search", as: :search
-
-
-  controller :static do
-    get "contact"
-    get "about"
-    get "help_center"
-    get "privacy_policy"
-    get "term_of_service"
-    get "pricing"
+  # Devise routes for authentication
+  devise_for :users
+  # Custom domain handling
+  constraints(DomainConstraint) do
+    get '/', to: 'stores#show'
+    get '/products', to: 'stores#products'
+    get '/about', to: 'stores#about'
+    get '/contact', to: 'stores#contact'
   end
 
-  # Admin routes
+  # Stores index route
+  get 'stores', to: 'stores#index', as: :stores
+
+  # Store display routes
+  scope 'stores/:slug', as: 'store' do
+    get '/', to: 'stores#show'
+    get '/products', to: 'stores#products'
+    get '/about', to: 'stores#about'
+    get '/contact', to: 'stores#contact'
+    post '/contact', to: 'stores#send_contact'
+    get '/categories', to: 'stores#categories'
+    get '/categories/:id', to: 'stores#category', as: :category_products
+  end
+
+  # Seller store management
+  namespace :sellers do
+    resource :store, only: [:edit, :update] do
+      collection do
+        get :theme, :analytics
+        patch :update_theme
+        resources :categories, controller: 'store_categories'
+      end
+    end
+  end
+
+  # Shopping Cart System
+  resources :carts, only: [:show, :destroy] do
+    collection { get :current }
+  end
+  resources :cart_items, only: [:create, :update, :destroy]
+  get 'cart', to: 'carts#current', as: :current_cart
+
+  # Checkout Process
+  get 'checkout', to: 'checkout#index', as: :checkout
+  post 'buy_now/:product_id', to: 'checkout#buy_now', as: :buy_now
+
+  # Orders & Downloads
+  resources :orders
+  resources :download_links, only: [:show]
+
+  # Product Catalog
+  resources :categories
+  resources :products do
+    member { post 'add_item_to_cart', as: :add_item_to }
+    collection { get :new_arrivals }
+    resources :reviews, only: [:index, :new, :create]
+    resources :product_questions, only: [:index, :new, :create], as: :questions
+  end
+  resources :product_images
+
+  # Product Discovery
+  get 'search', to: 'products#search', as: :search
+  get 'deals', to: 'deals#index', as: :deals
+
+  # Seller Area
+  resources :sellers, except: [:destroy] do
+    collection do
+      get :dashboard, :store_settings
+      patch :update_store_settings
+      post :verify_domain
+    end
+  end
+
+  # User Collections
+  resources :wishlist_items do
+    collection { delete :clear }
+  end
+
+  # User Activity & Notifications
+  resources :notifications, :user_activities, :action_items, :payment_audit_logs, only: [:index, :show]
+
+  # Static Pages
+  root 'static#home'
+  controller :static do
+    get :contact, :about, :help_center, :privacy_policy, :term_of_service, :pricing
+  end
+
+  # Admin Area
   namespace :admin do
-    root to: "dashboard#index"
+    root to: 'dashboard#index'
+    get :dashboard
 
-    # Dashboard
-    get "dashboard", to: "dashboard#index"
-
-    # Users management
     resources :users do
-      member do
-        post "toggle_admin"
-        post "impersonate"
-      end
-      collection do
-        get "stop_impersonating"
-      end
+      member { post :toggle_admin, :impersonate }
+      collection { get :stop_impersonating }
     end
-
-    # Products management
-    resources :products do
-      member do
-        post "toggle_featured"
-        post "toggle_status"
-      end
-    end
-
-    # Orders management
-    resources :orders do
-      member do
-        post "process_payment"
-        post "refund"
-        get "download_invoice"
-      end
-    end
-
-    # Sellers management
     resources :sellers do
-      member do
-        post "verify"
-        post "suspend"
-        get "products"
-        get "orders"
-        get "analytics"
-      end
+      member { post :verify, :suspend }
+      collection { get :products, :orders, :analytics }
     end
-
-    # Categories management
+    resources :products do
+      member { post :toggle_featured, :toggle_status }
+    end
     resources :categories do
-      member do
-        get "products"
-      end
-      collection do
-        post "reorder"
-      end
+      member { get :products }
+      collection { post :reorder }
+    end
+    resources :orders do
+      member { post :process_payment, :refund }
     end
 
-    # Settings (super admin only)
-    get "settings", to: "settings#index"
-    patch "settings", to: "settings#update"
-    get "settings/security", to: "settings#security"
-    get "settings/maintenance", to: "settings#maintenance"
-    post "settings/backup", to: "settings#backup"
-    get "settings/logs", to: "settings#logs"
-    post "settings/clear_cache", to: "settings#clear_cache"
-    post "settings/restart_application", to: "settings#restart_application"
+    resources :action_items, :cart_items, :carts, :download_links, :notifications,
+              :payment_audit_logs, :product_images, :product_questions, :reviews,
+              :user_activities, :wishlist_items
 
     # Analytics
-    get "analytics", to: "analytics#index"
-    get "analytics/sales", to: "analytics#sales"
-    get "analytics/products", to: "analytics#products"
-    get "analytics/customers", to: "analytics#customers"
-    get "analytics/export", to: "analytics#export"
-  end
+    get 'analytics', to: 'analytics#index'
+    namespace :analytics do
+      get :sales, :products, :customers, :export
+    end
 
-  # Add this line to define the deals route
-  # Add this line to your existing routes.rb file
-  get "deals", to: "deals#index", as: :deals
+    # Settings
+    get 'settings', to: 'settings#index'
+    patch 'settings', to: 'settings#update'
+    namespace :settings do
+      get :security, :maintenance, :logs
+      post :backup, :clear_cache, :restart_application
+    end
 
-  # Your existing new_arrivals route
-  get "new_arrivals", to: "products#new_arrivals", as: :new_arrivals
-
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  # Add this inside your existing routes.rb file
-  resources :wishlist_items do
-    collection do
-      delete :clear, as: :clear
+    # System Monitoring
+    get 'system', to: 'system#index'
+    namespace :system do
+      get :logs, :cache, :jobs
+      post :cache
     end
   end
+
+  # System & Health Checks
+  get 'up', to: 'rails/health#show', as: :rails_health_check
 end

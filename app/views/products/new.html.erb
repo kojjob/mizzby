@@ -1,9 +1,19 @@
-<% content_for :title, "New product" %>
+<% content_for :title, "Create New Product" %>
 
-<div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">New product</h1>
-
-  <%= render "form", product: @product %>
-
-  <%= link_to "Back to products", products_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Create New Product</h1>
+    <%= link_to products_path, class: "flex items-center text-indigo-600 hover:text-indigo-900" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Back to products
+    <% end %>
+  </div>
+  
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="p-6">
+      <%= render "form", product: @product %>
+    </div>
+  </div>
 </div>

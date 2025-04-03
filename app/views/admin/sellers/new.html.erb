@@ -1,0 +1,171 @@
+<% content_for :page_title, "New Seller" %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Create New Seller</h1>
+      <p class="text-gray-600">Add a new seller to the platform</p>
+    </div>
+    <div class="flex space-x-2">
+      <%= link_to admin_sellers_path, class: "bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+        </svg>
+        Back to Sellers
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_with(model: [:admin, @seller], class: "contents") do |form| %>
+    <% if @seller.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-4 py-3 rounded-md mb-6">
+        <div class="flex items-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <h2 class="font-bold"><%= pluralize(@seller.errors.count, "error") %> prohibited this seller from being saved:</h2>
+        </div>
+        <ul class="list-disc pl-5">
+          <% @seller.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Main Information Column -->
+      <div class="md:col-span-2 space-y-6">
+        <!-- Basic Information Section -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Basic Information</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :user_id, "Select User", class: "block text-sm font-medium text-gray-700" %>
+              <%= form.collection_select :user_id,
+                                        @users,
+                                        :id,
+                                        ->(user) { "#{user.first_name} #{user.last_name} (#{user.email})" },
+                                        { include_blank: "Select User" },
+                                        { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+              <p class="mt-1 text-xs text-gray-500">Select the user account to associate with this seller</p>
+            </div>
+
+            <div>
+              <%= form.label :business_name, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :business_name, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Business Name" %>
+            </div>
+
+            <div>
+              <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :description, rows: 5, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Business description..." %>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <%= form.label :phone_number, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :phone_number, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "+1 (555) 123-4567" %>
+              </div>
+
+              <div>
+                <%= form.label :country, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.select :country,
+                               options_for_select([
+                                 ["Ghana", "GH"],
+                                 ["Nigeria", "NG"],
+                                 ["United States", "US"],
+                                 ["United Kingdom", "GB"],
+                                 ["Other", "Other"]
+                               ]),
+                               { include_blank: "Select Country" },
+                               { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
+              </div>
+            </div>
+
+            <div>
+              <%= form.label :location, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_field :location, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "City, State/Region" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Information Section -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Payment Information</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div>
+              <%= form.label :commission_rate, "Commission Rate (%)", class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 sm:text-sm">%</span>
+                </div>
+                <%= form.number_field :commission_rate, step: "0.01", min: "0", max: "100", value: "10.00", class: "py-2 px-3 pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "10.00" %>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Enter the percentage commission rate (e.g., 10 for 10%)</p>
+            </div>
+
+            <div>
+              <%= form.label :bank_account_details, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :bank_account_details, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Bank name, account number, account name, etc." %>
+            </div>
+
+            <div>
+              <%= form.label :mobile_money_details, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :mobile_money_details, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Mobile money provider, phone number, account name, etc." %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Store Settings -->
+      <%= render 'admin/sellers/store_settings', form: form %>
+
+      <!-- Sidebar Information -->
+      <div class="md:col-span-1 space-y-6">
+        <!-- Verification Status -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <h3 class="font-medium text-gray-900">Verification Status</h3>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center">
+              <%= form.check_box :verified, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+              <%= form.label :verified, "Verified Seller", class: "ml-2 block text-sm text-gray-700" %>
+            </div>
+            <p class="mt-2 text-xs text-gray-500">Verified sellers can list and sell products on the platform.</p>
+          </div>
+        </div>
+
+        <!-- Submission Buttons -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="p-4 space-y-3">
+            <%= form.submit "Create Seller", class: "w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+
+            <%= link_to 'Cancel', admin_sellers_path, class: "block w-full text-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-gray-700 hover:text-gray-500" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Convert commission rate from percentage to decimal when submitting the form
+    const form = document.querySelector('form');
+    const commissionRateInput = document.querySelector('#seller_commission_rate');
+
+    if (form && commissionRateInput) {
+      form.addEventListener('submit', function() {
+        const value = parseFloat(commissionRateInput.value);
+        if (!isNaN(value)) {
+          commissionRateInput.value = value / 100;
+        }
+      });
+    }
+  });
+</script>

@@ -1,76 +1,48 @@
 class CartsController < ApplicationController
-  before_action :set_cart, only: %i[ show edit update destroy ]
-
-  # GET /carts or /carts.json
-  def index
-    @carts = Cart.all
-  end
-
-  # GET /carts/1 or /carts/1.json
-  def show
-  end
-
-  # GET /carts/new
-  def new
-    @cart = Cart.new
-  end
-
-  # GET /carts/1/edit
-  def edit
-  end
-
-  # POST /carts or /carts.json
-  def create
-    @cart = Cart.new(cart_params)
-
-    respond_to do |format|
-      if @cart.save
-        format.html { redirect_to @cart, notice: "Cart was successfully created." }
-        format.json { render :show, status: :created, location: @cart }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @cart.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /carts/1 or /carts/1.json
-  def update
-    respond_to do |format|
-      if @cart.update(cart_params)
-        format.html { redirect_to @cart, notice: "Cart was successfully updated." }
-        format.json { render :show, status: :ok, location: @cart }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @cart.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /carts/1 or /carts/1.json
-  def destroy
-    @cart.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to carts_path, status: :see_other, notice: "Cart was successfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_cart
-      @cart = Cart.find(params[:id])  # Changed from params.expect(:id)
-    end
-
-    # Only allow a list of trusted parameters through.
-    def cart_params
-      params.require(:cart).permit(:user_id)  # Changed from params.expect
-    end
-
+  before_action :authenticate_user!
+  before_action :set_cart, only: [:show, :destroy, :empty]
+  
   def current
-    # Find the current user's cart or create a new one
-    @cart = current_user&.cart || Cart.new
+    # Handle both authenticated and guest users
+    if user_signed_in?
+      # For authenticated users, use their associated cart
+      @cart = current_user.cart || Cart.create(user: current_user)
+    else
+      # For guest users, use a session-based cart
+      session[:cart_id] ||= SecureRandom.uuid
+      @cart = Cart.find_by(cart_id: session[:cart_id]) || Cart.create(cart_id: session[:cart_id])
+    end
+    
+    # Load cart items with their associated products to avoid N+1 queries
+    @cart_items = @cart.cart_items.includes(:product)
+    
+    # Render the cart view
     render :show
+  end
+  
+  def show
+    @cart_items = @cart.cart_items.includes(:product)
+  end
+  
+  def empty
+    @cart.empty!
+    redirect_to cart_path, notice: "Your cart has been emptied."
+  end
+  
+  def destroy
+    @cart.destroy
+    redirect_to root_path, notice: "Your cart has been deleted."
+  end
+  
+  private
+  
+  def set_cart
+    if user_signed_in?
+      @cart = current_user.cart
+    else
+      @cart = Cart.find_by(cart_id: session[:cart_id])
+    end
+    
+    redirect_to products_path, alert: "You don't have an active cart." unless @cart
   end
 end

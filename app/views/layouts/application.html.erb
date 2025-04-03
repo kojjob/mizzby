@@ -21,7 +21,8 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    
+    <script src="/dropdown_fix.js"></script>
+
     <!-- Initialize Alpine.js stores -->
     <script>
       document.addEventListener('alpine:init', () => {

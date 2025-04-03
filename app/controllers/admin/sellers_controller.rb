@@ -34,19 +34,25 @@ module Admin
     def show
       # Get seller's stats
       @products_count = @seller.products.count
-      @orders_count = Order.joins(:product).where(products: { seller_id: @seller.id }).count
-      @total_sales = Order.joins(:product)
-                          .where(products: { seller_id: @seller.id, status: "completed" })
+      @orders_count = Order.joins(order_items: :product).where(products: { seller_id: @seller.id }).distinct.count
+      @total_sales = Order.joins(order_items: :product)
+                          .where(products: { seller_id: @seller.id })
+                          .where(status: "completed")
                           .sum(:total_amount)
 
       # Get seller's recent products
       @recent_products = @seller.products.order(created_at: :desc).limit(5)
 
       # Get seller's recent orders
-      @recent_orders = Order.joins(:product)
+      @recent_orders = Order.joins(order_items: :product)
                             .where(products: { seller_id: @seller.id })
+                            .distinct
                             .order(created_at: :desc)
                             .limit(5)
+
+      # Initialize empty arrays if no data is available
+      @recent_products ||= []
+      @recent_orders ||= []
     end
 
     def new
@@ -88,7 +94,8 @@ module Admin
         @seller.user.notifications.create(
           title: "Your seller account has been verified!",
           message: "Congratulations! Your seller account has been verified. You can now start selling products on our platform.",
-          notification_type: :seller_verification
+          notification_type: :success,
+          notifiable: @seller
         )
 
         flash[:success] = "Seller has been verified successfully."
@@ -105,7 +112,8 @@ module Admin
         @seller.user.notifications.create(
           title: "Your seller account has been suspended",
           message: "Your seller account has been suspended. Please contact support for more information.",
-          notification_type: :seller_suspension
+          notification_type: :warning,
+          notifiable: @seller
         )
 
         flash[:success] = "Seller has been suspended successfully."
@@ -126,9 +134,10 @@ module Admin
     end
 
     def orders
-      @orders = Order.joins(:product)
+      @orders = Order.joins(order_items: :product)
                     .where(products: { seller_id: @seller.id })
-                    .includes(:user, :product)
+                    .includes(:user, order_items: :product)
+                    .distinct
                     .order(created_at: :desc)
                     .page(params[:page])
                     .per(25)
@@ -138,36 +147,38 @@ module Admin
 
     def analytics
       # Get sales data for the last 30 days
-      @daily_sales = Order.joins(:product)
-                          .where(products: { seller_id: @seller.id }, status: "completed")
+      @daily_sales = Order.joins(order_items: :product)
+                          .where(products: { seller_id: @seller.id })
+                          .where(status: "completed")
                           .where("orders.created_at >= ?", 30.days.ago)
                           .group("DATE(orders.created_at)")
                           .sum(:total_amount)
 
       # Get top products
       @top_products = @seller.products
-                            .joins(:orders)
+                            .joins(order_items: :order)
                             .group("products.id")
-                            .select("products.*, COUNT(orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
+                            .select("products.*, COUNT(DISTINCT orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
                             .order("total_sales DESC")
                             .limit(5)
 
       # Customer analytics
-      @customer_count = Order.joins(:product, :user)
+      @customer_count = Order.joins(order_items: :product)
                             .where(products: { seller_id: @seller.id })
-                            .select("DISTINCT orders.user_id")
-                            .count
+                            .distinct
+                            .count(:user_id)
 
-      @repeat_customer_count = Order.joins(:product, :user)
+      @repeat_customer_count = Order.joins(order_items: :product)
                                   .where(products: { seller_id: @seller.id })
                                   .group("orders.user_id")
-                                  .having("COUNT(orders.id) > 1")
+                                  .having("COUNT(DISTINCT orders.id) > 1")
                                   .count.size
 
       # Commission data
-      @total_commission = Order.joins(:product)
-                              .where(products: { seller_id: @seller.id }, status: "completed")
-                              .sum("orders.total_amount * ?", @seller.commission_rate)
+      @total_commission = Order.joins(order_items: :product)
+                              .where(products: { seller_id: @seller.id })
+                              .where(status: "completed")
+                              .sum("orders.total_amount * ?", @seller.commission_rate || 0.1)
 
       render "admin/sellers/analytics"
     end
@@ -182,7 +193,8 @@ module Admin
       params.require(:seller).permit(
         :user_id, :business_name, :description, :location, :country,
         :phone_number, :verified, :commission_rate, :bank_account_details,
-        :mobile_money_details
+        :mobile_money_details, :store_name, :store_slug, :custom_domain, :domain_verified,
+        store_settings: [:enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css]
       )
     end
   end

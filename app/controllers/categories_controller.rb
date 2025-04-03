@@ -3,11 +3,14 @@ class CategoriesController < ApplicationController
 
   # GET /categories or /categories.json
   def index
-    @categories = Category.all
+    @categories = Category.where(visible: true).order(:position)
   end
 
   # GET /categories/1 or /categories/1.json
   def show
+    @category = Category.find(params[:id])
+    # Initialize products to at least an empty array
+    @products = @category.products.where(published: true) rescue []
   end
 
   # GET /categories/new
@@ -58,13 +61,13 @@ class CategoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_category
-      @category = Category.find(params.expect(:id))
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_category
+    @category = Category.find(params.expect(:id))
+  end
 
-    # Only allow a list of trusted parameters through.
-    def category_params
-      params.expect(category: [ :name, :description, :slug, :parent_id, :position, :visible, :icon_name, :icon_color ])
-    end
+  # Only allow a list of trusted parameters through.
+  def category_params
+    params.expect(category: [ :name, :description, :slug, :parent_id, :position, :visible, :icon_name, :icon_color ])
+  end
 end
