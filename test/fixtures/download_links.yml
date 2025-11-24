@@ -2,7 +2,7 @@
 
 one:
   product: one
-  user: one
+  user: regular_user
   token: DOWNLOAD-TOKEN-001
   expires_at: 2025-04-01 03:58:15
   download_count: 1
@@ -12,7 +12,7 @@ one:
 
 two:
   product: two
-  user: two
+  user: admin
   token: DOWNLOAD-TOKEN-002
   expires_at: 2025-04-01 03:58:15
   download_count: 1
