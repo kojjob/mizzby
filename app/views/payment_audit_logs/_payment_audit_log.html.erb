@@ -1,0 +1,38 @@
+<div id="<%= dom_id payment_audit_log %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">User:</strong>
+    <%= payment_audit_log.user_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Order:</strong>
+    <%= payment_audit_log.order_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Event type:</strong>
+    <%= payment_audit_log.event_type %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Payment processor:</strong>
+    <%= payment_audit_log.payment_processor %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Amount:</strong>
+    <%= payment_audit_log.amount %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Transaction:</strong>
+    <%= payment_audit_log.transaction_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Metadata:</strong>
+    <%= payment_audit_log.metadata %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Ip address:</strong>
+    <%= payment_audit_log.ip_address %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">User agent:</strong>
+    <%= payment_audit_log.user_agent %>
+  </div>
+</div>

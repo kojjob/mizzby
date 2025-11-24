@@ -1,1 +1,137 @@
 @import "tailwindcss";
+
+/* Import component styles */
+@import "../stylesheets/components/dropdowns.css";
+@import "../stylesheets/components/enhanced_dropdowns.css";
+@import "../stylesheets/components/tabs.css";
+
+
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  25% {
+    transform: translate(20px, -10px) scale(1.1);
+  }
+  50% {
+    transform: translate(10px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(-10px, 10px) scale(1.05);
+  }
+}
+
+.animate-blob {
+  animation: blob 10s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Categories show Page Custom Animations and Styles */
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 100%;
+  animation: gradient-x 5s ease infinite;
+}
+
+/* Subtle Hover Effects */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.hover-float:hover {
+  animation: float 2s ease-in-out infinite;
+}
+.hover-float {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Scrollbar hiding for category nav */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Custom range slider styling */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  background: #4f46e5;
+  cursor: pointer;
+  margin-top: -0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  position: relative;
+}
+
+input[type=range]::-moz-range-thumb {
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  background: #4f46e5;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  position: relative;
+}
+
+/* Active tab styling */
+.tab-active\:block:where(.tab-active) {
+  display: block;
+}
+
+.tab-active\:text-indigo-600:where(.tab-active) {
+  --tw-text-opacity: 1;
+  color: rgba(79, 70, 229, var(--tw-text-opacity));
+}
+
+.tab-active\:border-indigo-500:where(.tab-active) {
+  --tw-border-opacity: 1;
+  border-color: rgba(99, 102, 241, var(--tw-border-opacity));
+}

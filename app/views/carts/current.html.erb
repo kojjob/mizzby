@@ -1,0 +1,114 @@
+<div class="container mx-auto px-4 py-8" data-controller="cart">
+  <h1 class="text-3xl font-bold mb-6">Your Current Cart</h1>
+
+  <% if @cart.cart_items.any? %>
+    <div data-cart-target="itemsContainer" class="space-y-4">
+      <% @cart_items.each do |cart_item| %>
+        <%= turbo_frame_tag dom_id(cart_item) do %>
+          <div class="bg-white shadow-md rounded-lg p-4 flex items-center space-x-4" 
+               data-controller="cart-item" 
+               data-cart-item-id-value="<%= cart_item.id %>">
+            
+            <div class="flex-shrink-0">
+              <%= image_tag cart_item.product.image.variant(resize_to_limit: [100, 100]), 
+                            class: "w-20 h-20 object-cover rounded-md" if cart_item.product.image.attached? %>
+            </div>
+            
+            <div class="flex-grow">
+              <h2 class="text-xl font-semibold"><%= cart_item.product.name %></h2>
+              <p class="text-gray-600">
+                <%= number_to_currency(cart_item.product.price) %>
+              </p>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <%= form_with(
+                    model: cart_item, 
+                    data: {
+                      controller: "quantity",
+                      action: "turbo:submit-end->cart-item#update",
+                      quantity_target: "form"
+                    },
+                    class: "flex items-center"
+                  ) do |f| %>
+                <button 
+                  type="button" 
+                  data-action="click->quantity#decrement"
+                  class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l-md">
+                  -
+                </button>
+                
+                <%= f.number_field :quantity, 
+                      min: 1, 
+                      data: { 
+                        quantity_target: "input", 
+                        action: "change->quantity#validate" 
+                      },
+                      class: "w-16 text-center border-t border-b border-gray-300 px-2 py-1" %>
+                
+                <button 
+                  type="button" 
+                  data-action="click->quantity#increment"
+                  class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r-md">
+                  +
+                </button>
+                
+                <%= f.submit "Update", 
+                      class: "ml-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition",
+                      data: { quantity_target: "submit" } %>
+              <% end %>
+            </div>
+            
+            <div class="ml-auto">
+              <p class="font-bold text-lg">
+                <%= number_to_currency(cart_item.quantity * cart_item.product.price) %>
+              </p>
+            </div>
+            
+            <div>
+              <%= button_to cart_item_path(cart_item), 
+                    method: :delete, 
+                    data: { 
+                      turbo_method: :delete, 
+                      turbo_confirm: "Are you sure you want to remove this item?",
+                      action: "click->cart-item#remove"
+                    },
+                    class: "text-red-500 hover:text-red-700 transition" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="mt-8 bg-gray-100 rounded-lg p-6 flex justify-between items-center">
+      <div>
+        <h2 class="text-2xl font-bold">Total</h2>
+        <p class="text-gray-600">Shipping and taxes calculated at checkout</p>
+      </div>
+      <div class="text-right">
+        <p class="text-3xl font-bold mb-4">
+          <%= number_to_currency(@cart_items.sum { |item| item.quantity * item.product.price }) %>
+        </p>
+        <%= button_to 'Proceed to Checkout', 
+              checkout_path, 
+              method: :post, 
+              class: "bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition text-lg font-semibold" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <h2 class="text-2xl font-bold mb-4">Your cart is empty</h2>
+      <p class="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
+      <%= link_to 'Continue Shopping', 
+            products_path, 
+            class: "bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition text-lg font-semibold" %>
+    </div>
+  <% end %>
+</div>

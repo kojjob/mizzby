@@ -1,0 +1,160 @@
+<!-- Deals Page using the site's design style -->
+<% content_for :title, "Special Deals & Discounts" %>
+
+<div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 text-white py-12">
+  <div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-pulse">Hot Deals & Special Offers</h1>
+      <p class="text-xl opacity-90 mb-8">Discover our best discounts on digital and physical products!</p>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Deals Section -->
+<% if @featured_deals.present? %>
+  <div class="py-12 bg-gradient-to-b from-indigo-50 to-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold text-indigo-900 mb-8 text-center">Featured Deals</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <% @featured_deals.each do |product| %>
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 duration-300 border border-indigo-100 relative">
+            <!-- Discount Badge -->
+            <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full font-bold shadow-md">
+              <%= product.discount_percentage.to_i %>% OFF
+            </div>
+            
+            <!-- Product Image -->
+            <div class="h-48 bg-indigo-50 flex items-center justify-center p-4">
+              <% if product.product_images.any? %>
+                <%= image_tag product.product_images.first.image, class: "h-full w-auto object-contain" %>
+              <% else %>
+                <div class="w-32 h-32 bg-indigo-100 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              <% end %>
+            </div>
+            
+            <!-- Product Info -->
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-2"><%= product.name %></h3>
+              
+              <!-- Digital Badge -->
+              <% if product.is_digital %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Digital
+                </span>
+              <% end %>
+              
+              <!-- Product Price -->
+              <div class="flex items-center space-x-2 mt-4">
+                <span class="text-2xl font-bold text-indigo-600"><%= number_to_currency(product.discounted_price) %></span>
+                <span class="text-gray-500 line-through"><%= number_to_currency(product.price) %></span>
+              </div>
+              
+              <!-- CTA Button -->
+              <div class="mt-6">
+                <%= link_to product_path(product), class: "block w-full text-center py-3 px-4 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:from-indigo-700 hover:to-purple-700 transition-colors" do %>
+                  View Deal
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- All Deals Section -->
+<div class="py-12">
+  <div class="container mx-auto px-4">
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8">All Current Deals</h2>
+    
+    <% if @products.any? %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <% @products.each do |product| %>
+          <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 relative">
+            <!-- Discount Badge -->
+            <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold">
+              <%= product.discount_percentage.to_i %>% OFF
+            </div>
+            
+            <!-- Product Image -->
+            <div class="h-40 bg-gray-50 flex items-center justify-center p-4">
+              <% if product.product_images.any? %>
+                <%= image_tag product.product_images.first.image, class: "h-full w-auto object-contain" %>
+              <% else %>
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              <% end %>
+            </div>
+            
+            <!-- Product Info -->
+            <div class="p-4">
+              <h3 class="text-sm font-medium text-gray-900 mb-1 truncate"><%= product.name %></h3>
+              
+              <!-- Price -->
+              <div class="flex items-center space-x-2 mt-2">
+                <span class="text-lg font-bold text-indigo-600"><%= number_to_currency(product.discounted_price) %></span>
+                <span class="text-sm text-gray-500 line-through"><%= number_to_currency(product.price) %></span>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="mt-4 flex space-x-2">
+                <%= link_to product_path(product), class: "flex-1 text-center py-2 px-3 rounded bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors" do %>
+                  View
+                <% end %>
+                
+                <button 
+                  class="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded transition-colors"
+                  data-action="click->cart-modal#addToCart"
+                  data-product-id="<%= product.id %>"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12 bg-gray-50 rounded-xl">
+        <div class="w-16 h-16 mx-auto bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No Active Deals</h3>
+        <p class="text-gray-600 max-w-md mx-auto">We don't have any active deals at the moment. Please check back later for new special offers!</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Newsletter Banner -->
+<div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12">
+  <div class="container mx-auto px-4">
+    <div class="max-w-xl mx-auto text-center">
+      <h2 class="text-2xl md:text-3xl font-bold mb-4">Get notified about exclusive deals!</h2>
+      <p class="mb-6 opacity-90">Subscribe to our newsletter and never miss our limited-time offers and flash sales.</p>
+      
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input type="email" placeholder="Your email address" class="flex-1 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"/>
+        <button class="px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-indigo-900 font-medium rounded-lg hover:from-yellow-300 hover:to-amber-400 transition-colors">
+          Subscribe
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

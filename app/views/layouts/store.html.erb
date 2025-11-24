@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @seller.store_name %> | <%= @page_title || "Online Store" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    
+    <style>
+      :root {
+        --primary-color: <%= @seller.store_settings["primary_color"] || "#4f46e5" %>;
+        --secondary-color: <%= @seller.store_settings["secondary_color"] || "#818cf8" %>;
+      }
+    </style>
+    
+    <% if @seller.store_settings["custom_css"].present? %>
+      <style>
+        <%= @seller.store_settings["custom_css"] %>
+      </style>
+    <% end %>
+  </head>
+
+  <body class="bg-gray-50">
+    <header class="bg-indigo-600 text-white">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <% if @seller.store_settings["logo"].present? %>
+              <img src="<%= @seller.store_settings["logo"] %>" alt="<%= @seller.store_name %>" class="h-10 mr-3">
+            <% end %>
+            <h1 class="text-xl font-bold"><%= @seller.store_name %></h1>
+          </div>
+          
+          <nav class="hidden md:flex space-x-6">
+            <%= link_to "Home", store_path(@seller.store_slug), class: "text-white hover:text-gray-200" %>
+            <%= link_to "Products", store_products_path(@seller.store_slug), class: "text-white hover:text-gray-200" %>
+            <%= link_to "Categories", store_categories_path(@seller.store_slug), class: "text-white hover:text-gray-200" %>
+            <%= link_to "About", store_about_path(@seller.store_slug), class: "text-white hover:text-gray-200" %>
+            <%= link_to "Contact", store_contact_path(@seller.store_slug), class: "text-white hover:text-gray-200" %>
+          </nav>
+          
+          <div class="md:hidden">
+            <button id="mobile-menu-button" class="text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden mt-4 md:hidden">
+          <div class="flex flex-col space-y-2">
+            <%= link_to "Home", store_path(@seller.store_slug), class: "text-white hover:text-gray-200 py-2" %>
+            <%= link_to "Products", store_products_path(@seller.store_slug), class: "text-white hover:text-gray-200 py-2" %>
+            <%= link_to "Categories", store_categories_path(@seller.store_slug), class: "text-white hover:text-gray-200 py-2" %>
+            <%= link_to "About", store_about_path(@seller.store_slug), class: "text-white hover:text-gray-200 py-2" %>
+            <%= link_to "Contact", store_contact_path(@seller.store_slug), class: "text-white hover:text-gray-200 py-2" %>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <h3 class="text-lg font-semibold mb-4"><%= @seller.store_name %></h3>
+            <p class="text-gray-300"><%= @seller.description %></p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul class="space-y-2">
+              <li><%= link_to "Home", store_path(@seller.store_slug), class: "text-gray-300 hover:text-white" %></li>
+              <li><%= link_to "Products", store_products_path(@seller.store_slug), class: "text-gray-300 hover:text-white" %></li>
+              <li><%= link_to "About", store_about_path(@seller.store_slug), class: "text-gray-300 hover:text-white" %></li>
+              <li><%= link_to "Contact", store_contact_path(@seller.store_slug), class: "text-gray-300 hover:text-white" %></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Contact</h3>
+            <p class="text-gray-300"><%= @seller.location %>, <%= @seller.country %></p>
+            <p class="text-gray-300"><%= @seller.phone_number %></p>
+          </div>
+        </div>
+        
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; <%= Date.today.year %> <%= @seller.store_name %>. All rights reserved.</p>
+          <p class="mt-2 text-sm">Powered by <%= link_to "Mizzby", root_path, class: "text-indigo-400 hover:text-indigo-300" %></p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', function() {
+          mobileMenu.classList.toggle('hidden');
+        });
+      });
+    </script>
+  </body>
+</html>

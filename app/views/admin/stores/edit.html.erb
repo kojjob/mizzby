@@ -1,0 +1,15 @@
+<div class="px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <div class="flex items-center">
+      <%= link_to admin_store_path(@store), class: "text-indigo-600 hover:text-indigo-900 mr-2" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-semibold text-gray-900">Edit Store: <%= @store.name %></h1>
+    </div>
+    <p class="mt-2 text-sm text-gray-700">Update store information and appearance.</p>
+  </div>
+
+  <%= render 'form', store: @store %>
+</div>

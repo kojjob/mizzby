@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Category One
+  description: First test category
+  slug: category-one
+  parent: one
+  position: 1
+  visible: false
+  icon_name: MyString
+  icon_color: MyString
+
+two:
+  name: Category Two
+  description: Second test category
+  slug: category-two
+  parent: two
+  position: 1
+  visible: false
+  icon_name: MyString
+  icon_color: MyString

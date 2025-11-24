@@ -1,0 +1,71 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Account Settings</h1>
+    
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+      <div class="p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Personal Information</h2>
+        
+        <%= form_with model: @user, url: user_registration_path, method: :put, class: "space-y-6" do |f| %>
+          <%= f.hidden_field :current_password, value: "" %>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.text_field :first_name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+            
+            <div>
+              <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.text_field :last_name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+            
+            <div>
+              <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.email_field :email, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+            
+            <div>
+              <%= f.label :phone, class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.telephone_field :phone, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+          </div>
+          
+          <div class="flex justify-end">
+            <%= f.submit "Update Information", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Change Password</h2>
+        
+        <%= form_with model: @user, url: user_registration_path, method: :put, class: "space-y-6" do |f| %>
+          <div class="space-y-4">
+            <div>
+              <%= f.label :current_password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.password_field :current_password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+              <p class="mt-1 text-sm text-gray-500">We need your current password to confirm your changes</p>
+            </div>
+            
+            <div>
+              <%= f.label :password, "New Password", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.password_field :password, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+            
+            <div>
+              <%= f.label :password_confirmation, "Confirm New Password", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.password_field :password_confirmation, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+          </div>
+          
+          <div class="flex justify-end">
+            <%= f.submit "Update Password", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

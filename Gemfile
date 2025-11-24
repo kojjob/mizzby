@@ -40,7 +40,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 1.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -51,6 +51,12 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # RSpec for testing
+  gem "rspec-rails", "~> 6.1"
+  gem "factory_bot_rails", "~> 6.4"
+  gem "shoulda-matchers", "~> 6.0"
+  gem "database_cleaner-active_record", "~> 2.1"
 end
 
 group :development do
@@ -62,4 +68,18 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  # Controller testing support
+  gem "rails-controller-testing"
 end
+
+gem "devise", "~> 4.9"
+gem "view_component", "~> 3.0"
+gem "cancancan"
+# Add this line to your Gemfile
+gem "country_select", "~> 8.0"
+
+# Faker for generating sample data
+gem "faker", "~> 3.2"
+
+# Pagination
+gem "kaminari", "~> 1.2"

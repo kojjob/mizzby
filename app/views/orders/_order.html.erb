@@ -1,0 +1,38 @@
+<div id="<%= dom_id order %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">User:</strong>
+    <%= order.user_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Product:</strong>
+    <%= order.product_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Status:</strong>
+    <%= order.status %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Total amount:</strong>
+    <%= order.total_amount %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Payment processor:</strong>
+    <%= order.payment_processor %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Payment:</strong>
+    <%= order.payment_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Payment status:</strong>
+    <%= order.payment_status %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Payment details:</strong>
+    <%= order.payment_details %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Notes:</strong>
+    <%= order.notes %>
+  </div>
+</div>

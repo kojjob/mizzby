@@ -1,0 +1,26 @@
+<div id="<%= dom_id action_item %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">User:</strong>
+    <%= action_item.user_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Title:</strong>
+    <%= action_item.title %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= action_item.description %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Priority:</strong>
+    <%= action_item.priority %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Due date:</strong>
+    <%= action_item.due_date %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Completed:</strong>
+    <%= action_item.completed? ? "Yes" : "No" %>
+  </div>
+</div>

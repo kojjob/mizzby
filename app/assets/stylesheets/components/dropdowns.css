@@ -1,0 +1,59 @@
+/* Dropdown menu animation and styling */
+.dropdown-menu {
+  transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+}
+
+/* Add transition for menu arrows */
+[data-dropdown-target="arrow"] {
+  transition: transform 150ms ease-in-out;
+}
+
+/* Mobile dropdown transitions */
+[data-mobile-dropdown-target="content"] {
+  overflow: hidden;
+  transition: max-height 300ms ease-in-out, opacity 200ms ease-in-out;
+}
+
+/* Mobile menu transitions */
+[data-header-target="mobileMenu"] {
+  overflow: hidden;
+  transition: max-height 300ms ease-in-out, opacity 200ms ease-in-out;
+}
+
+/* Add glass effect to dropdowns */
+.dropdown-glass {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Default dropdown state for animation */
+.dropdown-menu-closed {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+
+.dropdown-menu-open {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Dropdown items hover effect */
+.dropdown-item {
+  transition: background-color 150ms ease;
+}
+
+/* Custom dropdown arrow */
+.dropdown-arrow {
+  position: absolute;
+  top: -5px;
+  right: 20px;
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  transform: rotate(45deg);
+  border-left: 1px solid rgba(209, 213, 219, 1); /* gray-200 */
+  border-top: 1px solid rgba(209, 213, 219, 1); /* gray-200 */
+  z-index: -1;
+}

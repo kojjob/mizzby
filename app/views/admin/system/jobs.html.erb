@@ -1,0 +1,210 @@
+<% content_for :page_title, "Background Jobs" %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Background Jobs</h1>
+      <p class="text-gray-600">Monitor and manage background jobs</p>
+    </div>
+    <div class="flex space-x-2">
+      <%= link_to admin_system_path, class: "bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+        </svg>
+        Back to Dashboard
+      <% end %>
+
+      <button id="refresh-jobs" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh Jobs
+      </button>
+    </div>
+  </div>
+
+  <!-- Jobs Summary -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="bg-indigo-600 px-4 py-2">
+        <h2 class="text-lg font-medium text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Jobs Summary
+        </h2>
+      </div>
+      <div class="p-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-blue-50 rounded-lg p-4 text-center">
+            <div class="text-3xl font-bold text-blue-600"><%= @pending_jobs.size %></div>
+            <div class="text-sm font-medium text-blue-800">Pending Jobs</div>
+          </div>
+          <div class="bg-red-50 rounded-lg p-4 text-center">
+            <div class="text-3xl font-bold text-red-600"><%= @failed_jobs.size %></div>
+            <div class="text-sm font-medium text-red-800">Failed Jobs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden md:col-span-2">
+      <div class="bg-green-600 px-4 py-2">
+        <h2 class="text-lg font-medium text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Job Types
+        </h2>
+      </div>
+      <div class="p-4">
+        <% if @pending_jobs.any? %>
+          <% job_types = @pending_jobs.group_by do |job|
+               begin
+                 YAML.load(job.handler).class.name
+               rescue
+                 "Unknown"
+               end
+             end %>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <% job_types.each do |type, jobs| %>
+              <div class="bg-gray-50 rounded-lg p-3 text-center">
+                <div class="text-xl font-bold text-gray-700"><%= jobs.size %></div>
+                <div class="text-xs font-medium text-gray-600 truncate" title="<%= type %>"><%= type.split("::").last %></div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-4 text-gray-500">No pending jobs</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Jobs -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+    <div class="bg-blue-600 px-4 py-2">
+      <h2 class="text-lg font-medium text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Pending Jobs
+      </h2>
+    </div>
+    <div class="overflow-x-auto">
+      <% if @pending_jobs.any? %>
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Type</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Queue</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Run At</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attempts</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @pending_jobs.each do |job| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= job.id %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <% begin %>
+                    <% job_object = YAML.load(job.handler) %>
+                    <span class="font-mono"><%= job_object.class.name.split("::").last %></span>
+                  <% rescue %>
+                    <span class="text-red-500">Error parsing job</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= job.queue || "default" %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= job.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= job.run_at&.strftime("%Y-%m-%d %H:%M:%S") || "ASAP" %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= job.attempts %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="p-6 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No pending jobs</h3>
+          <p class="mt-1 text-sm text-gray-500">All jobs have been processed.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Failed Jobs -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-red-600 px-4 py-2">
+      <h2 class="text-lg font-medium text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        Failed Jobs
+      </h2>
+    </div>
+    <div class="overflow-x-auto">
+      <% if @failed_jobs.any? %>
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Type</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Failed At</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attempts</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Error</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @failed_jobs.each do |job| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= job.id %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <% begin %>
+                    <% job_object = YAML.load(job.handler) %>
+                    <span class="font-mono"><%= job_object.class.name.split("::").last %></span>
+                  <% rescue %>
+                    <span class="text-red-500">Error parsing job</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= job.failed_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= job.attempts %></td>
+                <td class="px-6 py-4 text-sm text-red-600">
+                  <div class="max-w-xs truncate" title="<%= job.last_error %>">
+                    <%= job.last_error.to_s.split("\n").first %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="p-6 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No failed jobs</h3>
+          <p class="mt-1 text-sm text-gray-500">All jobs have been processed successfully.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const refreshButton = document.getElementById('refresh-jobs');
+
+    refreshButton.addEventListener('click', function() {
+      window.location.reload();
+    });
+
+    // Auto-refresh every 30 seconds
+    setTimeout(function() {
+      window.location.reload();
+    }, 30000);
+  });
+</script>

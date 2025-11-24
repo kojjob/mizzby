@@ -1,0 +1,176 @@
+<% content_for :page_title, "System Logs" %>
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">System Logs</h1>
+      <p class="text-gray-600">View and analyze application logs</p>
+    </div>
+    <div class="flex space-x-2">
+      <%= link_to admin_system_path, class: "bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+        </svg>
+        Back to Dashboard
+      <% end %>
+      
+      <button id="refresh-logs" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh Logs
+      </button>
+    </div>
+  </div>
+
+  <!-- Log Type Selector -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+    <div class="bg-indigo-600 px-4 py-2">
+      <h2 class="text-lg font-medium text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Log Files
+      </h2>
+    </div>
+    <div class="p-4">
+      <div class="flex flex-wrap gap-2">
+        <% @log_types.each do |log_type| %>
+          <%= link_to admin_system_logs_path(type: log_type), class: "px-3 py-1 rounded-full text-sm font-medium #{@log_type == log_type ? 'bg-indigo-100 text-indigo-800 border border-indigo-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}" do %>
+            <%= log_type %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Content -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-gray-800 px-4 py-2 flex justify-between items-center">
+      <h2 class="text-lg font-medium text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <%= @log_type %>.log
+      </h2>
+      <div class="flex items-center space-x-2">
+        <button id="toggle-wrap" class="text-white hover:text-gray-300 text-sm font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        </button>
+        <button id="copy-logs" class="text-white hover:text-gray-300 text-sm font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="absolute top-0 right-0 p-2 flex space-x-2">
+        <button id="filter-errors" class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium hover:bg-red-200">
+          Errors
+        </button>
+        <button id="filter-warnings" class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium hover:bg-yellow-200">
+          Warnings
+        </button>
+        <button id="clear-filters" class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium hover:bg-gray-200">
+          Clear Filters
+        </button>
+      </div>
+      <pre id="log-content" class="p-4 bg-gray-900 text-gray-300 font-mono text-sm overflow-x-auto max-h-screen h-[calc(100vh-300px)] whitespace-pre"><%= @log_content %></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const logContent = document.getElementById('log-content');
+    const refreshButton = document.getElementById('refresh-logs');
+    const toggleWrapButton = document.getElementById('toggle-wrap');
+    const copyButton = document.getElementById('copy-logs');
+    const filterErrorsButton = document.getElementById('filter-errors');
+    const filterWarningsButton = document.getElementById('filter-warnings');
+    const clearFiltersButton = document.getElementById('clear-filters');
+    
+    // Store the original log content
+    const originalContent = logContent.textContent;
+    
+    // Refresh logs
+    refreshButton.addEventListener('click', function() {
+      fetch(window.location.href, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        logContent.textContent = data.content;
+        highlightLogLines();
+      });
+    });
+    
+    // Toggle word wrap
+    toggleWrapButton.addEventListener('click', function() {
+      logContent.classList.toggle('whitespace-pre');
+      logContent.classList.toggle('whitespace-pre-wrap');
+    });
+    
+    // Copy logs to clipboard
+    copyButton.addEventListener('click', function() {
+      navigator.clipboard.writeText(logContent.textContent).then(function() {
+        alert('Logs copied to clipboard');
+      }, function() {
+        alert('Failed to copy logs');
+      });
+    });
+    
+    // Filter for errors
+    filterErrorsButton.addEventListener('click', function() {
+      const lines = originalContent.split('\n');
+      const filteredLines = lines.filter(line => 
+        line.toLowerCase().includes('error') || 
+        line.toLowerCase().includes('exception') || 
+        line.toLowerCase().includes('fatal')
+      );
+      logContent.textContent = filteredLines.join('\n');
+      highlightLogLines();
+    });
+    
+    // Filter for warnings
+    filterWarningsButton.addEventListener('click', function() {
+      const lines = originalContent.split('\n');
+      const filteredLines = lines.filter(line => 
+        line.toLowerCase().includes('warn') || 
+        line.toLowerCase().includes('warning')
+      );
+      logContent.textContent = filteredLines.join('\n');
+      highlightLogLines();
+    });
+    
+    // Clear filters
+    clearFiltersButton.addEventListener('click', function() {
+      logContent.textContent = originalContent;
+      highlightLogLines();
+    });
+    
+    // Highlight log lines based on content
+    function highlightLogLines() {
+      const content = logContent.innerHTML;
+      let highlightedContent = content
+        .replace(/\b(ERROR|FATAL|Exception|Error)\b/gi, '<span class="text-red-400">$1</span>')
+        .replace(/\b(WARN|WARNING)\b/gi, '<span class="text-yellow-400">$1</span>')
+        .replace(/\b(INFO)\b/gi, '<span class="text-blue-400">$1</span>')
+        .replace(/\b(DEBUG)\b/gi, '<span class="text-green-400">$1</span>')
+        .replace(/\[([\d-]+) ([\d:]+)\]/g, '[<span class="text-purple-400">$1 $2</span>]');
+      
+      logContent.innerHTML = highlightedContent;
+    }
+    
+    // Initial highlighting
+    highlightLogLines();
+    
+    // Scroll to bottom of logs
+    logContent.scrollTop = logContent.scrollHeight;
+  });
+</script>

@@ -1,0 +1,62 @@
+<%= form_with(model: payment_audit_log, class: "contents") do |form| %>
+  <% if payment_audit_log.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(payment_audit_log.errors.count, "error") %> prohibited this payment_audit_log from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% payment_audit_log.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :user_id %>
+    <%= form.text_field :user_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:user_id].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:user_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :order_id %>
+    <%= form.text_field :order_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:order_id].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:order_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :event_type %>
+    <%= form.text_field :event_type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:event_type].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:event_type].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :payment_processor %>
+    <%= form.text_field :payment_processor, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:payment_processor].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:payment_processor].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :amount %>
+    <%= form.text_field :amount, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:amount].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:amount].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :transaction_id %>
+    <%= form.text_field :transaction_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:transaction_id].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:transaction_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :metadata %>
+    <%= form.textarea :metadata, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:metadata].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:metadata].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :ip_address %>
+    <%= form.text_field :ip_address, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:ip_address].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:ip_address].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :user_agent %>
+    <%= form.text_field :user_agent, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": payment_audit_log.errors[:user_agent].none?, "border-red-400 focus:outline-red-600": payment_audit_log.errors[:user_agent].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

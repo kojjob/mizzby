@@ -1,4 +1,694 @@
-<div>
-  <h1 class="font-bold text-4xl">Static#contact</h1>
-  <p>Find me in app/views/static/contact.html.erb</p>
+<%# Set page title and meta description %>
+<% content_for :title, "Contact Us | Digital Store - Get in Touch" %>
+<% content_for :meta_description, "Contact the Digital Store team for support, partnership inquiries, or feedback. We're here to help with all your digital product selling needs." %>
+
+<!-- Hero Section with Gradient Background -->
+<section class="relative bg-gradient-to-br from-indigo-600 to-violet-700 text-white overflow-hidden">
+  <!-- Decorative Background Elements -->
+  <div class="absolute inset-0 overflow-hidden opacity-20">
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+    <div class="absolute top-1/3 -left-24 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+    <div class="text-center max-w-3xl mx-auto">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Get in Touch</h1>
+      <p class="text-xl md:text-2xl text-indigo-100 mb-8">We're here to help with all your questions about selling digital products.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#contact-form" class="bg-white text-indigo-600 hover:bg-indigo-50 px-6 py-3 rounded-lg font-medium transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600">
+          Send a Message
+        </a>
+        <a href="#support-options" class="bg-indigo-500 bg-opacity-30 hover:bg-opacity-40 backdrop-blur-sm text-white border border-indigo-300 border-opacity-30 px-6 py-3 rounded-lg font-medium transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600">
+          Support Options
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Decorative Waves -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" fill="#ffffff" preserveAspectRatio="none">
+      <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- Contact Methods Section -->
+<section class="py-12 md:py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Contact Card 1: Email -->
+      <div class="bg-white rounded-xl shadow-lg p-8 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl border-t-4 border-indigo-500">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Email Us</h3>
+        <p class="text-gray-600 mb-6">Our team typically responds within 24 hours on business days.</p>
+        <a href="mailto:support@digitalstore.com" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors flex items-center justify-center">
+          support@digitalstore.com
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
+      
+      <!-- Contact Card 2: Phone -->
+      <div class="bg-white rounded-xl shadow-lg p-8 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl border-t-4 border-purple-500">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Call Us</h3>
+        <p class="text-gray-600 mb-6">Available Monday to Friday, 9am to 5pm EST.</p>
+        <a href="tel:+1-555-123-4567" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors flex items-center justify-center">
+          +1 (555) 123-4567
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
+      
+      <!-- Contact Card 3: Live Chat -->
+      <div class="bg-white rounded-xl shadow-lg p-8 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl border-t-4 border-pink-500">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-red-500 flex items-center justify-center text-white mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Live Chat</h3>
+        <p class="text-gray-600 mb-6">Get instant help from our support team during business hours.</p>
+        <button onclick="openChat()" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors flex items-center justify-center">
+          Start Live Chat
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Contact Section -->
+<section id="contact-form" class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <!-- Contact Form -->
+      <div>
+        <div class="max-w-md">
+          <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            Send a Message
+          </div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Get in Touch with Our Team</h2>
+          <p class="text-lg text-gray-600 mb-8">Whether you have questions about our platform, need technical support, or want to explore partnership opportunities, we'd love to hear from you.</p>
+        </div>
+        
+        <form id="contactForm" class="space-y-6" onsubmit="return validateForm()">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+              <input type="text" id="firstName" name="firstName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" required>
+              <p id="firstNameError" class="mt-1 text-red-500 text-sm hidden">Please enter your first name</p>
+            </div>
+            <div>
+              <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+              <input type="text" id="lastName" name="lastName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" required>
+              <p id="lastNameError" class="mt-1 text-red-500 text-sm hidden">Please enter your last name</p>
+            </div>
+          </div>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+            <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" required>
+            <p id="emailError" class="mt-1 text-red-500 text-sm hidden">Please enter a valid email address</p>
+          </div>
+          
+          <div>
+            <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject <span class="text-red-500">*</span></label>
+            <select id="subject" name="subject" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" required>
+              <option value="">Select a topic</option>
+              <option value="general">General Inquiry</option>
+              <option value="support">Technical Support</option>
+              <option value="billing">Billing Question</option>
+              <option value="partnership">Partnership Opportunity</option>
+              <option value="feedback">Feedback</option>
+              <option value="other">Other</option>
+            </select>
+            <p id="subjectError" class="mt-1 text-red-500 text-sm hidden">Please select a subject</p>
+          </div>
+          
+          <div>
+            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message <span class="text-red-500">*</span></label>
+            <textarea id="message" name="message" rows="6" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" required></textarea>
+            <p id="messageError" class="mt-1 text-red-500 text-sm hidden">Please enter your message</p>
+            <p class="mt-1 text-sm text-gray-500">Min 10 characters</p>
+          </div>
+          
+          <div class="flex items-start">
+            <input type="checkbox" id="privacy" name="privacy" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mt-1" required>
+            <label for="privacy" class="ml-2 block text-sm text-gray-700">
+              I agree to the <a href="#" class="text-indigo-600 hover:text-indigo-800">Privacy Policy</a> and consent to being contacted regarding my inquiry.
+            </label>
+          </div>
+          
+          <div>
+            <button type="submit" class="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transform transition duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+              Send Message
+            </button>
+          </div>
+        </form>
+        
+        <!-- Success Message (hidden by default) -->
+        <div id="successMessage" class="hidden mt-8 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium">Thank you for contacting us! We've received your message and will get back to you soon.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact Information & Office -->
+      <div>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <!-- Office Image -->
+          <div class="h-64 bg-gradient-to-br from-indigo-500 to-purple-600 relative flex items-center justify-center">
+            <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=1000" alt="Digital Store Office" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60">
+            <div class="relative z-10 text-white text-center px-4">
+              <h3 class="text-2xl font-bold mb-2">Our Headquarters</h3>
+              <p class="max-w-xs mx-auto">Visit us at our main office in downtown tech hub</p>
+            </div>
+          </div>
+          
+          <!-- Office Info -->
+          <div class="p-8">
+            <div class="space-y-6">
+              <!-- Address -->
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h4 class="text-lg font-medium text-gray-900">Visit Our Office</h4>
+                  <p class="text-gray-600 mt-1">
+                    123 Innovation Way<br>
+                    San Francisco, CA 94107<br>
+                    United States
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Business Hours -->
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h4 class="text-lg font-medium text-gray-900">Business Hours</h4>
+                  <p class="text-gray-600 mt-1">
+                    Monday - Friday: 9:00 AM - 5:00 PM EST<br>
+                    Saturday & Sunday: Closed
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Support Hours -->
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h4 class="text-lg font-medium text-gray-900">Support Hours</h4>
+                  <p class="text-gray-600 mt-1">
+                    24/7 Email Support<br>
+                    Live Chat: 9:00 AM - 8:00 PM EST
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Social Media Links -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+              <h4 class="text-lg font-medium text-gray-900 mb-4">Connect With Us</h4>
+              <div class="flex space-x-5">
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                  <span class="sr-only">Twitter</span>
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                  <span class="sr-only">Facebook</span>
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                  <span class="sr-only">Instagram</span>
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                  <span class="sr-only">LinkedIn</span>
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors">
+                  <span class="sr-only">GitHub</span>
+                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Google Map -->
+            <div class="mt-8 aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-inner border border-gray-200">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26430.39739534345!2d-122.43195492285493!3d37.773719270277886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80859a6d00690021%3A0x4a501367f076adff!2sSoMa%2C%20San%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v1621892177877!5m2!1sen!2sus"
+                width="100%"
+                height="100%"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy">
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Support Options Section -->
+<section id="support-options" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Support Options
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">We're Here to Help</h2>
+      <p class="text-lg text-gray-600">Choose the support channel that works best for you.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Support Option 1: Knowledge Base -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl border border-gray-200">
+        <div class="h-3 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+        <div class="p-8">
+          <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Knowledge Base</h3>
+          <p class="text-gray-600 mb-6">Find answers to common questions in our comprehensive knowledge base articles.</p>
+          <a href="#" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+            Browse Articles
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Support Option 2: Community Forum -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl border border-gray-200">
+        <div class="h-3 bg-gradient-to-r from-pink-500 to-red-500"></div>
+        <div class="p-8">
+          <div class="w-12 h-12 rounded-lg bg-pink-100 flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Community Forum</h3>
+          <p class="text-gray-600 mb-6">Connect with other Digital Store users to share tips, ask questions, and learn from peers.</p>
+          <a href="#" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+            Join Our Community
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Support Option 3: Video Tutorials -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl border border-gray-200">
+        <div class="h-3 bg-gradient-to-r from-green-500 to-teal-500"></div>
+        <div class="p-8">
+          <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Video Tutorials</h3>
+          <p class="text-gray-600 mb-6">Watch step-by-step tutorials to learn how to use all features of our platform effectively.</p>
+          <a href="#" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+            Watch Tutorials
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        FAQ
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+      <p class="text-lg text-gray-600">Find quick answers to common questions about Digital Store.</p>
+    </div>
+    
+    <div class="max-w-3xl mx-auto">
+      <div class="space-y-6" x-data="{selected:null}">
+        <!-- FAQ Item 1 -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{selected: 0}">
+          <button 
+            @click="selected !== 0 ? selected = 0 : selected = null"
+            class="flex justify-between items-center w-full px-6 py-5 text-left"
+            :class="{'border-b border-gray-200': selected === 0}">
+            <span class="text-lg font-medium text-gray-900">What payment methods do you accept?</span>
+            <svg class="h-6 w-6 text-indigo-500 transform transition-transform duration-200" :class="{'rotate-180': selected === 0}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="selected === 0" 
+            x-transition:enter="transition ease-out duration-200" 
+            x-transition:enter-start="opacity-0 -translate-y-2" 
+            x-transition:enter-end="opacity-100 translate-y-0"
+            class="px-6 py-5 text-gray-600">
+            We accept all major credit cards (Visa, Mastercard, American Express, Discover), PayPal, Apple Pay, Google Pay, and bank transfers in select countries. If you're on our Enterprise plan, we also offer invoicing with net-30 terms.
+          </div>
+        </div>
+        
+        <!-- FAQ Item 2 -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{selected: 0}">
+          <button 
+            @click="selected !== 0 ? selected = 0 : selected = null"
+            class="flex justify-between items-center w-full px-6 py-5 text-left"
+            :class="{'border-b border-gray-200': selected === 0}">
+            <span class="text-lg font-medium text-gray-900">How do I contact support?</span>
+            <svg class="h-6 w-6 text-indigo-500 transform transition-transform duration-200" :class="{'rotate-180': selected === 0}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="selected === 0" 
+            x-transition:enter="transition ease-out duration-200" 
+            x-transition:enter-start="opacity-0 -translate-y-2" 
+            x-transition:enter-end="opacity-100 translate-y-0"
+            class="px-6 py-5 text-gray-600">
+            You can reach our support team through email at support@digitalstore.com, via live chat on our website, or by filling out the contact form on this page. We aim to respond to all inquiries within 24 hours during business days.
+          </div>
+        </div>
+        
+        <!-- FAQ Item 3 -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{selected: 0}">
+          <button 
+            @click="selected !== 0 ? selected = 0 : selected = null"
+            class="flex justify-between items-center w-full px-6 py-5 text-left"
+            :class="{'border-b border-gray-200': selected === 0}">
+            <span class="text-lg font-medium text-gray-900">What is your refund policy?</span>
+            <svg class="h-6 w-6 text-indigo-500 transform transition-transform duration-200" :class="{'rotate-180': selected === 0}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="selected === 0" 
+            x-transition:enter="transition ease-out duration-200" 
+            x-transition:enter-start="opacity-0 -translate-y-2" 
+            x-transition:enter-end="opacity-100 translate-y-0"
+            class="px-6 py-5 text-gray-600">
+            We offer a 30-day money-back guarantee for our subscription plans. If you're not satisfied with our service, you can request a full refund within 30 days of your initial purchase. For digital product sellers, refund policies are set by the individual sellers.
+          </div>
+        </div>
+        
+        <!-- FAQ Item 4 -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{selected: 0}">
+          <button 
+            @click="selected !== 0 ? selected = 0 : selected = null"
+            class="flex justify-between items-center w-full px-6 py-5 text-left"
+            :class="{'border-b border-gray-200': selected === 0}">
+            <span class="text-lg font-medium text-gray-900">Can I sell both digital and physical products?</span>
+            <svg class="h-6 w-6 text-indigo-500 transform transition-transform duration-200" :class="{'rotate-180': selected === 0}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="selected === 0" 
+            x-transition:enter="transition ease-out duration-200" 
+            x-transition:enter-start="opacity-0 -translate-y-2" 
+            x-transition:enter-end="opacity-100 translate-y-0"
+            class="px-6 py-5 text-gray-600">
+            Yes! Digital Store supports both digital and physical products. Our platform includes features for digital product delivery as well as shipping and inventory management for physical goods. You can mix both types in your store.
+          </div>
+        </div>
+        
+        <!-- FAQ Item 5 -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-data="{selected: 0}">
+          <button 
+            @click="selected !== 0 ? selected = 0 : selected = null"
+            class="flex justify-between items-center w-full px-6 py-5 text-left"
+            :class="{'border-b border-gray-200': selected === 0}">
+            <span class="text-lg font-medium text-gray-900">How do I become a partner?</span>
+            <svg class="h-6 w-6 text-indigo-500 transform transition-transform duration-200" :class="{'rotate-180': selected === 0}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            x-show="selected === 0" 
+            x-transition:enter="transition ease-out duration-200" 
+            x-transition:enter-start="opacity-0 -translate-y-2" 
+            x-transition:enter-end="opacity-100 translate-y-0"
+            class="px-6 py-5 text-gray-600">
+            We're always looking for partners to help expand our ecosystem. To apply for our partner program, please fill out the contact form on this page with "Partnership Opportunity" as the subject. Our partnership team will review your application and get back to you within 3-5 business days.
+          </div>
+        </div>
+      </div>
+      
+      <!-- More Questions Link -->
+      <div class="text-center mt-10">
+        <a href="#" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+          View All FAQs
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Live Chat Widget -->
+<div id="chat-widget" class="fixed bottom-24 right-6 z-30 hidden">
+  <div class="w-80 bg-white rounded-xl shadow-2xl overflow-hidden">
+    <!-- Chat Header -->
+    <div class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-red-500 flex items-center justify-center text-white mr-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <div>
+          <p class="font-medium">Live Support</p>
+          <p class="text-xs text-indigo-100">We typically reply in a few minutes</p>
+        </div>
+      </div>
+      <button onclick="closeChat()" class="text-white hover:text-indigo-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Chat Messages -->
+    <div class="h-80 overflow-y-auto p-4 bg-gray-50" id="chat-messages">
+      <!-- Support Message -->
+      <div class="flex mb-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex-shrink-0 flex items-center justify-center text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        </div>
+        <div class="ml-3 bg-white rounded-lg py-2 px-4 shadow max-w-xs">
+          <p class="text-gray-800">👋 Hi there! How can we help you today?</p>
+          <p class="text-xs text-gray-500 mt-1">Just now</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Chat Input -->
+    <div class="p-4 border-t border-gray-200">
+      <div class="flex">
+        <input type="text" id="chat-input" placeholder="Type your message..." class="flex-grow px-4 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+        <button onclick="sendChatMessage()" class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white px-4 py-2 rounded-r-lg hover:opacity-90 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Page Scripts -->
+<script>
+  // Form validation
+  function validateForm() {
+    let isValid = true;
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const email = document.getElementById('email');
+    const subject = document.getElementById('subject');
+    const message = document.getElementById('message');
+    
+    // Reset error messages
+    document.querySelectorAll('.text-red-500').forEach(el => el.classList.add('hidden'));
+    
+    // Validate First Name
+    if (firstName.value.trim() === '') {
+      document.getElementById('firstNameError').classList.remove('hidden');
+      isValid = false;
+    }
+    
+    // Validate Last Name
+    if (lastName.value.trim() === '') {
+      document.getElementById('lastNameError').classList.remove('hidden');
+      isValid = false;
+    }
+    
+    // Validate Email
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value)) {
+      document.getElementById('emailError').classList.remove('hidden');
+      isValid = false;
+    }
+    
+    // Validate Subject
+    if (subject.value === '') {
+      document.getElementById('subjectError').classList.remove('hidden');
+      isValid = false;
+    }
+    
+    // Validate Message
+    if (message.value.trim().length < 10) {
+      document.getElementById('messageError').classList.remove('hidden');
+      isValid = false;
+    }
+    
+    // If form is valid, show success message (in a real app, you'd submit the form)
+    if (isValid) {
+      document.getElementById('contactForm').reset();
+      document.getElementById('successMessage').classList.remove('hidden');
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        document.getElementById('successMessage').classList.add('hidden');
+      }, 5000);
+    }
+    
+    return false; // Prevent form submission for this demo
+  }
+  
+  // Live Chat Functions
+  function openChat() {
+    document.getElementById('chat-widget').classList.remove('hidden');
+  }
+  
+  function closeChat() {
+    document.getElementById('chat-widget').classList.add('hidden');
+  }
+  
+  function sendChatMessage() {
+    const inputElement = document.getElementById('chat-input');
+    const message = inputElement.value.trim();
+    
+    if (message === '') return;
+    
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Append user message
+    chatMessages.innerHTML += `
+      <div class="flex justify-end mb-4">
+        <div class="bg-indigo-100 rounded-lg py-2 px-4 max-w-xs">
+          <p class="text-gray-800">${message}</p>
+          <p class="text-xs text-gray-500 mt-1 text-right">Just now</p>
+        </div>
+      </div>
+    `;
+    
+    // Clear input
+    inputElement.value = '';
+    
+    // Auto-scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Simulate response after a delay
+    setTimeout(() => {
+      // Append support message
+      chatMessages.innerHTML += `
+        <div class="flex mb-4">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex-shrink-0 flex items-center justify-center text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+          </div>
+          <div class="ml-3 bg-white rounded-lg py-2 px-4 shadow max-w-xs">
+            <p class="text-gray-800">Thanks for reaching out! One of our support agents will be with you shortly. In the meantime, have you checked our <a href="#" class="text-indigo-600 hover:text-indigo-800">help center</a>?</p>
+            <p class="text-xs text-gray-500 mt-1">Just now</p>
+          </div>
+        </div>
+      `;
+      
+      // Auto-scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 1000);
+  }
+  
+  // Handle Enter key in chat input
+  document.getElementById('chat-input').addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+      sendChatMessage();
+    }
+  });
+</script>

@@ -1,0 +1,96 @@
+/* Enhanced dropdown styles */
+
+/* Base dropdown menu styling */
+.dropdown-menu {
+  @apply bg-white shadow-xl rounded-lg border border-gray-200 z-30;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Dropdown transitions */
+.dropdown-menu {
+  transition: opacity 150ms ease-out, 
+              transform 150ms ease-out, 
+              translate 150ms ease-out;
+}
+
+/* Arrow indicator for the dropdown origin */
+.dropdown-arrow {
+  position: absolute;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  transform: rotate(45deg);
+  border-left: 1px solid rgba(229, 231, 235, 1); /* gray-200 */
+  border-top: 1px solid rgba(229, 231, 235, 1); /* gray-200 */
+  z-index: -1;
+}
+
+/* Menu item hover styles */
+.dropdown-item {
+  @apply transition-colors duration-150 rounded-md;
+}
+
+/* Menu dividers */
+.dropdown-divider {
+  @apply border-t border-gray-100 my-1;
+}
+
+/* Mega menu specific styles */
+.mega-dropdown {
+  @apply w-screen max-w-5xl py-4;
+}
+
+/* Glass effect variant */
+.dropdown-glass {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover animation for dropdown items */
+.dropdown-item-hover {
+  @apply relative overflow-hidden;
+}
+
+.dropdown-item-hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 1) 0%, rgba(168, 85, 247, 1) 100%);
+  transition: width 0.3s ease;
+  border-radius: 1px;
+}
+
+.dropdown-item-hover:hover::after {
+  width: 100%;
+}
+
+/* Dropdown headers */
+.dropdown-header {
+  @apply text-sm font-semibold text-gray-900 tracking-wide uppercase border-b border-gray-100 pb-2 mb-3;
+}
+
+/* Custom dropdown with colorful top header */
+.dropdown-custom-header {
+  @apply rounded-t-lg px-4 py-3 -mt-2 flex justify-between items-center text-white;
+  background: linear-gradient(90deg, rgba(79, 70, 229, 1) 0%, rgba(124, 58, 237, 1) 100%);
+}
+
+/* Mobile dropdown transitions */
+[data-mobile-dropdown-target="content"] {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 300ms ease-in-out, opacity 200ms ease-in-out;
+}
+
+[data-mobile-dropdown-target="content"].open {
+  max-height: 500px;
+  opacity: 1;
+}

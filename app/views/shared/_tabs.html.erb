@@ -1,0 +1,46 @@
+<%# 
+  Tabs Component
+  
+  Usage: 
+  <%= render 'shared/tabs', tabs: [
+    { id: 'popular', label: 'Popular' },
+    { id: 'guides', label: 'Guides' },
+    { id: 'videos', label: 'Videos' }
+  ], default_tab: 'popular' %>
+  
+  Then, within your content:
+  <div x-show="activeTab === 'popular'">Popular content here</div>
+  <div x-show="activeTab === 'guides'">Guides content here</div>
+  <div x-show="activeTab === 'videos'">Videos content here</div>
+%>
+
+<div data-controller="tab" 
+     data-tab-default-value="<%= local_assigns[:default_tab] || tabs.first[:id] %>"
+     x-data="tabContainer"
+     class="border-b border-gray-200 mb-6">
+  <div class="sm:flex sm:items-baseline">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">
+      <%= local_assigns[:title] %>
+    </h3>
+    <div class="mt-4 sm:mt-0 sm:ml-10">
+      <nav class="-mb-px flex space-x-8">
+        <% tabs.each do |tab| %>
+          <button type="button"
+                  class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ease-in-out"
+                  data-tab-target="tab" 
+                  data-tab-id="<%= tab[:id] %>"
+                  data-action="click->tab#change click->tab#change"
+                  @click="setTab('<%= tab[:id] %>')"
+                  aria-controls="<%= tab[:id] %>-panel"
+                  role="tab"
+                  :class="activeTab === '<%= tab[:id] %>' ? 
+                    'border-indigo-500 text-indigo-600' : 
+                    'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                  aria-selected="<%= tab[:id] == (local_assigns[:default_tab] || tabs.first[:id]) %>">
+            <%= tab[:label] %>
+          </button>
+        <% end %>
+      </nav>
+    </div>
+  </div>
+</div>

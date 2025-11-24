@@ -1,0 +1,313 @@
+class ProductsController < ApplicationController
+  include PaginationHelper
+  before_action :set_product, only: %i[ show edit update destroy add_item_to_cart ]
+
+  # GET /products or /products.json
+  def index
+    # Base query with comprehensive includes to avoid N+1 queries
+    @products = Product.includes(:category, :seller, :product_images)
+                      .where(published: true)
+                      .order(created_at: :desc)
+    
+    # Apply filters if present
+    if params[:category_id].present?
+      @products = @products.where(category_id: params[:category_id])
+    end
+    
+    if params[:min_price].present?
+      @products = @products.where("price >= ?", params[:min_price])
+    end
+    
+    if params[:max_price].present?
+      @products = @products.where("price <= ?", params[:max_price])
+    end
+    
+    if params[:sort].present?
+      case params[:sort]
+      when "price_asc"
+        @products = @products.order(price: :asc)
+      when "price_desc"
+        @products = @products.order(price: :desc)
+      when "newest"
+        @products = @products.order(created_at: :desc)
+      when "oldest"
+        @products = @products.order(created_at: :asc)
+      when "popular"
+        @products = @products.order(sales_count: :desc)
+      end
+    end
+    
+    # Get featured products for the carousel
+    @featured_products = Product.where(featured: true, published: true)
+                               .includes(:category, :seller, :product_images)
+                               .order(created_at: :desc)
+                               .limit(8)
+    
+    # Paginate the results
+    @products = paginate_safely(@products, params[:page], 12)
+    
+    # Get all categories for the filter sidebar
+    @categories = Category.all.order(name: :asc)
+    
+    # Get price range for the filter sidebar
+    @min_price = Product.where(published: true).minimum(:price)
+    @max_price = Product.where(published: true).maximum(:price)
+  end
+
+  # GET /products/1 or /products/1.json
+  def show
+    # Increment view count
+    @product.increment!(:view_count) unless user_signed_in? && current_user == @product.seller&.user
+    
+    # Get related products
+    @related_products = Product.where(category_id: @product.category_id)
+                              .where.not(id: @product.id)
+                              .where(published: true)
+                              .includes(:category, :seller, :product_images)
+                              .order(created_at: :desc)
+                              .limit(4)
+    
+    # Get other products from the same seller
+    @seller_products = @product.seller.products
+                              .where.not(id: @product.id)
+                              .where(published: true)
+                              .includes(:category, :product_images)
+                              .order(created_at: :desc)
+                              .limit(4)
+  end
+
+  # GET /products/new
+  def new
+    @product = Product.new
+  end
+
+  # GET /products/1/edit
+  def edit
+  end
+
+  # POST /products or /products.json
+  def create
+    @product = Product.new(product_params)
+    @product.seller = current_user.seller if current_user.seller.present?
+
+    respond_to do |format|
+      if @product.save
+        format.html { redirect_to product_url(@product), notice: "Product was successfully created." }
+        format.json { render :show, status: :created, location: @product }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @product.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /products/1 or /products/1.json
+  def update
+    respond_to do |format|
+      if @product.update(product_params)
+        format.html { redirect_to product_url(@product), notice: "Product was successfully updated." }
+        format.json { render :show, status: :ok, location: @product }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @product.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /products/1 or /products/1.json
+  def destroy
+    @product.destroy
+
+    respond_to do |format|
+      format.html { redirect_to products_url, notice: "Product was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+  
+  # GET /products/search
+  def search
+    @query = params[:q]
+    
+    if @query.present?
+      # Search products by name, description, or SKU
+      @products = Product.where(published: true)
+                        .where("name ILIKE ? OR description ILIKE ? OR sku ILIKE ?", 
+                               "%#{@query}%", "%#{@query}%", "%#{@query}%")
+                        .includes(:category, :seller, :product_images)
+                        .order(created_at: :desc)
+      
+      # Apply category filter if present
+      if params[:category_id].present?
+        @products = @products.where(category_id: params[:category_id])
+      end
+      
+      # Apply price filters if present
+      if params[:min_price].present?
+        @products = @products.where("price >= ?", params[:min_price])
+      end
+      
+      if params[:max_price].present?
+        @products = @products.where("price <= ?", params[:max_price])
+      end
+      
+      # Apply sorting if present
+      if params[:sort].present?
+        case params[:sort]
+        when "price_asc"
+          @products = @products.order(price: :asc)
+        when "price_desc"
+          @products = @products.order(price: :desc)
+        when "newest"
+          @products = @products.order(created_at: :desc)
+        when "oldest"
+          @products = @products.order(created_at: :asc)
+        when "popular"
+          @products = @products.order(sales_count: :desc)
+        end
+      end
+      
+      # Paginate the results
+      @products = paginate_safely(@products, params[:page], 12)
+    else
+      @products = Product.none
+    end
+    
+    # Get all categories for the filter sidebar
+    @categories = Category.all.order(name: :asc)
+    
+    # Get price range for the filter sidebar
+    @min_price = Product.where(published: true).minimum(:price)
+    @max_price = Product.where(published: true).maximum(:price)
+  end
+  
+  # GET /products/category/:id
+  def category
+    @category = Category.find(params[:id])
+    
+    @products = Product.where(category_id: @category.id, published: true)
+                      .includes(:seller, :product_images)
+                      .order(created_at: :desc)
+    
+    # Apply price filters if present
+    if params[:min_price].present?
+      @products = @products.where("price >= ?", params[:min_price])
+    end
+    
+    if params[:max_price].present?
+      @products = @products.where("price <= ?", params[:max_price])
+    end
+    
+    # Apply sorting if present
+    if params[:sort].present?
+      case params[:sort]
+      when "price_asc"
+        @products = @products.order(price: :asc)
+      when "price_desc"
+        @products = @products.order(price: :desc)
+      when "newest"
+        @products = @products.order(created_at: :desc)
+      when "oldest"
+        @products = @products.order(created_at: :asc)
+      when "popular"
+        @products = @products.order(sales_count: :desc)
+      end
+    end
+    
+    # Paginate the results
+    @products = paginate_safely(@products, params[:page], 12)
+    
+    # Get all categories for the filter sidebar
+    @categories = Category.all.order(name: :asc)
+    
+    # Get price range for the filter sidebar
+    @min_price = Product.where(published: true).minimum(:price)
+    @max_price = Product.where(published: true).maximum(:price)
+  end
+  
+  # GET /products/featured
+  def featured
+    @products = Product.where(featured: true, published: true)
+                      .includes(:category, :seller, :product_images)
+                      .order(created_at: :desc)
+    
+    # Paginate the results
+    @products = paginate_safely(@products, params[:page], 12)
+  end
+  
+  # GET /products/deals
+  def deals
+    # Get products with a discount
+    @products = Product.where(published: true)
+                      .where("compare_at_price > price")
+                      .includes(:category, :seller, :product_images)
+                      .order(created_at: :desc)
+    
+    # Paginate the results
+    @products = paginate_safely(@products, params[:page], 12)
+    # Add any additional logic you need for the deals page
+  end
+
+  def new_arrivals
+    # Get products published in the last 30 days - with eager loading to prevent N+1
+    @new_products = Product.where(published: true)
+                        .where("published_at >= ?", 30.days.ago)
+                        .includes(:category, :seller, :product_images)
+                        .order(published_at: :desc)
+
+    # Use pagination helper for safety
+    @new_products = paginate_safely(@new_products, params[:page], 12)
+  end
+
+  # Add item to cart action
+  def add_item_to_cart
+    @product = Product.find(params[:id])
+    quantity = params[:quantity].present? ? params[:quantity].to_i : 1
+    
+    # Create or find the user's cart
+    cart = current_user.cart if user_signed_in? && current_user.respond_to?(:cart)
+    
+    # If no cart exists and user is signed in, create one
+    if user_signed_in? && current_user.respond_to?(:cart) && cart.nil?
+      cart = Cart.create(user: current_user)
+    end
+    
+    # If user is not signed in, use session cart
+    if !user_signed_in? || !current_user.respond_to?(:cart)
+      session[:cart] ||= {}
+      session[:cart][params[:id]] = (session[:cart][params[:id]] || 0) + quantity
+      flash[:notice] = "#{@product.name} added to cart."
+      redirect_back(fallback_location: product_path(@product)) and return
+    end
+    
+    # If we have a cart, add the item
+    if cart
+      # Check if the item is already in the cart
+      cart_item = cart.cart_items.find_by(product_id: @product.id)
+      
+      if cart_item
+        # Update quantity if item exists
+        cart_item.update(quantity: cart_item.quantity + quantity)
+      else
+        # Create new cart item if it doesn't exist
+        cart.cart_items.create(product: @product, quantity: quantity)
+      end
+      
+      flash[:notice] = "#{@product.name} added to cart."
+    else
+      flash[:alert] = "Could not add item to cart."
+    end
+    
+    redirect_back(fallback_location: product_path(@product))
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_product
+      @product = Product.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def product_params
+      params.require(:product).permit(:name, :description, :price, :compare_at_price, :sku, :stock_quantity, :published, :featured, :category_id, :seller_id, :status, :slug, product_images: [])
+    end
+end

@@ -1,0 +1,55 @@
+<!-- app/views/stores/show.html.erb -->
+<div class="store-container <%= @store.theme || 'default' %>-theme">
+  <%= render 'stores/themes/header', store: @store %>
+
+  <% if @store.respond_to?(:show_featured_products?) && @store.show_featured_products? && @featured_products.any? %>
+    <section class="featured-products">
+      <h2>Featured Products</h2>
+      <div class="product-grid">
+        <%= render partial: 'products/product_card',
+                  collection: @featured_products,
+                  as: :product %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @recent_products.present? && @recent_products.any? %>
+    <section class="recent-products">
+      <h2>New Arrivals</h2>
+      <div class="product-grid">
+        <%= render partial: 'products/product_card',
+                  collection: @recent_products,
+                  as: :product %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @store.respond_to?(:setting) && @store.setting('show_categories_on_homepage') == 'true' && @categories.present? && @categories.any? %>
+    <section class="category-showcase">
+      <h2>Browse by Category</h2>
+      <div class="category-grid">
+        <%= render partial: 'stores/category_card',
+                  collection: @categories,
+                  as: :category %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @store.respond_to?(:setting) && @store.setting('show_about_section') == 'true' && @store.description.present? %>
+    <section class="about-preview">
+      <h2>About <%= @store.name %></h2>
+      <div class="about-content">
+        <%= simple_format @store.description.truncate(300) %>
+        <%= link_to 'Read more', store_about_path(@store.slug), class: 'btn btn-outline' %>
+      </div>
+    </section>
+  <% end %>
+
+  <%= render 'stores/themes/footer', store: @store %>
+</div>
+
+<% if @store.respond_to?(:custom_css) && @store.custom_css.present? %>
+  <style>
+    <%= sanitize @store.custom_css, tags: [], attributes: [] %>
+  </style>
+<% end %>
