@@ -3,11 +3,11 @@
 one:
   seller: one
   name: MyString
-  slug: MyString
+  slug: store-one
   description: MyText
 
 two:
   seller: two
   name: MyString
-  slug: MyString
+  slug: store-two
   description: MyText
