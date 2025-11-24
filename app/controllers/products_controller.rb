@@ -170,6 +170,13 @@ class ProductsController < ApplicationController
     end
   end
 
+  # Helper method for safe pagination params
+  helper_method :safe_params_for_pagination
+
+  def safe_params_for_pagination
+    params.permit(:category_id, :sort, :query, :page)
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product

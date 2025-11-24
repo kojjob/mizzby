@@ -181,8 +181,9 @@ class Admin::SystemController < Admin::BaseController
 
     if File.exist?(log_file)
       begin
-        # Read the last 1000 lines of the log file
-        log_content = `tail -n 1000 #{log_file}`
+        # Read the last 1000 lines of the log file using File.readlines (safe method)
+        log_lines = File.readlines(log_file).last(1000)
+        log_content = log_lines.join
 
         # Extract error lines
         error_lines = log_content.split("\n").select do |line|
@@ -211,8 +212,8 @@ class Admin::SystemController < Admin::BaseController
 
     if File.exist?(log_file)
       begin
-        # Read the last 500 lines of the log file
-        `tail -n 500 #{log_file}`
+        # Read the last 500 lines of the log file using File.readlines (safe method)
+        File.readlines(log_file).last(500).join
       rescue => e
         "Error reading log file: #{e.message}"
       end
