@@ -17,7 +17,7 @@ class DownloadLinksControllerTest < ActionDispatch::IntegrationTest
 
   test "should create download_link" do
     assert_difference("DownloadLink.count") do
-      post download_links_url, params: { download_link: { active: @download_link.active, download_count: @download_link.download_count, download_limit: @download_link.download_limit, expires_at: @download_link.expires_at, order_id: @download_link.order_id, product_id: @download_link.product_id, token: @download_link.token, user_id: @download_link.user_id } }
+      post download_links_url, params: { download_link: { active: @download_link.active, download_count: @download_link.download_count, download_limit: @download_link.download_limit, expires_at: @download_link.expires_at, order_id: @download_link.order_id, product_id: @download_link.product_id, token: SecureRandom.urlsafe_base64, user_id: @download_link.user_id } }
     end
 
     assert_redirected_to download_link_url(DownloadLink.last)

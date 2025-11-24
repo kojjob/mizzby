@@ -44,7 +44,7 @@ Rails.application.routes.draw do
   resources :carts, only: [ :show, :destroy ] do
     collection { get :current }
   end
-  resources :cart_items, only: [ :create, :update, :destroy ]
+  resources :cart_items
   get "cart", to: "carts#current", as: :current_cart
 
   # Checkout Process
