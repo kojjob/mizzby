@@ -62,7 +62,7 @@ Rails.application.routes.draw do
     member { post "add_item_to_cart", as: :add_item_to }
     collection { get :new_arrivals }
     resources :reviews, only: [ :index, :new, :create ]
-    resources :product_questions, only: [ :index, :new, :create ], as: :questions
+    resources :product_questions, only: [ :index, :new, :create ]
   end
   resources :reviews
   resources :product_questions
