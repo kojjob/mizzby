@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   # Shopping Cart System
   resources :carts do
     collection { get :current }
+    member { delete :empty }
   end
   resources :cart_items
   get "cart", to: "carts#current", as: :current_cart

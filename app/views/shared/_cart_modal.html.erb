@@ -52,7 +52,7 @@
               >
                 <!-- Product Image -->
                 <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-md overflow-hidden">
-                  <% if item.product.product_images.any? %>
+                  <% if item.product.product_images.any? && item.product.product_images.first.image&.attached? %>
                     <%= image_tag item.product.product_images.first.image, class: "w-full h-full object-cover" %>
                   <% else %>
                     <div class="w-full h-full flex items-center justify-center bg-gray-200">
