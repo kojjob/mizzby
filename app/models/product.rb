@@ -65,7 +65,13 @@ class Product < ApplicationRecord
   scope :on_sale, -> { where(on_sale: true) }
   scope :digital, -> { where(is_digital: true) }
   scope :physical, -> { where(is_digital: false) }
-  scope :search_by_name, ->(query) { where("name ILIKE ?", "%#{query}%") }
+  scope :search_by_name, ->(query) { where("name ILIKE ?", "%#{sanitize_sql_like(query)}%") if query.present? }
+  scope :active, -> { where(status: "active") }
+  scope :published, -> { where(published: true) }
+  scope :by_category, ->(category_id) { where(category_id: category_id) if category_id.present? }
+  scope :by_seller, ->(seller_id) { where(seller_id: seller_id) if seller_id.present? }
+  scope :in_stock, -> { where("stock_quantity > ?", 0) }
+  scope :price_range, ->(min, max) { where(price: min..max) if min.present? && max.present? }
 
   # Define a method to get the first image URL
   def image_url
@@ -100,16 +106,19 @@ class Product < ApplicationRecord
     ((price - discounted_price) / price * 100).round(1)
   end
 
-  # Calculate average rating
+  # Calculate average rating (with caching to avoid N+1)
   def average_rating
-    return nil if reviews.empty?
-    reviews.average(:rating)&.to_f
+    Rails.cache.fetch("product_#{id}_avg_rating", expires_in: 1.hour) do
+      reviews.average(:rating)&.to_f
+    end
   end
 
-  scope :active, -> { where(status: 'active') }
-  scope :on_sale, -> { where("discounted_price IS NOT NULL AND discounted_price < price") }
-  scope :digital, -> { where(is_digital: true) }
-  scope :physical, -> { where(is_digital: false) }
+  # Get review count (with caching)
+  def reviews_count
+    Rails.cache.fetch("product_#{id}_reviews_count", expires_in: 1.hour) do
+      reviews.count
+    end
+  end
 
   # validates :image, content_type: ['image/png', 'image/jpeg', 'image/jpg'],
   #         size: { less_than: 5.megabytes },
@@ -124,7 +133,7 @@ class Product < ApplicationRecord
     elsif image.attached?
       image
     else
-      'placeholder-product.png'
+      "placeholder-product.png"
     end
   end
 
@@ -136,13 +145,13 @@ class Product < ApplicationRecord
 
   def update_sale_status
     # Only update if the database has an on_sale column
-    if Product.column_names.include?('on_sale')
+    if Product.column_names.include?("on_sale")
       self.on_sale = discounted_price.present? && price.present? && discounted_price < price
     end
   end
 
   def set_slug
-    return if slug.present?
+    return if slug.present? || name.blank?
 
     # Create a base slug from the product name
     base_slug = name.parameterize
@@ -152,7 +161,7 @@ class Product < ApplicationRecord
     counter = 0
 
     # If the slug exists, append a number until it's unique
-    while Product.where(slug: new_slug).exists?
+    while Product.where(slug: new_slug).where.not(id: id).exists?
       counter += 1
       new_slug = "#{base_slug}-#{counter}"
     end

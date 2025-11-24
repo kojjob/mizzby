@@ -1,6 +1,5 @@
 class CreateOrderItems < ActiveRecord::Migration[8.0]
   def change
-
     create_table :order_items do |t|
       # References to associated models
       t.references :order, null: false, foreign_key: true
@@ -40,7 +39,7 @@ class CreateOrderItems < ActiveRecord::Migration[8.0]
       t.timestamps
     end
     # Add indexes for faster lookups
-    add_index :order_items, [:order_id, :product_id], unique: true
+    add_index :order_items, [ :order_id, :product_id ], unique: true
     add_index :order_items, :status
     add_index :order_items, :payment_status
     add_index :order_items, :shipping_method

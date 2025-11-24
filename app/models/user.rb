@@ -38,8 +38,7 @@ class User < ApplicationRecord
   # --- Validations ---
 
   # User information validations
-  validates :first_name, :last_name, presence: true, length: { minimum: 2, maximum: 50 },
-                                    allow_blank: true  # Allow blank for now to prevent validation errors
+  validates :first_name, :last_name, presence: true, length: { minimum: 2, maximum: 50 }
 
   # Email format validation (additional to Devise's validation)
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
@@ -95,7 +94,7 @@ class User < ApplicationRecord
     return !access_locked? unless respond_to?(:status)
 
     # If there is a status column, check if it's set to active
-    status == 'active'
+    status == "active"
   end
 
   # User name and display methods

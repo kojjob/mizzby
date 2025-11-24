@@ -1,13 +1,13 @@
 class WishlistItem < ApplicationRecord
   belongs_to :user
   belongs_to :product
-  
+
   # Validations
   validates :product_id, uniqueness: { scope: :user_id, message: "is already in your wishlist" }
-  
+
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
-  
+
   # Methods
   def move_to_cart
     cart = user.cart || user.create_cart(user_id: user.id) # Ensure user_id is set

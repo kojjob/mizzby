@@ -61,8 +61,8 @@ module Admin
       @log_content = []
 
       if @log_files[@selected_log.to_sym] && File.exist?(@log_files[@selected_log.to_sym])
-        # Read the last 100 lines of the log file
-        @log_content = `tail -n 100 #{@log_files[@selected_log.to_sym]}`.split("\n")
+        # Read the last 100 lines of the log file using File.readlines (safe method)
+        @log_content = File.readlines(@log_files[@selected_log.to_sym]).last(100)
       end
     end
 

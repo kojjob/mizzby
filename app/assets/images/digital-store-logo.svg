@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Background Shape -->
+  <rect x="10" y="10" width="40" height="40" rx="8" fill="#4F46E5" />
+  
+  <!-- Digital Product Icon -->
+  <g transform="translate(20, 20)">
+    <rect x="0" y="0" width="20" height="20" rx="2" fill="white" opacity="0.85" />
+    <path d="M4 6h12M4 10h12M4 14h8" stroke="#4338CA" stroke-width="1.5" stroke-linecap="round" />
+  </g>
+  
+  <!-- Shopping Bag Element -->
+  <path d="M38 28v-5a8 8 0 1 0-16 0v5h-2v14h20V28h-2z" fill="#FBBF24" stroke="#4338CA" stroke-width="1.5" />
+  <path d="M30 28v-5a8 8 0 0 0-8 0v5" stroke="#4338CA" stroke-width="1.5" stroke-linecap="round" />
+  
+  <!-- Text -->
+  <text x="60" y="30" font-family="Arial, sans-serif" font-weight="bold" font-size="18" fill="#4F46E5">Mizzby Store</text>
+  <text x="60" y="45" font-family="Arial, sans-serif" font-size="10" fill="#6366F1">Everything digital, delivered</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="170" cy="20" r="4" fill="#FBBF24" />
+  <path d="M175 15l5 5M175 20l5-5" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" />
+</svg>

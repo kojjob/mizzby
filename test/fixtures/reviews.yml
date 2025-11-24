@@ -1,14 +1,14 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user: one
+  user: regular_user
   product: one
   rating: 1
   content: MyText
   published: false
 
 two:
-  user: two
+  user: admin
   product: two
   rating: 1
   content: MyText

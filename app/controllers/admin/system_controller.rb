@@ -40,9 +40,9 @@ class Admin::SystemController < Admin::BaseController
       # Recent admin activities (if the model exists)
       @recent_activities = if defined?(AdminActivity)
                              AdminActivity.order(created_at: :desc).limit(20)
-                           else
+      else
                              []
-                           end
+      end
     rescue => e
       # Log the error
       Rails.logger.error("Error in system dashboard: #{e.message}\n#{e.backtrace.join("\n")}")
@@ -51,7 +51,7 @@ class Admin::SystemController < Admin::BaseController
       @system_stats = { rails_version: Rails.version, ruby_version: RUBY_VERSION, environment: Rails.env, server_time: Time.current }
       @database_stats = { tables: [] }
       @app_stats = {}
-      @recent_errors = [{ timestamp: Time.current.to_s, message: "Error loading system information: #{e.message}" }]
+      @recent_errors = [ { timestamp: Time.current.to_s, message: "Error loading system information: #{e.message}" } ]
       @recent_activities = []
 
       # Show error message to the user
@@ -60,7 +60,7 @@ class Admin::SystemController < Admin::BaseController
   end
 
   def logs
-    @log_type = params[:type] || 'production'
+    @log_type = params[:type] || "production"
     @log_content = fetch_log_content(@log_type)
     @log_types = available_log_types
 
@@ -103,8 +103,8 @@ class Admin::SystemController < Admin::BaseController
   end
 
   def calculate_uptime
-    if File.exist?('/proc/uptime')
-      uptime_seconds = File.read('/proc/uptime').split.first.to_f
+    if File.exist?("/proc/uptime")
+      uptime_seconds = File.read("/proc/uptime").split.first.to_f
       days = (uptime_seconds / 86400).floor
       hours = ((uptime_seconds % 86400) / 3600).floor
       minutes = ((uptime_seconds % 3600) / 60).floor
@@ -119,17 +119,18 @@ class Admin::SystemController < Admin::BaseController
     total = 0
     ActiveRecord::Base.connection.tables.each do |table|
       begin
-        # Different adapters return results in different formats
-        result = ActiveRecord::Base.connection.execute("SELECT COUNT(*) FROM #{table}")
+        # Use parameterized query to prevent SQL injection
+        sanitized_table = ActiveRecord::Base.connection.quote_table_name(table)
+        result = ActiveRecord::Base.connection.execute("SELECT COUNT(*) FROM #{sanitized_table}")
         count = if result.first.is_a?(Hash) && result.first["count"]
                   result.first["count"]
-                elsif result.first.is_a?(Array)
+        elsif result.first.is_a?(Array)
                   result.first[0]
-                elsif result.first.is_a?(String) || result.first.is_a?(Integer)
+        elsif result.first.is_a?(String) || result.first.is_a?(Integer)
                   result.first
-                else
+        else
                   0
-                end
+        end
         total += count.to_i
       rescue => e
         Rails.logger.debug("Couldn't count records in table #{table}: #{e.message}")
@@ -144,7 +145,7 @@ class Admin::SystemController < Admin::BaseController
 
   def calculate_database_size
     case ActiveRecord::Base.connection.adapter_name
-    when 'PostgreSQL'
+    when "PostgreSQL"
       result = ActiveRecord::Base.connection.execute(
         "SELECT pg_size_pretty(pg_database_size(current_database()))"
       )
@@ -156,9 +157,14 @@ class Admin::SystemController < Admin::BaseController
       else
         "Unknown format"
       end
-    when 'MySQL', 'Mysql2'
+    when "MySQL", "Mysql2"
+      # Use parameterized query to prevent SQL injection
+      db_name = ActiveRecord::Base.connection.current_database
       result = ActiveRecord::Base.connection.execute(
-        "SELECT SUM(data_length + index_length) / 1024 / 1024 FROM information_schema.TABLES WHERE table_schema = '#{ActiveRecord::Base.connection.current_database}'"
+        ActiveRecord::Base.sanitize_sql_array([
+          "SELECT SUM(data_length + index_length) / 1024 / 1024 FROM information_schema.TABLES WHERE table_schema = ?",
+          db_name
+        ])
       ).first[0]
       "#{result.to_f.round(2)} MB"
     else
@@ -171,23 +177,24 @@ class Admin::SystemController < Admin::BaseController
 
   def fetch_recent_errors
     errors = []
-    log_file = Rails.root.join('log', "#{Rails.env}.log")
+    log_file = Rails.root.join("log", "#{Rails.env}.log")
 
     if File.exist?(log_file)
       begin
-        # Read the last 1000 lines of the log file
-        log_content = `tail -n 1000 #{log_file}`
+        # Read the last 1000 lines of the log file using File.readlines (safe method)
+        log_lines = File.readlines(log_file).last(1000)
+        log_content = log_lines.join
 
         # Extract error lines
         error_lines = log_content.split("\n").select do |line|
-          line.include?('ERROR') || line.include?('FATAL') || line.include?('Exception')
+          line.include?("ERROR") || line.include?("FATAL") || line.include?("Exception")
         end
 
         # Group and format errors
         errors = error_lines.last(20).map do |line|
           {
-            timestamp: line.match(/\[(.*?)\]/)&.captures&.first || 'Unknown',
-            message: line.gsub(/\[\d{4}-\d{2}-\d{2}.*?\]/, '').strip
+            timestamp: line.match(/\[(.*?)\]/)&.captures&.first || "Unknown",
+            message: line.gsub(/\[\d{4}-\d{2}-\d{2}.*?\]/, "").strip
           }
         end
       rescue => e
@@ -201,12 +208,12 @@ class Admin::SystemController < Admin::BaseController
   end
 
   def fetch_log_content(log_type)
-    log_file = Rails.root.join('log', "#{log_type}.log")
+    log_file = Rails.root.join("log", "#{log_type}.log")
 
     if File.exist?(log_file)
       begin
-        # Read the last 500 lines of the log file
-        `tail -n 500 #{log_file}`
+        # Read the last 500 lines of the log file using File.readlines (safe method)
+        File.readlines(log_file).last(500).join
       rescue => e
         "Error reading log file: #{e.message}"
       end
@@ -216,8 +223,8 @@ class Admin::SystemController < Admin::BaseController
   end
 
   def available_log_types
-    Dir.glob(Rails.root.join('log', '*.log')).map do |file|
-      File.basename(file, '.log')
+    Dir.glob(Rails.root.join("log", "*.log")).map do |file|
+      File.basename(file, ".log")
     end
   end
 

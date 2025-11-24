@@ -1,0 +1,237 @@
+<header class="bg-gray-900 shadow-lg sticky top-0 z-50">
+  <!-- Top notification bar -->
+  <div class="bg-indigo-600 text-white py-2 px-4 text-xs sm:text-sm font-medium text-center">
+    <p>🚀 Launch Special: Get 25% off all digital assets with code <span class="font-bold text-yellow-300">LAUNCH25</span></p>
+  </div>
+
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo -->
+      <div class="flex-shrink-0 flex items-center">
+        <a href="/" class="flex items-center space-x-3 group">
+          <div class="relative">
+            <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-200"></div>
+            <div class="relative bg-gray-900 rounded-lg p-1">
+              <svg class="h-9 w-9 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <span class="text-white font-bold text-xl tracking-tight">Mizzby<span class="text-indigo-500">.</span></span>
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <!-- Categories Dropdown -->
+        <div data-controller="dropdown" class="relative group">
+          <button type="button" 
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="text-gray-300 hover:text-white font-medium flex items-center space-x-1 transition duration-150 ease-in-out outline-none">
+            <span>Categories</span>
+            <svg data-dropdown-target="arrow" class="h-4 w-4 text-gray-500 group-hover:text-gray-300 transition duration-150" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+
+          <div data-dropdown-target="menu" class="hidden absolute left-0 mt-4 w-screen max-w-md px-2 sm:px-0 lg:max-w-3xl transform -translate-x-1/4">
+            <div class="rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden">
+              <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
+                <a href="/categories/ebooks" class="group -m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 transition ease-in-out duration-150">
+                  <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <p class="text-base font-medium text-gray-900 group-hover:text-indigo-600">Ebooks</p>
+                    <p class="mt-1 text-sm text-gray-500">Comprehensive guides and fiction for every reader.</p>
+                  </div>
+                </a>
+                <a href="/categories/templates" class="group -m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 transition ease-in-out duration-150">
+                  <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <p class="text-base font-medium text-gray-900 group-hover:text-indigo-600">Templates</p>
+                    <p class="mt-1 text-sm text-gray-500">Ready-to-use templates for web, presentations, and more.</p>
+                  </div>
+                </a>
+                <a href="/categories/courses" class="group -m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 transition ease-in-out duration-150">
+                  <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <p class="text-base font-medium text-gray-900 group-hover:text-indigo-600">Courses</p>
+                    <p class="mt-1 text-sm text-gray-500">Learn new skills with video courses from experts.</p>
+                  </div>
+                </a>
+                <a href="/categories/graphics" class="group -m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 transition ease-in-out duration-150">
+                  <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <p class="text-base font-medium text-gray-900 group-hover:text-indigo-600">Graphics</p>
+                    <p class="mt-1 text-sm text-gray-500">Icons, illustrations, and UI kits for your projects.</p>
+                  </div>
+                </a>
+              </div>
+              <div class="p-5 bg-gray-50 sm:p-8">
+                <a href="/categories" class="-m-3 p-3 flow-root rounded-md hover:bg-gray-100 transition ease-in-out duration-150">
+                  <span class="flex items-center">
+                    <span class="text-base font-medium text-gray-900">View all categories</span>
+                    <span class="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium leading-5 bg-indigo-100 text-indigo-800">
+                      New
+                    </span>
+                  </span>
+                  <span class="mt-1 block text-sm text-gray-500">
+                    Explore our complete catalog of digital assets.
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a href="/new-arrivals" class="text-gray-300 hover:text-white font-medium transition duration-150">New Arrivals</a>
+        <a href="/best-sellers" class="text-gray-300 hover:text-white font-medium transition duration-150">Best Sellers</a>
+
+        <!-- Deals Dropdown -->
+        <div data-controller="dropdown" class="relative group">
+          <button type="button" 
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="text-gray-300 hover:text-white font-medium flex items-center space-x-1 transition duration-150 ease-in-out outline-none">
+            <span>Deals</span>
+            <svg data-dropdown-target="arrow" class="h-4 w-4 text-gray-500 group-hover:text-gray-300 transition duration-150" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div data-dropdown-target="menu" class="hidden absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+            <a href="/deals/flash-sales" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Flash Sales</a>
+            <a href="/deals/clearance" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Clearance</a>
+            <a href="/deals/weekly-offers" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Weekly Offers</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Search Bar (Desktop) -->
+      <div class="hidden lg:flex flex-1 max-w-lg mx-8">
+        <form action="/search" method="get" class="w-full relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input type="text" 
+                 name="q" 
+                 class="block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-full leading-5 bg-gray-800 text-gray-300 placeholder-gray-400 focus:outline-none focus:bg-white focus:text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm transition duration-200" 
+                 placeholder="Search for products, categories...">
+        </form>
+      </div>
+
+      <!-- Right Side Icons -->
+      <div class="flex items-center space-x-4">
+        <!-- Search Toggle (Mobile/Tablet) -->
+        <button type="button" class="lg:hidden text-gray-400 hover:text-white">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+
+        <!-- Wishlist -->
+        <a href="/wishlist" class="text-gray-400 hover:text-white relative group">
+          <svg class="h-6 w-6 transition duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center ring-2 ring-gray-900">5</span>
+        </a>
+
+        <!-- Cart -->
+        <a href="/cart" class="text-gray-400 hover:text-white relative group">
+          <svg class="h-6 w-6 transition duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center ring-2 ring-gray-900">3</span>
+        </a>
+
+        <!-- User Dropdown -->
+        <div class="hidden md:block">
+          <%= render 'shared/user_nav' %>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden flex items-center" data-controller="mobile-menu">
+          <button type="button" 
+                  data-action="click->mobile-menu#toggle"
+                  class="text-gray-400 hover:text-white focus:outline-none focus:text-white">
+            <svg data-mobile-menu-target="openIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg data-mobile-menu-target="closeIcon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <!-- Mobile Menu Overlay -->
+          <div data-mobile-menu-target="menu" class="hidden fixed inset-0 z-40 bg-gray-900 bg-opacity-95 overflow-y-auto">
+            <div class="flex flex-col min-h-screen pt-20 pb-6 px-4">
+              <div class="space-y-6">
+                <!-- Mobile Search -->
+                <form action="/search" method="get" class="relative">
+                  <input type="text" 
+                         name="q" 
+                         class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                         placeholder="Search...">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </form>
+
+                <!-- Mobile Links -->
+                <nav class="space-y-2">
+                  <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-800">Home</a>
+                  
+                  <!-- Mobile Categories -->
+                  <div class="space-y-1">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categories</p>
+                    <a href="/categories/ebooks" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Ebooks</a>
+                    <a href="/categories/templates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Templates</a>
+                    <a href="/categories/courses" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Courses</a>
+                    <a href="/categories/graphics" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Graphics</a>
+                  </div>
+
+                  <a href="/new-arrivals" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">New Arrivals</a>
+                  <a href="/best-sellers" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Best Sellers</a>
+                  
+                  <!-- Mobile Deals -->
+                  <div class="space-y-1 pt-2">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Deals</p>
+                    <a href="/deals/flash-sales" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Flash Sales</a>
+                    <a href="/deals/clearance" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Clearance</a>
+                  </div>
+                </nav>
+                
+                <!-- Mobile User Nav -->
+                <div class="pt-4 border-t border-gray-800">
+                  <%= render 'shared/user_nav' %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

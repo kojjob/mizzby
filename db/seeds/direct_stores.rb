@@ -6,7 +6,7 @@ puts "Creating stores directly..."
 existing_sellers = Seller.all
 if existing_sellers.empty?
   puts "No existing sellers found. Creating a dummy seller first..."
-  
+
   # Create a dummy user
   user = User.find_or_create_by(email: "dummy@example.com") do |u|
     u.first_name = "Dummy"
@@ -14,7 +14,7 @@ if existing_sellers.empty?
     u.password = "password123"
     u.password_confirmation = "password123"
   end
-  
+
   # Create a dummy seller
   seller = Seller.create!(
     user: user,
@@ -31,9 +31,9 @@ if existing_sellers.empty?
       enabled: true
     }
   )
-  
+
   puts "Created dummy seller: #{seller.business_name}"
-  existing_sellers = [seller]
+  existing_sellers = [ seller ]
 end
 
 # Use the first seller for all stores
@@ -49,7 +49,7 @@ puts "Using seller: #{seller.business_name} (ID: #{seller.id})"
       puts "  Store with slug '#{store_slug}' already exists, skipping..."
       next
     end
-    
+
     # Create the store
     store = Store.new(
       seller_id: seller.id,
@@ -57,7 +57,7 @@ puts "Using seller: #{seller.business_name} (ID: #{seller.id})"
       slug: store_slug,
       description: "This is a direct store #{i+1} created for testing"
     )
-    
+
     # Save the store
     if store.save(validate: false)
       puts "  Created store: #{store.name} (ID: #{store.id})"

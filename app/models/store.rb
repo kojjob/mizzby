@@ -23,7 +23,7 @@ class Store < ApplicationRecord
   end
 
   def bestselling_products(limit = 8)
-    products.joins(:orders).group(:id).order('COUNT(orders.id) DESC').limit(limit)
+    products.joins(:orders).group(:id).order("COUNT(orders.id) DESC").limit(limit)
   end
 
   # Dynamic settings management
@@ -38,7 +38,7 @@ class Store < ApplicationRecord
 
   # Theme related methods
   def theme
-    setting('theme') || 'default'
+    setting("theme") || "default"
   end
 
   def show_featured_products?
@@ -46,7 +46,7 @@ class Store < ApplicationRecord
     return false unless respond_to?(:featured_products)
 
     # Check if there are any featured products
-    featured_products.any? && (setting('show_featured_products') != 'false')
+    featured_products.any? && (setting("show_featured_products") != "false")
   rescue
     # If there's an error, return false
     false
@@ -54,7 +54,7 @@ class Store < ApplicationRecord
 
   # Custom CSS
   def custom_css
-    setting('custom_css')
+    setting("custom_css")
   end
 
   # Product methods

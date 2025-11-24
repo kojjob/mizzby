@@ -1,0 +1,172 @@
+/* Store Themes */
+
+/* Default Theme */
+.default-theme {
+  --primary-color: #4f46e5;
+  --secondary-color: #818cf8;
+  --accent-color: #c7d2fe;
+  --text-color: #1f2937;
+  --background-color: #ffffff;
+  --header-bg: #ffffff;
+  --footer-bg: #1f2937;
+}
+
+/* Modern Theme */
+.modern-theme {
+  --primary-color: #0ea5e9;
+  --secondary-color: #38bdf8;
+  --accent-color: #bae6fd;
+  --text-color: #0f172a;
+  --background-color: #f8fafc;
+  --header-bg: #f8fafc;
+  --footer-bg: #0f172a;
+}
+
+/* Classic Theme */
+.classic-theme {
+  --primary-color: #b45309;
+  --secondary-color: #d97706;
+  --accent-color: #fcd34d;
+  --text-color: #1e293b;
+  --background-color: #fffbeb;
+  --header-bg: #fffbeb;
+  --footer-bg: #1e293b;
+}
+
+/* Minimal Theme */
+.minimal-theme {
+  --primary-color: #525252;
+  --secondary-color: #737373;
+  --accent-color: #e5e5e5;
+  --text-color: #171717;
+  --background-color: #fafafa;
+  --header-bg: #fafafa;
+  --footer-bg: #171717;
+}
+
+/* Bold Theme */
+.bold-theme {
+  --primary-color: #be123c;
+  --secondary-color: #e11d48;
+  --accent-color: #fecdd3;
+  --text-color: #0f172a;
+  --background-color: #ffffff;
+  --header-bg: #ffffff;
+  --footer-bg: #0f172a;
+}
+
+/* Color Schemes */
+
+/* Light Color Scheme */
+.light-scheme {
+  --primary-color: var(--primary-color);
+  --secondary-color: var(--secondary-color);
+  --accent-color: var(--accent-color);
+  --text-color: #1f2937;
+  --background-color: #ffffff;
+  --header-bg: #ffffff;
+  --footer-bg: #1f2937;
+}
+
+/* Dark Color Scheme */
+.dark-scheme {
+  --primary-color: var(--primary-color);
+  --secondary-color: var(--secondary-color);
+  --accent-color: var(--accent-color);
+  --text-color: #f9fafb;
+  --background-color: #111827;
+  --header-bg: #1f2937;
+  --footer-bg: #111827;
+}
+
+/* Blue Color Scheme */
+.blue-scheme {
+  --primary-color: #2563eb;
+  --secondary-color: #3b82f6;
+  --accent-color: #bfdbfe;
+  --text-color: #1e3a8a;
+  --background-color: #eff6ff;
+  --header-bg: #eff6ff;
+  --footer-bg: #1e3a8a;
+}
+
+/* Green Color Scheme */
+.green-scheme {
+  --primary-color: #059669;
+  --secondary-color: #10b981;
+  --accent-color: #a7f3d0;
+  --text-color: #064e3b;
+  --background-color: #ecfdf5;
+  --header-bg: #ecfdf5;
+  --footer-bg: #064e3b;
+}
+
+/* Purple Color Scheme */
+.purple-scheme {
+  --primary-color: #7c3aed;
+  --secondary-color: #8b5cf6;
+  --accent-color: #ddd6fe;
+  --text-color: #4c1d95;
+  --background-color: #f5f3ff;
+  --header-bg: #f5f3ff;
+  --footer-bg: #4c1d95;
+}
+
+/* Red Color Scheme */
+.red-scheme {
+  --primary-color: #dc2626;
+  --secondary-color: #ef4444;
+  --accent-color: #fecaca;
+  --text-color: #7f1d1d;
+  --background-color: #fef2f2;
+  --header-bg: #fef2f2;
+  --footer-bg: #7f1d1d;
+}
+
+/* Apply theme and color scheme variables to elements */
+.store-theme {
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.store-theme header {
+  background-color: var(--header-bg);
+}
+
+.store-theme footer {
+  background-color: var(--footer-bg);
+}
+
+.store-theme .btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.store-theme .btn-secondary {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.store-theme .text-primary {
+  color: var(--primary-color);
+}
+
+.store-theme .text-secondary {
+  color: var(--secondary-color);
+}
+
+.store-theme .bg-primary {
+  background-color: var(--primary-color);
+}
+
+.store-theme .bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.store-theme .border-primary {
+  border-color: var(--primary-color);
+}
+
+.store-theme .border-secondary {
+  border-color: var(--secondary-color);
+}

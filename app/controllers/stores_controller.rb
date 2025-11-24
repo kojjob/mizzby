@@ -1,6 +1,6 @@
 # app/controllers/stores_controller.rb
 class StoresController < ApplicationController
-  before_action :set_store, only: [:show, :products, :about, :contact, :categories]
+  before_action :set_store, only: [ :show, :products, :about, :contact, :categories ]
 
   def index
     @stores = Store.all
@@ -14,16 +14,16 @@ class StoresController < ApplicationController
     # Sorting functionality
     if params[:sort].present?
       case params[:sort]
-      when 'newest'
+      when "newest"
         @stores = @stores.order(created_at: :desc)
-      when 'alphabetical'
+      when "alphabetical"
         @stores = @stores.order(name: :asc)
-      when 'popular'
+      when "popular"
         # This would ideally use a more sophisticated popularity metric
         # For now, we'll use the number of products as a proxy for popularity
         @stores = @stores.left_joins(seller: :products)
                          .group(:id)
-                         .order('COUNT(products.id) DESC')
+                         .order("COUNT(products.id) DESC")
       end
     else
       # Default sorting
@@ -63,14 +63,14 @@ class StoresController < ApplicationController
 
     if params[:sort].present?
       case params[:sort]
-      when 'price_asc'
+      when "price_asc"
         @products = @products.order(price: :asc)
-      when 'price_desc'
+      when "price_desc"
         @products = @products.order(price: :desc)
-      when 'newest'
+      when "newest"
         @products = @products.order(created_at: :desc)
-      when 'popularity'
-        @products = @products.left_joins(:orders).group(:id).order('COUNT(orders.id) DESC')
+      when "popularity"
+        @products = @products.left_joins(:orders).group(:id).order("COUNT(orders.id) DESC")
       end
     end
   end

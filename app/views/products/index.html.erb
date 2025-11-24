@@ -575,13 +575,13 @@
                           <%= page %>
                         </span>
                       <% else %>
-                        <%= link_to page, url_for(params.permit!.merge(page: page)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+                        <%= link_to page, url_for(safe_params_for_pagination.merge(page: page)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
                       <% end %>
                     <% end %>
                   <% else %>
                     <% # First page %>
                     <% if @products.current_page > 3 %>
-                      <%= link_to 1, url_for(params.permit!.merge(page: 1)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+                      <%= link_to 1, url_for(safe_params_for_pagination.merge(page: 1)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
                       <% if @products.current_page > 4 %>
                         <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
                       <% end %>
@@ -596,7 +596,7 @@
                           <%= page %>
                         </span>
                       <% else %>
-                        <%= link_to page, url_for(params.permit!.merge(page: page)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+                        <%= link_to page, url_for(safe_params_for_pagination.merge(page: page)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
                       <% end %>
                     <% end %>
 
@@ -605,7 +605,7 @@
                       <% if @products.current_page < @products.total_pages - 3 %>
                         <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
                       <% end %>
-                      <%= link_to @products.total_pages, url_for(params.permit!.merge(page: @products.total_pages)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+                      <%= link_to @products.total_pages, url_for(safe_params_for_pagination.merge(page: @products.total_pages)), class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
                     <% end %>
                   <% end %>
 

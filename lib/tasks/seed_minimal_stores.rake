@@ -3,7 +3,7 @@ namespace :db do
     desc "Seed minimal stores data only (no dependencies)"
     task minimal_stores: :environment do
       puts "Seeding minimal stores..."
-      load Rails.root.join('db/seeds/minimal_stores.rb')
+      load Rails.root.join("db/seeds/minimal_stores.rb")
       puts "Minimal stores seeded successfully!"
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -77,6 +77,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.decimal "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["cart_id", "product_id"], name: "index_cart_items_on_cart_and_product_unique", unique: true
     t.index ["cart_id"], name: "index_cart_items_on_cart_id"
     t.index ["product_id"], name: "index_cart_items_on_product_id"
   end
@@ -119,8 +120,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_download_links_on_active"
+    t.index ["expires_at"], name: "index_download_links_on_expires_at"
     t.index ["order_id"], name: "index_download_links_on_order_id"
     t.index ["product_id"], name: "index_download_links_on_product_id"
+    t.index ["token"], name: "index_download_links_on_token_unique", unique: true
+    t.index ["user_id", "active"], name: "index_download_links_on_user_and_active"
     t.index ["user_id"], name: "index_download_links_on_user_id"
   end
 
@@ -136,6 +140,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["user_id", "created_at"], name: "index_notifications_on_user_and_created_at"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_and_read_at"
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
@@ -190,11 +196,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_orders_on_created_at"
     t.index ["discount"], name: "index_orders_on_discount"
+    t.index ["payment_id"], name: "index_orders_on_payment_id_unique", unique: true
+    t.index ["payment_status", "created_at"], name: "index_orders_on_payment_status_and_created_at"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["shipping_cost"], name: "index_orders_on_shipping_cost"
     t.index ["status", "created_at"], name: "index_orders_on_status_and_created_at"
     t.index ["status"], name: "index_orders_on_status"
     t.index ["total_amount"], name: "index_orders_on_total_amount"
+    t.index ["user_id", "created_at"], name: "index_orders_on_user_and_created_at"
+    t.index ["user_id", "status"], name: "index_orders_on_user_and_status"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
@@ -288,6 +298,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.index ["available_in_nigeria"], name: "index_products_on_available_in_nigeria"
     t.index ["barcode"], name: "index_products_on_barcode", unique: true
     t.index ["brand"], name: "index_products_on_brand"
+    t.index ["category_id", "status"], name: "index_products_on_category_and_status"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["condition"], name: "index_products_on_condition"
     t.index ["country_of_origin"], name: "index_products_on_country_of_origin"
@@ -296,6 +307,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.index ["description"], name: "index_products_on_description"
     t.index ["dimensions"], name: "index_products_on_dimensions"
     t.index ["discounted_price"], name: "index_products_on_discounted_price"
+    t.index ["featured", "status"], name: "index_products_on_featured_and_status"
     t.index ["featured"], name: "index_products_on_featured"
     t.index ["is_digital"], name: "index_products_on_is_digital"
     t.index ["meta_description"], name: "index_products_on_meta_description"
@@ -305,9 +317,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.index ["on_sale"], name: "index_products_on_on_sale"
     t.index ["price"], name: "index_products_on_price"
     t.index ["product_type"], name: "index_products_on_product_type"
+    t.index ["published", "published_at"], name: "index_products_on_published_and_published_at"
     t.index ["published"], name: "index_products_on_published"
     t.index ["published_at"], name: "index_products_on_published_at"
     t.index ["sale_status"], name: "index_products_on_sale_status"
+    t.index ["seller_id", "status"], name: "index_products_on_seller_and_status"
     t.index ["seller_id"], name: "index_products_on_seller_id"
     t.index ["shipping_method"], name: "index_products_on_shipping_method"
     t.index ["shipping_time"], name: "index_products_on_shipping_time"
@@ -328,6 +342,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "published_at"
+    t.index ["product_id", "created_at"], name: "index_reviews_on_product_and_created_at"
+    t.index ["product_id", "published"], name: "index_reviews_on_product_and_published"
     t.index ["product_id"], name: "index_reviews_on_product_id"
     t.index ["published_at"], name: "index_reviews_on_published_at"
     t.index ["rating"], name: "index_reviews_on_rating"
@@ -358,7 +374,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.jsonb "store_settings", default: {}
     t.index ["custom_domain"], name: "index_sellers_on_custom_domain", unique: true
     t.index ["store_slug"], name: "index_sellers_on_store_slug", unique: true
+    t.index ["user_id", "verified"], name: "index_sellers_on_user_and_verified"
     t.index ["user_id"], name: "index_sellers_on_user_id"
+    t.index ["verified"], name: "index_sellers_on_verified"
   end
 
   create_table "store_categories", force: :cascade do |t|
@@ -387,6 +405,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "published", default: true
+    t.string "color_scheme", default: "light"
+    t.string "theme", default: "default"
     t.index ["seller_id"], name: "index_stores_on_seller_id"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
@@ -404,6 +425,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.datetime "updated_at", null: false
     t.index ["activity_type"], name: "index_user_activities_on_activity_type"
     t.index ["reference_type", "reference_id"], name: "index_user_activities_on_reference"
+    t.index ["user_id", "activity_type"], name: "index_user_activities_on_user_and_activity_type"
+    t.index ["user_id", "created_at"], name: "index_user_activities_on_user_and_created_at"
     t.index ["user_id"], name: "index_user_activities_on_user_id"
   end
 
@@ -458,6 +481,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_083801) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_wishlist_items_on_product_id"
+    t.index ["user_id", "created_at"], name: "index_wishlist_items_on_user_and_created_at"
+    t.index ["user_id", "product_id"], name: "index_wishlist_items_on_user_and_product_unique", unique: true
     t.index ["user_id"], name: "index_wishlist_items_on_user_id"
   end
 

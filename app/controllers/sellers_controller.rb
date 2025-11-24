@@ -1,7 +1,7 @@
 class SellersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_seller, only: [:show, :edit, :update, :dashboard]
-  before_action :authorize_seller, only: [:edit, :update, :dashboard]
+  before_action :set_seller, only: [ :show, :edit, :update, :dashboard ]
+  before_action :authorize_seller, only: [ :edit, :update, :dashboard ]
 
   def new
     # Check if the current user already has a seller profile
@@ -61,20 +61,20 @@ class SellersController < ApplicationController
 
   def dashboard
     @seller = current_user.seller
-    
+
     # Use subqueries instead of joins for all order-related queries
     seller_product_ids = @seller.products.pluck(:id)
-    
+
     @total_sales = Order.where(product_id: seller_product_ids)
                       .where(status: "completed")
                       .sum(:total_amount)
-    
+
     @products_count = @seller.products.count
-    
+
     @pending_orders_count = Order.where(product_id: seller_product_ids)
-                                .where(status: ["pending", "processing"])
+                                .where(status: [ "pending", "processing" ])
                                 .count
-    
+
     # For recent orders, use the same approach
     @recent_orders = Order.where(product_id: seller_product_ids)
                         .includes(:user) # Include any associations you need in the view
@@ -145,7 +145,7 @@ class SellersController < ApplicationController
       base_params.merge!(params.require(:seller).permit(
         :user_id, :verified, :commission_rate, :store_name, :store_slug,
         :custom_domain, :domain_verified,
-        store_settings: [:enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css]
+        store_settings: [ :enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css ]
       ))
     end
 
@@ -155,7 +155,7 @@ class SellersController < ApplicationController
   def store_params
     params.require(:seller).permit(
       :store_name, :store_slug, :custom_domain,
-      store_settings: [:enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css]
+      store_settings: [ :enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css ]
     )
   end
 end

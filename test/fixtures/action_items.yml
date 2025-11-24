@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user: one
+  user: regular_user
   title: MyString
   description: MyText
   priority: 1
@@ -9,7 +9,7 @@ one:
   completed: false
 
 two:
-  user: two
+  user: admin
   title: MyString
   description: MyText
   priority: 1

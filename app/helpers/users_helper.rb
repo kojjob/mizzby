@@ -1,5 +1,5 @@
 module UsersHelper
-  def user_avatar(user, size = 'w-8 h-8')
+  def user_avatar(user, size = "w-8 h-8")
     if user.nil?
       # Default avatar for non-logged in users
       content_tag :div, class: "#{size} rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600" do

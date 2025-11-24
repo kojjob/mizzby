@@ -50,6 +50,6 @@
 
 <% if @store.respond_to?(:custom_css) && @store.custom_css.present? %>
   <style>
-    <%= raw @store.custom_css %>
+    <%= sanitize @store.custom_css, tags: [], attributes: [] %>
   </style>
 <% end %>
