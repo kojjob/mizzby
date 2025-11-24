@@ -6,7 +6,7 @@ one:
   status: MyString
   total_amount: 9.99
   payment_processor: MyString
-  payment_id: MyString
+  payment_id: PAYMENT-ID-001
   payment_status: MyString
   payment_details: MyText
   notes: MyText
@@ -17,7 +17,7 @@ two:
   status: MyString
   total_amount: 9.99
   payment_processor: MyString
-  payment_id: MyString
+  payment_id: PAYMENT-ID-002
   payment_status: MyString
   payment_details: MyText
   notes: MyText
