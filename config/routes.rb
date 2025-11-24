@@ -61,7 +61,7 @@ Rails.application.routes.draw do
   resources :products do
     member do
       post "add_item_to_cart", as: :add_item_to
-      post "add_to_cart"  # Alias route for add_to_cart_path(product)
+      post "add_to_cart", to: "cart_items#create"  # Route for add_to_cart_path(product)
     end
     collection { get :new_arrivals }
     resources :reviews, only: [ :index, :new, :create ]

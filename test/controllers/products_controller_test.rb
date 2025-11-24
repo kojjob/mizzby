@@ -40,9 +40,27 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to product_url(@product)
   end
 
-  test "should destroy product" do
+  test "should destroy product without orders" do
+    # Create a new product specifically for this test that has no orders
+    new_product = Product.create!(
+      name: "Product To Delete",
+      description: "Test product for deletion",
+      price: 9.99,
+      sku: "DELETE-SKU-#{SecureRandom.hex(4)}",
+      slug: "product-to-delete-#{SecureRandom.hex(4)}",
+      barcode: "DELETE-BARCODE-#{SecureRandom.hex(4)}",
+      condition: "New",
+      brand: "Test Brand",
+      country_of_origin: "Ghana",
+      category: categories(:one),
+      seller: sellers(:seller_profile),
+      meta_title: "Delete Test",
+      meta_description: "Product to be deleted",
+      status: "active"
+    )
+
     assert_difference("Product.count", -1) do
-      delete product_url(@product)
+      delete product_url(new_product)
     end
 
     assert_redirected_to products_url

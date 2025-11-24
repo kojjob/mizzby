@@ -4,7 +4,9 @@ class CartItemsController < ApplicationController
   before_action :set_cart_item, only: [ :update, :destroy ]
 
   def create
-    @product = Product.find(params[:product_id])
+    # Support both product_id param and id param (from member route)
+    product_id = params[:product_id] || params[:id]
+    @product = Product.find(product_id)
     @quantity = params[:quantity].to_i || 1
 
     # Check if item already exists in cart
