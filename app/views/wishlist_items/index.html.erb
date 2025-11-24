@@ -17,8 +17,8 @@
           <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
             <div class="relative">
               <%= link_to product_path(item.product) do %>
-                <% if item.product.product_images.first %>
-                  <%= image_tag item.product.product_images.first.image_url, 
+                <% if item.product.product_images.first&.image&.attached? %>
+                  <%= image_tag url_for(item.product.product_images.first.image),
                       class: "w-full h-48 object-cover", alt: item.product.name %>
                 <% else %>
                   <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
