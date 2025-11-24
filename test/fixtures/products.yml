@@ -7,6 +7,7 @@ one:
   discounted_price: 9.99
   stock_quantity: 1
   sku: TEST-SKU-001
+  slug: test-product-one
   barcode: BARCODE001
   weight: 9.99
   dimensions: 10x10x10
@@ -34,6 +35,7 @@ two:
   discounted_price: 15.99
   stock_quantity: 5
   sku: TEST-SKU-002
+  slug: test-product-two
   barcode: BARCODE002
   weight: 12.50
   dimensions: 15x15x15
