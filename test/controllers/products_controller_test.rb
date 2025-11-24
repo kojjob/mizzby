@@ -3,6 +3,8 @@ require "test_helper"
 class ProductsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @product = products(:one)
+    @user = users(:seller)
+    sign_in @user
   end
 
   test "should get index" do
@@ -17,7 +19,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create product" do
     assert_difference("Product.count") do
-      post products_url, params: { product: { available_in_ghana: @product.available_in_ghana, available_in_nigeria: @product.available_in_nigeria, barcode: @product.barcode, brand: @product.brand, category_id: @product.category_id, condition: @product.condition, country_of_origin: @product.country_of_origin, currency: @product.currency, description: @product.description, dimensions: @product.dimensions, discounted_price: @product.discounted_price, featured: @product.featured, is_digital: @product.is_digital, meta_description: @product.meta_description, meta_title: @product.meta_title, name: @product.name, price: @product.price, published: @product.published, published_at: @product.published_at, seller_id: @product.seller_id, shipping_time: @product.shipping_time, sku: @product.sku, status: @product.status, stock_quantity: @product.stock_quantity, weight: @product.weight } }
+      post products_url, params: { product: { available_in_ghana: @product.available_in_ghana, available_in_nigeria: @product.available_in_nigeria, barcode: @product.barcode, brand: @product.brand, category_id: @product.category_id, condition: @product.condition, country_of_origin: @product.country_of_origin, currency: @product.currency, description: @product.description, dimensions: @product.dimensions, discounted_price: @product.discounted_price, featured: @product.featured, is_digital: @product.is_digital, meta_description: @product.meta_description, meta_title: @product.meta_title, name: "New Test Product", price: @product.price, published: @product.published, published_at: @product.published_at, seller_id: @product.seller_id, shipping_time: @product.shipping_time, sku: "NEW-SKU-#{SecureRandom.hex(4)}", status: @product.status, stock_quantity: @product.stock_quantity, weight: @product.weight } }
     end
 
     assert_redirected_to product_url(Product.last)

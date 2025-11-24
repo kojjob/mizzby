@@ -60,8 +60,8 @@
               <div class="flex justify-between items-center">
                 <div>
                   <% if item.product.discount_percentage && item.product.discount_percentage > 0 %>
-                    <span class="text-gray-400 line-through text-sm">$<%= sprintf('%.2f', item.product.original_price) %></span>
-                    <span class="text-indigo-600 font-bold ml-1">$<%= sprintf('%.2f', item.product.price) %></span>
+                    <span class="text-gray-400 line-through text-sm">$<%= sprintf('%.2f', item.product.price) %></span>
+                    <span class="text-indigo-600 font-bold ml-1">$<%= sprintf('%.2f', item.product.discounted_price) %></span>
                   <% else %>
                     <span class="text-indigo-600 font-bold">$<%= sprintf('%.2f', item.product.price) %></span>
                   <% end %>
