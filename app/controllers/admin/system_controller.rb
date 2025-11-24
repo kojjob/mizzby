@@ -119,8 +119,9 @@ class Admin::SystemController < Admin::BaseController
     total = 0
     ActiveRecord::Base.connection.tables.each do |table|
       begin
-        # Different adapters return results in different formats
-        result = ActiveRecord::Base.connection.execute("SELECT COUNT(*) FROM #{table}")
+        # Use parameterized query to prevent SQL injection
+        sanitized_table = ActiveRecord::Base.connection.quote_table_name(table)
+        result = ActiveRecord::Base.connection.execute("SELECT COUNT(*) FROM #{sanitized_table}")
         count = if result.first.is_a?(Hash) && result.first["count"]
                   result.first["count"]
         elsif result.first.is_a?(Array)
@@ -157,8 +158,13 @@ class Admin::SystemController < Admin::BaseController
         "Unknown format"
       end
     when "MySQL", "Mysql2"
+      # Use parameterized query to prevent SQL injection
+      db_name = ActiveRecord::Base.connection.current_database
       result = ActiveRecord::Base.connection.execute(
-        "SELECT SUM(data_length + index_length) / 1024 / 1024 FROM information_schema.TABLES WHERE table_schema = '#{ActiveRecord::Base.connection.current_database}'"
+        ActiveRecord::Base.sanitize_sql_array([
+          "SELECT SUM(data_length + index_length) / 1024 / 1024 FROM information_schema.TABLES WHERE table_schema = ?",
+          db_name
+        ])
       ).first[0]
       "#{result.to_f.round(2)} MB"
     else
