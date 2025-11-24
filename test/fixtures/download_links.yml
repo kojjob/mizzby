@@ -3,7 +3,7 @@
 one:
   product: one
   user: one
-  token: MyString
+  token: DOWNLOAD-TOKEN-001
   expires_at: 2025-04-01 03:58:15
   download_count: 1
   download_limit: 1
@@ -13,7 +13,7 @@ one:
 two:
   product: two
   user: two
-  token: MyString
+  token: DOWNLOAD-TOKEN-002
   expires_at: 2025-04-01 03:58:15
   download_count: 1
   download_limit: 1
