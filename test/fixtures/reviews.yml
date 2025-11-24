@@ -3,13 +3,13 @@
 one:
   user: regular_user
   product: one
-  rating: 1
-  content: MyText
-  published: false
+  rating: 5
+  content: "This is a great product! I highly recommend it to everyone."
+  published: true
 
 two:
   user: admin
   product: two
-  rating: 1
-  content: MyText
-  published: false
+  rating: 4
+  content: "Good quality product, arrived on time and as described."
+  published: true

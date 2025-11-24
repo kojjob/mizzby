@@ -4,8 +4,8 @@ class UserTest < ActiveSupport::TestCase
   def setup
     @user = User.new(
       email: "test@example.com",
-      password: "password123",
-      password_confirmation: "password123",
+      password: "Password123!",
+      password_confirmation: "Password123!",
       first_name: "Test",
       last_name: "User"
     )
@@ -54,18 +54,12 @@ class UserTest < ActiveSupport::TestCase
 
   test "first_name should be present" do
     @user.first_name = "     "
-    # Since the User model allows blank names right now with allow_blank: true, this test should pass
-    # If you want to enforce non-blank names, you would expect this to fail
-    # assert_not @user.valid?
-    assert @user.valid?
+    assert_not @user.valid?
   end
 
   test "last_name should be present" do
     @user.last_name = "     "
-    # Since the User model allows blank names right now with allow_blank: true, this test should pass
-    # If you want to enforce non-blank names, you would expect this to fail
-    # assert_not @user.valid?
-    assert @user.valid?
+    assert_not @user.valid?
   end
 
   test "full_name returns correctly formatted name" do
@@ -121,8 +115,10 @@ class UserTest < ActiveSupport::TestCase
     # Test non-owners
     other_user = User.new(
       email: "other@example.com",
-      password: "password123",
-      password_confirmation: "password123"
+      password: "Password123!",
+      password_confirmation: "Password123!",
+      first_name: "Other",
+      last_name: "User"
     )
     other_user_review = Review.new(user: other_user)
     other_user_order = Order.new(user: other_user)

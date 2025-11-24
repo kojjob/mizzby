@@ -20,8 +20,8 @@ one:
   available_in_nigeria: false
   shipping_time: 2-3 days
   category: one
-  seller: one
-  published: false
+  seller: seller_profile
+  published: true
   published_at: 2025-04-01 03:37:01
   meta_title: Test Product One Meta Title
   meta_description: Test product one meta description
@@ -49,7 +49,7 @@ two:
   shipping_time: 3-5 days
   category: two
   seller: two
-  published: false
+  published: true
   published_at: 2025-04-01 03:37:01
   meta_title: Test Product Two Meta Title
   meta_description: Test product two meta description

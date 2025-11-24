@@ -6,22 +6,53 @@ class ProductsController < ApplicationController
   def index
     # Base query with comprehensive includes to avoid N+1 queries
     base_query = Product.where(published: true)
-                       .includes(:category, :seller)
+                       .includes(:category, :seller, :product_images, :reviews)
 
-    # Filter by category if requested
+    # Filter by category (single)
     if params[:category_id].present?
       base_query = base_query.where(category_id: params[:category_id])
     end
 
+    # Filter by categories (multiple)
+    if params[:category_ids].present?
+      base_query = base_query.where(category_id: params[:category_ids])
+    end
+
+    # Filter by price range
+    if params[:min_price].present?
+      base_query = base_query.where('price >= ?', params[:min_price])
+    end
+
+    if params[:max_price].present?
+      base_query = base_query.where('price <= ?', params[:max_price])
+    end
+
+    # Filter by product type
+    if params[:digital] == "1"
+      base_query = base_query.where(is_digital: true)
+    end
+
+    if params[:on_sale] == "1"
+      base_query = base_query.where("discounted_price < price")
+    end
+
+    if params[:featured] == "1"
+      base_query = base_query.where(featured: true)
+    end
+
     # Apply sorting
     case params[:sort]
-    when "price-low"
+    when "price_asc", "price-low"
       base_query = base_query.order(price: :asc)
-    when "price-high"
+    when "price_desc", "price-high"
       base_query = base_query.order(price: :desc)
-    when "popular"
+    when "popular", "best_selling"
       # Assuming you have a way to track popularity - adjust as needed
       base_query = base_query.order(created_at: :desc) # Fallback to newest
+    when "highest_rated"
+      base_query = base_query.left_joins(:reviews)
+                             .group(:id)
+                             .order('AVG(reviews.rating) DESC NULLS LAST')
     else # default to newest
       base_query = base_query.order(created_at: :desc)
     end
@@ -174,7 +205,7 @@ class ProductsController < ApplicationController
   helper_method :safe_params_for_pagination
 
   def safe_params_for_pagination
-    params.permit(:category_id, :sort, :query, :page)
+    params.permit(:category_id, :sort, :query, :page, :min_price, :max_price, :digital, :on_sale, :featured, category_ids: [])
   end
 
   private

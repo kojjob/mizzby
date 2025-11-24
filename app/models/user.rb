@@ -4,25 +4,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :confirmable, :lockable,
          :recoverable, :rememberable, :validatable, :timeoutable, :trackable
 
-  # Active Storage for profile picture
-  has_one_attached :profile_picture
-
-  # --- Associations ---
-
-  # Customer relationships
-  has_one  :cart, dependent: :destroy
-  has_many :cart_items, dependent: :destroy
-  has_many :orders, dependent: :restrict_with_error
-  has_many :reviews, dependent: :nullify
-  has_many :wishlist_items, dependent: :destroy
-  has_many :download_links, dependent: :destroy
-  has_many :notifications, dependent: :destroy
-  has_many :payment_audit_logs, dependent: :nullify
-  has_many :user_activities, dependent: :destroy
-  has_many :action_items, dependent: :destroy
-
-  # Seller relationship
-  has_one :seller, dependent: :destroy
+  # Include concerns
+  include UserAssociations
+  include UserValidations
+  include UserCallbacks
+  include UserScopes
 
   # --- Enums ---
   # User roles (if you have a role column)
@@ -34,24 +20,6 @@ class User < ApplicationRecord
   # User preferences
   store_accessor :preferences, :theme, :email_notifications, :marketing_emails,
                 :two_factor_enabled, :currency_preference, :language_preference
-
-  # --- Validations ---
-
-  # User information validations
-  validates :first_name, :last_name, presence: true, length: { minimum: 2, maximum: 50 }
-
-  # Email format validation (additional to Devise's validation)
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
-
-  # Custom validation for profile picture
-  validate :validate_profile_picture, if: :profile_picture_attached?
-
-  # --- Callbacks ---
-  # Create a cart for new users
-  after_create :create_cart
-
-  # Set default preferences
-  after_initialize :set_default_preferences, if: :new_record?
 
   # --- Delegations ---
   # Check if user is a seller
@@ -185,17 +153,6 @@ class User < ApplicationRecord
     false
   end
 
-  # Password validation for security
-  validate :password_complexity, if: -> { password.present? }
-
-  def password_complexity
-    # Skip validation if password is blank (handled by Devise) or meets requirements
-    return if password.blank? ||
-              password =~ /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-
-    errors.add(:password, "must include at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long")
-  end
-
   # Helper method to get active cart or create one
   def current_cart
     cart || create_cart
@@ -230,45 +187,5 @@ class User < ApplicationRecord
 
       return orders
     end
-  end
-  private
-
-  def profile_picture_attached?
-    profile_picture.attached?
-  end
-
-  # Fallback validation for profile picture when active_storage_validations gem is not available
-  def validate_profile_picture
-    if profile_picture.attached?
-      # Check file size
-      if profile_picture.blob.byte_size > 5.megabytes
-        errors.add(:profile_picture, "must be less than 5MB")
-        profile_picture.purge
-      end
-
-      # Check content type
-      allowed_types = [ "image/png", "image/jpeg", "image/jpg", "image/webp" ]
-      unless allowed_types.include?(profile_picture.blob.content_type)
-        errors.add(:profile_picture, "must be a valid image format (JPEG, PNG, or WebP)")
-        profile_picture.purge
-      end
-    end
-  end
-
-  def create_cart
-    Cart.create(user: self) if cart.nil?
-  rescue StandardError => e
-    Rails.logger.error("Failed to create cart for user #{id}: #{e.message}")
-    # Don't raise the error to prevent user creation failure
-  end
-
-  def set_default_preferences
-    self.preferences ||= {}
-    self.theme ||= "light"
-    self.email_notifications ||= true
-    self.marketing_emails ||= false
-    self.two_factor_enabled ||= false
-    self.currency_preference ||= "USD"
-    self.language_preference ||= "en"
   end
 end

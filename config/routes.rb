@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   # Shopping Cart System
   resources :carts do
     collection { get :current }
+    member { delete :empty }
   end
   resources :cart_items
   get "cart", to: "carts#current", as: :current_cart
@@ -59,7 +60,10 @@ Rails.application.routes.draw do
   # Product Catalog
   resources :categories
   resources :products do
-    member { post "add_item_to_cart", as: :add_item_to }
+    member do
+      post "add_item_to_cart", as: :add_item_to
+      post "add_to_cart", to: "cart_items#create"  # Route for add_to_cart_path(product)
+    end
     collection { get :new_arrivals }
     resources :reviews, only: [ :index, :new, :create ]
     resources :product_questions, only: [ :index, :new, :create ]

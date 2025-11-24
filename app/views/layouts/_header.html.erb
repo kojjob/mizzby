@@ -35,7 +35,7 @@
               <%= link_to "Account", edit_user_registration_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600" %>
               <%= link_to "Orders", orders_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600" rescue nil %>
               <% if current_user.respond_to?(:seller) && current_user.seller.present? %>
-                <%= link_to "Seller Dashboard", seller_dashboard_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600" %>
+                <%= link_to "Seller Dashboard", dashboard_sellers_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600" %>
               <% end %>
               <% if current_user.respond_to?(:admin) && current_user.admin? %>
                 <%= link_to "Admin Dashboard", admin_root_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600" %>

@@ -261,8 +261,8 @@
                 <% end %>
                 
                 <%= link_to product_path(product), class: "block" do %>
-                  <% if product.product_images.any? %>
-                    <%= image_tag url_for(product.product_images.first.image), 
+                  <% if product.product_images.any? && product.product_images.first.image&.attached? %>
+                    <%= image_tag url_for(product.product_images.first.image),
                         class: "w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out" %>
                   <% else %>
                     <div class="w-full h-full flex items-center justify-center bg-gray-200">
@@ -284,7 +284,7 @@
                       </svg>
                     <% end %>
                     
-                    <%= button_to add_item_to_product_path(product), method: :post, 
+                    <%= button_to add_to_cart_product_path(product), method: :post,
                         class: "p-2 rounded-full bg-white text-gray-800 hover:text-indigo-600 transition-colors shadow-md transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-in-out delay-75",
                         data: { turbo: true } do %>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

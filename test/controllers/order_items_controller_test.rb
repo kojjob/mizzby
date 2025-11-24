@@ -3,6 +3,7 @@ require "test_helper"
 class OrderItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @order_item = order_items(:one)
+    @other_order = orders(:two)
   end
 
   test "should get index" do
@@ -17,7 +18,7 @@ class OrderItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create order_item" do
     assert_difference("OrderItem.count") do
-      post order_items_url, params: { order_item: { order_id: @order_item.order_id, product_id: @order_item.product_id, quantity: @order_item.quantity, total_price: @order_item.total_price, unit_price: @order_item.unit_price, shipping_address: @order_item.shipping_address, shipping_method: @order_item.shipping_method, payment_method: @order_item.payment_method, product_name: @order_item.product_name, product_sku: @order_item.product_sku } }
+      post order_items_url, params: { order_item: { order_id: @other_order.id, product_id: @order_item.product_id, quantity: @order_item.quantity, total_price: @order_item.total_price, unit_price: @order_item.unit_price, shipping_address: @order_item.shipping_address, shipping_method: @order_item.shipping_method, payment_method: @order_item.payment_method, product_name: @order_item.product_name, product_sku: @order_item.product_sku } }
     end
 
     assert_redirected_to order_item_url(OrderItem.last)

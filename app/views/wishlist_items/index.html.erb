@@ -17,8 +17,8 @@
           <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
             <div class="relative">
               <%= link_to product_path(item.product) do %>
-                <% if item.product.product_images.first %>
-                  <%= image_tag item.product.product_images.first.image_url, 
+                <% if item.product.product_images.first&.image&.attached? %>
+                  <%= image_tag url_for(item.product.product_images.first.image),
                       class: "w-full h-48 object-cover", alt: item.product.name %>
                 <% else %>
                   <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
@@ -60,14 +60,14 @@
               <div class="flex justify-between items-center">
                 <div>
                   <% if item.product.discount_percentage && item.product.discount_percentage > 0 %>
-                    <span class="text-gray-400 line-through text-sm">$<%= sprintf('%.2f', item.product.original_price) %></span>
-                    <span class="text-indigo-600 font-bold ml-1">$<%= sprintf('%.2f', item.product.price) %></span>
+                    <span class="text-gray-400 line-through text-sm">$<%= sprintf('%.2f', item.product.price) %></span>
+                    <span class="text-indigo-600 font-bold ml-1">$<%= sprintf('%.2f', item.product.discounted_price) %></span>
                   <% else %>
                     <span class="text-indigo-600 font-bold">$<%= sprintf('%.2f', item.product.price) %></span>
                   <% end %>
                 </div>
                 
-                <%= button_to add_to_cart_path(product_id: item.product.id), method: :post, class: "py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-full transition-colors" do %>
+                <%= button_to add_item_to_product_path(item.product), method: :post, class: "py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-full transition-colors" do %>
                   Add to Cart
                 <% end %>
               </div>
