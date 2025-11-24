@@ -70,15 +70,15 @@ class UserTest < ActiveSupport::TestCase
 
   test "full_name returns correctly formatted name" do
     assert_equal "Test User", @user.full_name
-    
+
     @user.first_name = nil
     @user.last_name = "Only"
     assert_equal "Only", @user.full_name
-    
+
     @user.first_name = "First"
     @user.last_name = nil
     assert_equal "First", @user.full_name
-    
+
     @user.first_name = nil
     @user.last_name = nil
     assert_equal "test", @user.full_name # Should return first part of email
@@ -86,15 +86,15 @@ class UserTest < ActiveSupport::TestCase
 
   test "initials returns correct values" do
     assert_equal "TU", @user.initials
-    
+
     @user.first_name = nil
     @user.last_name = "Only"
     assert_equal "O", @user.initials
-    
+
     @user.first_name = "First"
     @user.last_name = nil
     assert_equal "F", @user.initials
-    
+
     @user.first_name = nil
     @user.last_name = nil
     assert_equal "T", @user.initials # Should return first character of email
@@ -117,7 +117,7 @@ class UserTest < ActiveSupport::TestCase
     @user.admin = false
     assert @user.can_manage?(review)
     assert @user.can_manage?(order)
-    
+
     # Test non-owners
     other_user = User.new(
       email: "other@example.com",
@@ -126,7 +126,7 @@ class UserTest < ActiveSupport::TestCase
     )
     other_user_review = Review.new(user: other_user)
     other_user_order = Order.new(user: other_user)
-    
+
     assert_not @user.can_manage?(other_user_review)
     assert_not @user.can_manage?(other_user_order)
   end
@@ -142,7 +142,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "seller? returns correct value" do
     assert_not @user.seller?
-    
+
     # Create a seller for the user
     @user.build_seller
     @user.save
@@ -151,39 +151,39 @@ class UserTest < ActiveSupport::TestCase
 
   test "admin? returns correct value for admins" do
     assert_not @user.admin?
-    
+
     @user.admin = true
     assert @user.admin?
   end
 
   test "admin? returns correct value for super_admins" do
     assert_not @user.admin?
-    
+
     @user.super_admin = true
     assert @user.admin?
   end
 
   test "super_admin? returns correct value" do
     assert_not @user.super_admin?
-    
+
     @user.super_admin = true
     assert @user.super_admin?
   end
 
   test "completed_profile? returns correct value" do
     assert_not @user.completed_profile? # No profile picture
-    
+
     # Test with mock attachment - since we can't easily attach a file in a unit test
     # We'll mock the attachment check
     def @user.profile_picture_attached?
       true
     end
-    
+
     assert @user.completed_profile?
-    
+
     @user.first_name = nil
     assert_not @user.completed_profile?
-    
+
     @user.first_name = "Test"
     @user.last_name = nil
     assert_not @user.completed_profile?

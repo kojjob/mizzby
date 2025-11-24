@@ -95,7 +95,7 @@ class User < ApplicationRecord
     return !access_locked? unless respond_to?(:status)
 
     # If there is a status column, check if it's set to active
-    status == 'active'
+    status == "active"
   end
 
   # User name and display methods

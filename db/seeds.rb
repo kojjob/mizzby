@@ -63,7 +63,7 @@ puts "Creating sellers..."
 sellers = []
 
 seller_users.each_with_index do |user, i|
-  business_name = ["Digital Dreams", "Code Crafters", "Pixel Perfect", "Tech Treasures"][i] || Faker::Company.unique.name
+  business_name = [ "Digital Dreams", "Code Crafters", "Pixel Perfect", "Tech Treasures" ][i] || Faker::Company.unique.name
 
   seller = Seller.find_or_initialize_by(user: user) do |s|
     s.business_name = business_name
@@ -71,7 +71,7 @@ seller_users.each_with_index do |user, i|
     s.location = Faker::Address.city
     s.country = Faker::Address.country
     s.phone_number = Faker::PhoneNumber.phone_number
-    s.verified = [true, false].sample
+    s.verified = [ true, false ].sample
     s.commission_rate = rand(10.0..20.0).round(2)
     s.acceptance_rate = rand(90.0..100.0).round(2)
     s.average_response_time = rand(1..24)
@@ -293,7 +293,7 @@ end
   name = Faker::Commerce.unique.product_name
 
   # Set some products on sale
-  on_sale = [true, false].sample
+  on_sale = [ true, false ].sample
   price = rand(9.99..99.99).round(2)
   discounted_price = on_sale ? (price * rand(0.7..0.9)).round(2) : nil
 
@@ -341,11 +341,11 @@ end
     dimensions: dimensions,
     condition: "new",
     brand: Faker::Company.name,
-    featured: [true, false].sample,
+    featured: [ true, false ].sample,
     currency: "USD",
     country_of_origin: Faker::Address.country,
-    available_in_ghana: [true, false].sample,
-    available_in_nigeria: [true, false].sample,
+    available_in_ghana: [ true, false ].sample,
+    available_in_nigeria: [ true, false ].sample,
     shipping_time: is_digital ? nil : "#{rand(2..14)} business days",
     category: category,
     seller: seller,

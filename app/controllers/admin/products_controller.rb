@@ -43,7 +43,7 @@ module Admin
       # Set stats for dashboard cards
       begin
         @total_products = Product.count
-        @active_products = Product.where(status: 'active').count
+        @active_products = Product.where(status: "active").count
         @featured_products = Product.where(featured: true).count
         @out_of_stock_products = Product.where("stock_quantity <= 0").count
       rescue => e
@@ -161,7 +161,7 @@ module Admin
       )
 
       # Convert string values to boolean for boolean attributes
-      [:featured, :published, :available_in_ghana, :available_in_nigeria].each do |attr|
+      [ :featured, :published, :available_in_ghana, :available_in_nigeria ].each do |attr|
         if params_hash[attr].present?
           params_hash[attr] = ActiveModel::Type::Boolean.new.cast(params_hash[attr])
         end
@@ -175,8 +175,8 @@ module Admin
       # Ensure status is a valid value
       if params_hash[:status].present?
         # Check what valid statuses are available in the Product model
-        valid_statuses = ['active', 'inactive']
-        params_hash[:status] = 'active' unless valid_statuses.include?(params_hash[:status])
+        valid_statuses = [ "active", "inactive" ]
+        params_hash[:status] = "active" unless valid_statuses.include?(params_hash[:status])
       end
 
       params_hash

@@ -16,7 +16,7 @@ puts "Creating 5 minimal stores..."
     user.save(validate: false)
     puts "  Created user #{user.email}"
   end
-  
+
   # Create a seller for the user
   seller = Seller.find_or_initialize_by(user_id: user.id)
   if !seller.persisted?
@@ -41,7 +41,7 @@ puts "Creating 5 minimal stores..."
     seller.save(validate: false)
     puts "  Created seller #{seller.business_name}"
   end
-  
+
   # Create a store for the seller
   store = Store.find_or_initialize_by(seller_id: seller.id)
   if !store.persisted?

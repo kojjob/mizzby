@@ -15,11 +15,11 @@ class ProductsController < ApplicationController
 
     # Apply sorting
     case params[:sort]
-    when 'price-low'
+    when "price-low"
       base_query = base_query.order(price: :asc)
-    when 'price-high'
+    when "price-high"
       base_query = base_query.order(price: :desc)
-    when 'popular'
+    when "popular"
       # Assuming you have a way to track popularity - adjust as needed
       base_query = base_query.order(created_at: :desc) # Fallback to newest
     else # default to newest
@@ -108,15 +108,15 @@ class ProductsController < ApplicationController
     attributes = product_params.to_h
 
     # Handle the featured attribute specifically
-    if params[:product][:featured] == '0'
+    if params[:product][:featured] == "0"
       attributes[:featured] = false
-    elsif params[:product][:featured] == '1'
+    elsif params[:product][:featured] == "1"
       attributes[:featured] = true
     end
 
     # Handle the status attribute specifically
-    if params[:product][:status] == 'draft'
-      attributes[:status] = 'inactive'
+    if params[:product][:status] == "draft"
+      attributes[:status] = "inactive"
     end
 
     @product = Product.new(attributes)
@@ -139,15 +139,15 @@ class ProductsController < ApplicationController
       attributes = product_params.to_h
 
       # Handle the featured attribute specifically
-      if params[:product][:featured] == '0'
+      if params[:product][:featured] == "0"
         attributes[:featured] = false
-      elsif params[:product][:featured] == '1'
+      elsif params[:product][:featured] == "1"
         attributes[:featured] = true
       end
 
       # Handle the status attribute specifically
-      if params[:product][:status] == 'draft'
-        attributes[:status] = 'inactive'
+      if params[:product][:status] == "draft"
+        attributes[:status] = "inactive"
       end
 
       if @product.update(attributes)
@@ -177,7 +177,7 @@ class ProductsController < ApplicationController
       @product = Product.includes(:category, :seller, :product_images, :reviews, :product_questions).find(params.require(:id))
 
       # For edit/update/destroy actions, verify the current user has permission
-      if ['edit', 'update', 'destroy'].include?(action_name) && !can_modify_product?(@product)
+      if [ "edit", "update", "destroy" ].include?(action_name) && !can_modify_product?(@product)
         flash[:alert] = "You don't have permission to modify this product."
         redirect_to products_path and return
       end
@@ -204,8 +204,8 @@ class ProductsController < ApplicationController
         :country_of_origin, :available_in_ghana, :available_in_nigeria, :shipping_time,
         :category_id, :published, :published_at, :meta_title, :meta_description,
         :is_digital, :status, :on_sale, :cover_image, :digital_file,
-        :product_images_attributes => [:id, :image_url, :_destroy],
-        :images => []
+        product_images_attributes: [ :id, :image_url, :_destroy ],
+        images: []
       )
 
       # Only admins can set the featured flag

@@ -194,7 +194,7 @@ module Admin
         :user_id, :business_name, :description, :location, :country,
         :phone_number, :verified, :commission_rate, :bank_account_details,
         :mobile_money_details, :store_name, :store_slug, :custom_domain, :domain_verified,
-        store_settings: [:enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css]
+        store_settings: [ :enabled, :logo, :banner, :primary_color, :secondary_color, :font, :custom_css ]
       )
     end
   end

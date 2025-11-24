@@ -19,7 +19,7 @@ if Seller.count < 5
     else
       user = User.find_by(email: "seller#{i+1}@example.com")
     end
-    
+
     # Create the seller if it doesn't exist
     unless user.seller.present?
       seller = Seller.create!(
@@ -51,14 +51,14 @@ puts "Creating stores..."
 Seller.all.each_with_index do |seller, index|
   # Skip if the seller already has a store
   next if Store.exists?(seller_id: seller.id)
-  
+
   store = Store.create!(
     seller: seller,
     name: seller.store_name || "#{Faker::Commerce.color.capitalize} #{Faker::Commerce.material.capitalize} Store",
     slug: seller.store_slug || "#{Faker::Commerce.color.downcase}-#{Faker::Commerce.material.downcase}-store-#{index+1}",
     description: seller.description || Faker::Lorem.paragraph(sentence_count: 3)
   )
-  
+
   # Create some store categories
   categories = []
   rand(3..5).times do |i|
@@ -70,15 +70,15 @@ Seller.all.each_with_index do |seller, index|
     )
     categories << category
   end
-  
+
   # Create some store settings
-  ["theme", "contact_email", "shipping_policy", "return_policy"].each do |key|
+  [ "theme", "contact_email", "shipping_policy", "return_policy" ].each do |key|
     StoreSetting.create!(
       store: store,
       key: key,
       value: case key
              when "theme"
-               ["default", "modern", "classic", "minimal"].sample
+               [ "default", "modern", "classic", "minimal" ].sample
              when "contact_email"
                seller.user.email
              when "shipping_policy"
@@ -88,13 +88,13 @@ Seller.all.each_with_index do |seller, index|
              end
     )
   end
-  
+
   puts "  Created store: #{store.name} with #{categories.size} categories"
-  
+
   # Create some products for this store if there aren't any
   if seller.products.count < 5
     puts "  Adding products to store..."
-    
+
     5.times do |i|
       product = Product.create!(
         seller: seller,
@@ -104,7 +104,7 @@ Seller.all.each_with_index do |seller, index|
         sku: "SKU-#{seller.id}-#{Time.now.to_i}-#{i}",
         stock_quantity: rand(1..100),
         published: true,
-        featured: [true, false].sample,
+        featured: [ true, false ].sample,
         category_id: categories.sample.id,
         status: "active",
         slug: "#{Faker::Lorem.words(number: 3).join('-')}-#{Time.now.to_i}-#{i}"

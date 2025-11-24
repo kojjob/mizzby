@@ -1,7 +1,7 @@
 module Users
   class RegistrationsController < Devise::RegistrationsController
-    before_action :configure_sign_up_params, only: [:create]
-    before_action :configure_account_update_params, only: [:update]
+    before_action :configure_sign_up_params, only: [ :create ]
+    before_action :configure_account_update_params, only: [ :update ]
 
     # GET /resource/sign_up
     def new
@@ -21,7 +21,7 @@ module Users
             business_name: "#{user.first_name}'s Store",
             commission_rate: 10.0 # Default commission rate
           )
-          
+
           if seller.save
             # Log the creation of seller account
             UserActivity.create(
@@ -64,7 +64,7 @@ module Users
             business_name: params[:business_name].presence || "#{user.first_name}'s Store",
             commission_rate: 10.0 # Default commission rate
           )
-          
+
           if seller.save
             # Log the creation of seller account
             UserActivity.create(
@@ -98,12 +98,12 @@ module Users
 
     # If you have extra params to permit, append them to the sanitizer.
     def configure_sign_up_params
-      devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :profile_picture])
+      devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name, :profile_picture ])
     end
 
     # If you have extra params to permit, append them to the sanitizer.
     def configure_account_update_params
-      devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :profile_picture])
+      devise_parameter_sanitizer.permit(:account_update, keys: [ :first_name, :last_name, :profile_picture ])
     end
 
     # The path used after sign up.

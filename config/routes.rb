@@ -9,68 +9,68 @@ Rails.application.routes.draw do
   devise_for :users
   # Custom domain handling
   constraints(DomainConstraint) do
-    get '/', to: 'stores#show'
-    get '/products', to: 'stores#products'
-    get '/about', to: 'stores#about'
-    get '/contact', to: 'stores#contact'
+    get "/", to: "stores#show"
+    get "/products", to: "stores#products"
+    get "/about", to: "stores#about"
+    get "/contact", to: "stores#contact"
   end
 
   # Stores index route
-  get 'stores', to: 'stores#index', as: :stores
+  get "stores", to: "stores#index", as: :stores
 
   # Store display routes
-  scope 'stores/:slug', as: 'store' do
-    get '/', to: 'stores#show'
-    get '/products', to: 'stores#products'
-    get '/about', to: 'stores#about'
-    get '/contact', to: 'stores#contact'
-    post '/contact', to: 'stores#send_contact'
-    get '/categories', to: 'stores#categories'
-    get '/categories/:id', to: 'stores#category', as: :category_products
+  scope "stores/:slug", as: "store" do
+    get "/", to: "stores#show"
+    get "/products", to: "stores#products"
+    get "/about", to: "stores#about"
+    get "/contact", to: "stores#contact"
+    post "/contact", to: "stores#send_contact"
+    get "/categories", to: "stores#categories"
+    get "/categories/:id", to: "stores#category", as: :category_products
   end
 
   # Seller store management
   namespace :sellers do
-    resource :store, only: [:edit, :update] do
+    resource :store, only: [ :edit, :update ] do
       collection do
         get :theme, :analytics
         patch :update_theme
-        resources :categories, controller: 'store_categories'
+        resources :categories, controller: "store_categories"
       end
     end
   end
 
   # Shopping Cart System
-  resources :carts, only: [:show, :destroy] do
+  resources :carts, only: [ :show, :destroy ] do
     collection { get :current }
   end
-  resources :cart_items, only: [:create, :update, :destroy]
-  get 'cart', to: 'carts#current', as: :current_cart
+  resources :cart_items, only: [ :create, :update, :destroy ]
+  get "cart", to: "carts#current", as: :current_cart
 
   # Checkout Process
-  get 'checkout', to: 'checkout#index', as: :checkout
-  post 'buy_now/:product_id', to: 'checkout#buy_now', as: :buy_now
+  get "checkout", to: "checkout#index", as: :checkout
+  post "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now
 
   # Orders & Downloads
   resources :orders
-  resources :download_links, only: [:show]
+  resources :download_links, only: [ :show ]
 
   # Product Catalog
   resources :categories
   resources :products do
-    member { post 'add_item_to_cart', as: :add_item_to }
+    member { post "add_item_to_cart", as: :add_item_to }
     collection { get :new_arrivals }
-    resources :reviews, only: [:index, :new, :create]
-    resources :product_questions, only: [:index, :new, :create], as: :questions
+    resources :reviews, only: [ :index, :new, :create ]
+    resources :product_questions, only: [ :index, :new, :create ], as: :questions
   end
   resources :product_images
 
   # Product Discovery
-  get 'search', to: 'products#search', as: :search
-  get 'deals', to: 'deals#index', as: :deals
+  get "search", to: "products#search", as: :search
+  get "deals", to: "deals#index", as: :deals
 
   # Seller Area
-  resources :sellers, except: [:destroy] do
+  resources :sellers, except: [ :destroy ] do
     collection do
       get :dashboard, :store_settings
       patch :update_store_settings
@@ -84,17 +84,17 @@ Rails.application.routes.draw do
   end
 
   # User Activity & Notifications
-  resources :notifications, :user_activities, :action_items, :payment_audit_logs, only: [:index, :show]
+  resources :notifications, :user_activities, :action_items, :payment_audit_logs, only: [ :index, :show ]
 
   # Static Pages
-  root 'static#home'
+  root "static#home"
   controller :static do
     get :contact, :about, :help_center, :privacy_policy, :term_of_service, :pricing
   end
 
   # Admin Area
   namespace :admin do
-    root to: 'dashboard#index'
+    root to: "dashboard#index"
     get :dashboard
 
     resources :users do
@@ -121,21 +121,21 @@ Rails.application.routes.draw do
               :user_activities, :wishlist_items
 
     # Analytics
-    get 'analytics', to: 'analytics#index'
+    get "analytics", to: "analytics#index"
     namespace :analytics do
       get :sales, :products, :customers, :export
     end
 
     # Settings
-    get 'settings', to: 'settings#index'
-    patch 'settings', to: 'settings#update'
+    get "settings", to: "settings#index"
+    patch "settings", to: "settings#update"
     namespace :settings do
       get :security, :maintenance, :logs
       post :backup, :clear_cache, :restart_application
     end
 
     # System Monitoring
-    get 'system', to: 'system#index'
+    get "system", to: "system#index"
     namespace :system do
       get :logs, :cache, :jobs
       post :cache
@@ -143,5 +143,5 @@ Rails.application.routes.draw do
   end
 
   # System & Health Checks
-  get 'up', to: 'rails/health#show', as: :rails_health_check
+  get "up", to: "rails/health#show", as: :rails_health_check
 end

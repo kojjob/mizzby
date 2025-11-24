@@ -7,7 +7,7 @@ users = []
 5.times do |i|
   email = "store_owner#{i+1}@example.com"
   user = User.find_or_initialize_by(email: email)
-  
+
   if !user.persisted?
     user.first_name = Faker::Name.first_name
     user.last_name = Faker::Name.last_name
@@ -16,7 +16,7 @@ users = []
     user.save(validate: false)
     puts "  Created user #{user.email}"
   end
-  
+
   users << user
 end
 
@@ -24,7 +24,7 @@ end
 sellers = []
 users.each_with_index do |user, i|
   seller = Seller.find_or_initialize_by(user_id: user.id)
-  
+
   if !seller.persisted?
     seller.business_name = "#{Faker::Commerce.color.capitalize} #{Faker::Commerce.material.capitalize}"
     seller.description = Faker::Company.catch_phrase + ". " + Faker::Company.bs.capitalize + "."
@@ -33,7 +33,7 @@ users.each_with_index do |user, i|
     seller.phone_number = Faker::PhoneNumber.phone_number
     seller.verified = true
     seller.commission_rate = rand(5.0..15.0).round(2)
-    
+
     # Store-specific fields
     seller.store_name = "#{seller.business_name} Store"
     seller.store_slug = "#{seller.business_name.parameterize}-store"
@@ -44,11 +44,11 @@ users.each_with_index do |user, i|
       primary_color: Faker::Color.hex_color,
       secondary_color: Faker::Color.hex_color
     }
-    
+
     seller.save
     puts "  Created seller: #{seller.business_name}"
   end
-  
+
   sellers << seller
 end
 
@@ -56,7 +56,7 @@ end
 stores = []
 sellers.each do |seller|
   store = Store.find_or_initialize_by(seller_id: seller.id)
-  
+
   if !store.persisted?
     store.name = seller.store_name
     store.slug = seller.store_slug
@@ -64,7 +64,7 @@ sellers.each do |seller|
     store.save
     puts "  Created store: #{store.name}"
   end
-  
+
   stores << store
 end
 

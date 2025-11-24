@@ -56,7 +56,7 @@ module Admin
                             .limit(10)
 
       # Top categories
-      @top_categories = Category.joins(products: {order_items: :order})
+      @top_categories = Category.joins(products: { order_items: :order })
                                .where(orders: { status: "completed", created_at: @start_date.beginning_of_day..@end_date.end_of_day })
                                .group("categories.id")
                                .select("categories.*, COUNT(DISTINCT orders.id) as orders_count, SUM(orders.total_amount) as total_sales")
@@ -72,7 +72,7 @@ module Admin
                           .limit(10)
 
       # Top sellers
-      @top_sellers = Seller.joins(products: {order_items: :order})
+      @top_sellers = Seller.joins(products: { order_items: :order })
                           .where(orders: { status: "completed", created_at: @start_date.beginning_of_day..@end_date.end_of_day })
                           .group("sellers.id")
                           .select("sellers.*, COUNT(DISTINCT orders.id) as orders_count, SUM(orders.total_amount) as total_sales")

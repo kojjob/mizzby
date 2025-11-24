@@ -71,5 +71,4 @@ class Seller < ApplicationRecord
       published: true
     )
   end
-
 end
