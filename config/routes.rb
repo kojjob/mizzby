@@ -53,7 +53,8 @@ Rails.application.routes.draw do
 
   # Orders & Downloads
   resources :orders
-  resources :download_links, only: [ :show ]
+  resources :order_items
+  resources :download_links
 
   # Product Catalog
   resources :categories
