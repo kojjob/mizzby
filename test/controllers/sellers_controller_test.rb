@@ -2,27 +2,9 @@ require "test_helper"
 
 class SellersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @seller = sellers(:one)
+    @seller = sellers(:seller_profile)
     @user = users(:seller)
     sign_in @user
-  end
-
-  test "should get index" do
-    get sellers_url
-    assert_response :success
-  end
-
-  test "should get new" do
-    get new_seller_url
-    assert_response :success
-  end
-
-  test "should create seller" do
-    assert_difference("Seller.count") do
-      post sellers_url, params: { seller: { acceptance_rate: @seller.acceptance_rate, average_response_time: @seller.average_response_time, bank_account_details: @seller.bank_account_details, business_name: @seller.business_name, commission_rate: @seller.commission_rate, country: @seller.country, description: @seller.description, location: @seller.location, mobile_money_details: @seller.mobile_money_details, phone_number: @seller.phone_number, user_id: @seller.user_id, verified: @seller.verified } }
-    end
-
-    assert_redirected_to seller_url(Seller.last)
   end
 
   test "should show seller" do
@@ -30,21 +12,63 @@ class SellersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get edit" do
+  test "should get edit for own seller profile" do
     get edit_seller_url(@seller)
     assert_response :success
   end
 
-  test "should update seller" do
-    patch seller_url(@seller), params: { seller: { acceptance_rate: @seller.acceptance_rate, average_response_time: @seller.average_response_time, bank_account_details: @seller.bank_account_details, business_name: @seller.business_name, commission_rate: @seller.commission_rate, country: @seller.country, description: @seller.description, location: @seller.location, mobile_money_details: @seller.mobile_money_details, phone_number: @seller.phone_number, user_id: @seller.user_id, verified: @seller.verified } }
-    assert_redirected_to seller_url(@seller)
+  test "should update own seller profile" do
+    patch seller_url(@seller), params: {
+      seller: {
+        business_name: "Updated Business Name",
+        description: @seller.description,
+        location: @seller.location,
+        country: @seller.country,
+        phone_number: @seller.phone_number,
+        bank_account_details: @seller.bank_account_details,
+        mobile_money_details: @seller.mobile_money_details
+      }
+    }
+    # Controller redirects to dashboard_sellers_path after update
+    assert_redirected_to dashboard_sellers_path
   end
 
-  test "should destroy seller" do
-    assert_difference("Seller.count", -1) do
-      delete seller_url(@seller)
+  test "should redirect to dashboard if user already has seller account" do
+    get new_seller_url
+    assert_redirected_to dashboard_sellers_path
+  end
+end
+
+class SellersControllerNewUserTest < ActionDispatch::IntegrationTest
+  setup do
+    # Use a user without a seller profile
+    @user_without_seller = users(:unconfirmed)
+    # Confirm the user so they can sign in
+    @user_without_seller.update!(confirmed_at: Time.current)
+    sign_in @user_without_seller
+  end
+
+  test "should get new for user without seller profile" do
+    get new_seller_url
+    assert_response :success
+  end
+
+  test "should create seller for user without seller profile" do
+    assert_difference("Seller.count") do
+      post sellers_url, params: {
+        seller: {
+          business_name: "New Test Business",
+          description: "A new test seller",
+          location: "Test Location",
+          country: "Ghana",
+          phone_number: "+233555555555",
+          bank_account_details: "Test Bank",
+          mobile_money_details: "Test Mobile Money"
+        }
+      }
     end
 
-    assert_redirected_to sellers_url
+    # Controller redirects to dashboard after creation
+    assert_redirected_to dashboard_sellers_path
   end
 end

@@ -2,7 +2,7 @@ class Category < ApplicationRecord
   # Relationships
   has_many :subcategories, class_name: "Category", foreign_key: "parent_id", dependent: :destroy
   belongs_to :parent, class_name: "Category", optional: true
-  has_many :products, dependent: :nullify
+  has_many :products, dependent: :restrict_with_error
 
   # Validations
   validates :name, presence: true, length: { minimum: 2, maximum: 50 }

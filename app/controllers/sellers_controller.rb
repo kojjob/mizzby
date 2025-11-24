@@ -53,7 +53,7 @@ class SellersController < ApplicationController
 
   def update
     if @seller.update(seller_params)
-      redirect_to seller_dashboard_path, notice: "Your seller profile has been updated successfully"
+      redirect_to dashboard_sellers_path, notice: "Your seller profile has been updated successfully"
     else
       render :edit
     end

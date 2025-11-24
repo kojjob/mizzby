@@ -39,8 +39,15 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy category" do
+    # Create a category without products for deletion
+    category_to_delete = Category.create!(
+      name: "Deletable Category",
+      slug: "deletable-category-#{SecureRandom.hex(4)}",
+      description: "A category for testing deletion"
+    )
+
     assert_difference("Category.count", -1) do
-      delete category_url(@category)
+      delete category_url(category_to_delete)
     end
 
     assert_redirected_to categories_url
