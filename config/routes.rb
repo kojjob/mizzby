@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   end
 
   # Shopping Cart System
-  resources :carts, only: [ :show, :destroy ] do
+  resources :carts do
     collection { get :current }
   end
   resources :cart_items
@@ -64,6 +64,8 @@ Rails.application.routes.draw do
     resources :reviews, only: [ :index, :new, :create ]
     resources :product_questions, only: [ :index, :new, :create ], as: :questions
   end
+  resources :reviews
+  resources :product_questions
   resources :product_images
 
   # Product Discovery
@@ -85,7 +87,7 @@ Rails.application.routes.draw do
   end
 
   # User Activity & Notifications
-  resources :notifications, :user_activities, :action_items, :payment_audit_logs, only: [ :index, :show ]
+  resources :notifications, :user_activities, :action_items, :payment_audit_logs
 
   # Static Pages
   root "static#home"
