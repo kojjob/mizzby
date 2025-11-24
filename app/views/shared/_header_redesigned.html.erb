@@ -37,7 +37,7 @@
             </svg>
           </button>
 
-          <div data-dropdown-target="menu" class="hidden absolute left-0 mt-4 w-screen max-w-md px-2 sm:px-0 lg:max-w-3xl transform -translate-x-1/4">
+          <div data-dropdown-target="menu" class="hidden absolute left-0 mt-4 w-screen max-w-md px-2 sm:px-0 lg:max-w-3xl transform -translate-x-1/4 z-50">
             <div class="rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden">
               <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
                 <a href="/categories/ebooks" class="group -m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 transition ease-in-out duration-150">
@@ -155,6 +155,58 @@
           </svg>
           <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center ring-2 ring-gray-900">5</span>
         </a>
+
+        <!-- Notifications Dropdown -->
+        <div data-controller="dropdown" class="relative group">
+          <button type="button" 
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="text-gray-400 hover:text-white relative focus:outline-none">
+            <svg class="h-6 w-6 transition duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span class="absolute -top-1 -right-1 bg-yellow-500 text-gray-900 text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center ring-2 ring-gray-900">2</span>
+          </button>
+          
+          <div data-dropdown-target="menu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl overflow-hidden ring-1 ring-black ring-opacity-5 z-50">
+            <div class="p-3 border-b bg-gray-50 flex justify-between items-center">
+              <h3 class="font-semibold text-gray-900">Notifications</h3>
+              <a href="/notifications" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">View All</a>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+              <a href="/notifications/order-completed" class="block p-4 border-b hover:bg-gray-50 transition">
+                <div class="flex">
+                  <div class="flex-shrink-0 mr-3">
+                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Order Complete</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Your order #12345 has been completed!</p>
+                  </div>
+                </div>
+              </a>
+              <a href="/notifications/discount-coupon" class="block p-4 hover:bg-gray-50 transition">
+                <div class="flex">
+                  <div class="flex-shrink-0 mr-3">
+                    <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Special Discount</p>
+                    <p class="text-xs text-gray-500 mt-0.5">You've received a 15% discount coupon!</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
         <!-- Cart -->
         <a href="/cart" class="text-gray-400 hover:text-white relative group">
