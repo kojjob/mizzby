@@ -5,7 +5,7 @@ one:
   description: First test product description
   price: 9.99
   discounted_price: 9.99
-  stock_quantity: 1
+  stock_quantity: 10
   sku: TEST-SKU-001
   slug: test-product-one
   barcode: BARCODE001

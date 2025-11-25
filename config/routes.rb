@@ -75,6 +75,8 @@ Rails.application.routes.draw do
   # Product Discovery
   get "search", to: "products#search", as: :search
   get "deals", to: "deals#index", as: :deals
+  get "new-arrivals", to: "products#new_arrivals", as: :new_arrivals
+  get "best-sellers", to: "products#best_sellers", as: :best_sellers
 
   # Seller Area
   resources :sellers, except: [ :destroy ] do
@@ -85,10 +87,43 @@ Rails.application.routes.draw do
     end
   end
 
+  # Seller Dashboard (singular namespace for /seller/products, /seller/sales, etc.)
+  namespace :seller do
+    get "/", to: "dashboard#index", as: :root
+    resources :products do
+      collection do
+        get :bulk_new
+        post :bulk_create
+        get :bulk_template
+      end
+    end
+    get :sales, to: "dashboard#sales"
+    get :earnings, to: "dashboard#earnings"
+  end
+
+  # User Account Area
+  namespace :account do
+    get "/", to: "dashboard#index", as: :root
+    get :profile, to: "profile#show"
+    patch :profile, to: "profile#update"
+    get :orders, to: "orders#index"
+    get "orders/:id", to: "orders#show", as: :order
+    get :downloads, to: "downloads#index"
+    get :wishlist, to: "wishlist#index"
+    delete "wishlist/clear", to: "wishlist#clear", as: :clear_wishlist
+    get "payment-methods", to: "payment_methods#index", as: :payment_methods
+    post "payment-methods", to: "payment_methods#create"
+    delete "payment-methods/:id", to: "payment_methods#destroy", as: :payment_method
+    get :settings, to: "settings#index"
+    patch :settings, to: "settings#update"
+    resources :addresses
+  end
+
   # User Collections
   resources :wishlist_items do
     collection { delete :clear }
   end
+  get "wishlist", to: "wishlist_items#index", as: :wishlist
 
   # User Activity & Notifications
   resources :notifications, :user_activities, :action_items, :payment_audit_logs

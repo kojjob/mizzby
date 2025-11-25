@@ -1,13 +1,8 @@
 <%= form_with(model: product, class: "contents") do |form| %>
   <% if product.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-4 py-3 rounded-md mb-6">
-      <div class="flex items-center mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-        </svg>
-        <h2 class="font-bold"><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h2>
-      </div>
-      <ul class="list-disc pl-5">
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h2>
+      <ul class="list-disc ml-6">
         <% product.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -15,418 +10,77 @@
     </div>
   <% end %>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- Main Information Column -->
-    <div class="md:col-span-2 space-y-6">
-      <!-- Basic Information Section -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Basic Information</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div>
-            <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_field :name, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Product Name" %>
-          </div>
+  <div class="my-5">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:name].none?, "border-red-400 focus:outline-red-600": product.errors[:name].any?}] %>
+  </div>
 
-          <div>
-            <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_area :description, rows: 5, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Detailed product description..." %>
-          </div>
+  <div class="my-5">
+    <%= form.label :brand %>
+    <%= form.text_field :brand, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:brand].none?, "border-red-400 focus:outline-red-600": product.errors[:brand].any?}] %>
+  </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <%= form.label :brand, class: "block text-sm font-medium text-gray-700" %>
-              <%= form.text_field :brand, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Brand Name" %>
-            </div>
+  <div class="my-5">
+    <%= form.label :sku %>
+    <%= form.text_field :sku, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:sku].none?, "border-red-400 focus:outline-red-600": product.errors[:sku].any?}] %>
+  </div>
 
-            <div>
-              <%= form.label :condition, class: "block text-sm font-medium text-gray-700" %>
-              <%= form.select :condition,
-                             options_for_select([
-                               ["New", "new"],
-                               ["Like New", "like_new"],
-                               ["Good", "good"],
-                               ["Fair", "fair"],
-                               ["Used", "used"]
-                             ], product.condition),
-                             { include_blank: "Select Condition" },
-                             { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="my-5">
+    <%= form.label :category_id, "Category" %>
+    <%= form.collection_select :category_id, Category.all, :id, :name, { include_blank: "Select Category" }, { class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": (product.errors[:category_id].none? && product.errors[:category].none?), "border-red-400 focus:outline-red-600": (product.errors[:category_id].any? || product.errors[:category].any?)}] } %>
+  </div>
 
-      <!-- Pricing Section -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Pricing</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <%= form.label :price, class: "block text-sm font-medium text-gray-700" %>
-              <div class="mt-1 relative rounded-md shadow-sm">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500 sm:text-sm">$</span>
-                </div>
-                <%= form.number_field :price, step: "0.01", min: "0", class: "py-2 px-3 pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0.00" %>
-              </div>
-            </div>
+  <div class="my-5">
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:description].none?, "border-red-400 focus:outline-red-600": product.errors[:description].any?}] %>
+  </div>
 
-            <div>
-              <div class="flex items-center justify-between">
-                <%= form.label :discounted_price, class: "block text-sm font-medium text-gray-700" %>
-                <div class="flex items-center">
-                  <%= form.check_box :on_sale, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500", data: { action: "change->form#toggleDiscountFields" } %>
-                  <span class="ml-2 text-xs text-gray-600">On Sale</span>
-                </div>
-              </div>
-              <div class="mt-1 relative rounded-md shadow-sm">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500 sm:text-sm">$</span>
-                </div>
-                <%= form.number_field :discounted_price, step: "0.01", min: "0", class: "py-2 px-3 pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0.00" %>
-              </div>
-            </div>
-          </div>
+  <div class="my-5">
+    <%= form.label :price %>
+    <%= form.number_field :price, step: "0.01", class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:price].none?, "border-red-400 focus:outline-red-600": product.errors[:price].any?}] %>
+  </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <%= form.label :discount_percentage, "Discount %", class: "block text-sm font-medium text-gray-700" %>
-              <div class="mt-1 relative rounded-md shadow-sm">
-                <%= form.number_field :discount_percentage, step: "1", min: "0", max: "100", class: "py-2 px-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0" %>
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500 sm:text-sm">%</span>
-                </div>
-              </div>
-            </div>
+  <div class="my-5">
+    <%= form.label :discounted_price %>
+    <%= form.number_field :discounted_price, step: "0.01", class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:discounted_price].none?, "border-red-400 focus:outline-red-600": product.errors[:discounted_price].any?}] %>
+  </div>
 
-            <div>
-              <%= form.label :currency, class: "block text-sm font-medium text-gray-700" %>
-              <%= form.select :currency,
-                             options_for_select([
-                               ["USD ($)", "USD"],
-                               ["EUR (€)", "EUR"],
-                               ["GBP (£)", "GBP"],
-                               ["GHS (₵)", "GHS"],
-                               ["NGN (₦)", "NGN"]
-                             ], product.currency || "USD"),
-                             {},
-                             { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="my-5">
+    <%= form.label :meta_title %>
+    <%= form.text_field :meta_title, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:meta_title].none?, "border-red-400 focus:outline-red-600": product.errors[:meta_title].any?}] %>
+  </div>
 
-      <!-- Product Type & Category -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Product Type & Category</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <%= form.label :category_id, "Category", class: "block text-sm font-medium text-gray-700" %>
-              <%= form.collection_select :category_id,
-                                        Category.all,
-                                        :id,
-                                        :name,
-                                        { include_blank: "Select Category" },
-                                        { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
-            </div>
+  <div class="my-5">
+    <%= form.label :meta_description %>
+    <%= form.text_area :meta_description, rows: 3, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:meta_description].none?, "border-red-400 focus:outline-red-600": product.errors[:meta_description].any?}] %>
+  </div>
 
-            <div>
-              <%= form.label :product_type, "Product Type", class: "block text-sm font-medium text-gray-700 mb-1" %>
-              <div class="flex space-x-4">
-                <div class="flex items-center">
-                  <%= form.radio_button :is_digital, false, class: "h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500", data: { action: "change->form#toggleProductTypeFields" } %>
-                  <label for="product_is_digital_false" class="ml-2 block text-sm text-gray-700">Physical</label>
-                </div>
-                <div class="flex items-center">
-                  <%= form.radio_button :is_digital, true, class: "h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500", data: { action: "change->form#toggleProductTypeFields" } %>
-                  <label for="product_is_digital_true" class="ml-2 block text-sm text-gray-700">Digital</label>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div class="my-5">
+    <%= form.label :slug %>
+    <%= form.text_field :slug, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:slug].none?, "border-red-400 focus:outline-red-600": product.errors[:slug].any?}] %>
+  </div>
 
-          <div id="physical-product-fields" class="space-y-4" style="<%= product.is_digital? ? 'display: none;' : '' %>">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <%= form.label :stock_quantity, class: "block text-sm font-medium text-gray-700" %>
-                <%= form.number_field :stock_quantity, min: "0", class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0" %>
-              </div>
+  <div class="my-5">
+    <%= form.label :cover_image %>
+    <%= form.file_field :cover_image, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:cover_image].none?, "border-red-400 focus:outline-red-600": product.errors[:cover_image].any?}] %>
+  </div>
 
-              <div>
-                <%= form.label :weight, "Weight (kg)", class: "block text-sm font-medium text-gray-700" %>
-                <%= form.number_field :weight, step: "0.01", min: "0", class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "0.00" %>
-              </div>
-            </div>
+  <div class="my-5">
+    <%= form.label :digital_file, "Digital Product File" %>
+    <%= form.file_field :digital_file, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": product.errors[:digital_file].none?, "border-red-400 focus:outline-red-600": product.errors[:digital_file].any?}] %>
+  </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <%= form.label :dimensions, "Dimensions (LxWxH cm)", class: "block text-sm font-medium text-gray-700" %>
-                <%= form.text_field :dimensions, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "20x15x10" %>
-              </div>
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :published %>
+    <%= form.check_box :published, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:published].none?, "border-red-400 focus:outline-red-600": product.errors[:published].any?}] %>
+  </div>
 
-              <div>
-                <%= form.label :shipping_time, class: "block text-sm font-medium text-gray-700" %>
-                <%= form.text_field :shipping_time, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "3-5 business days" %>
-              </div>
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :featured %>
+    <%= form.check_box :featured, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": product.errors[:featured].none?, "border-red-400 focus:outline-red-600": product.errors[:featured].any?}] %>
+  </div>
 
-              <div>
-                <div>
-                  <%= form.label :country_of_origin, class: "block text-sm font-medium text-gray-700" %>
-                  <%= form.select :country_of_origin,
-                                 [["United States", "US"], ["United Kingdom", "GB"], ["Canada", "CA"],
-                                  ["Ghana", "GH"], ["Nigeria", "NG"],
-                                  ["Other Countries", "Other"]],
-                                 { include_blank: "Select Country" },
-                                 { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="flex items-center">
-                <%= form.check_box :available_in_ghana, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
-                <%= form.label :available_in_ghana, "Available in Ghana", class: "ml-2 block text-sm text-gray-700" %>
-              </div>
-
-              <div class="flex items-center">
-                <%= form.check_box :available_in_nigeria, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
-                <%= form.label :available_in_nigeria, "Available in Nigeria", class: "ml-2 block text-sm text-gray-700" %>
-              </div>
-            </div>
-          </div>
-
-          <div id="digital-product-fields" class="space-y-4" style="<%= product.is_digital? ? '' : 'display: none;' %>">
-            <div>
-              <%= form.label :digital_file, "Digital Product File", class: "block text-sm font-medium text-gray-700" %>
-              <div class="mt-1 flex items-center">
-                <% if product.digital_file.attached? %>
-                  <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    <%= product.digital_file.filename %>
-                  </span>
-                <% end %>
-                <label for="product_digital_file" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500 <%= product.digital_file.attached? ? 'ml-3' : '' %>">
-                  <span><%= product.digital_file.attached? ? "Replace file" : "Upload file" %></span>
-                  <%= form.file_field :digital_file, direct_upload: true, class: "py-2 px-3 sr-only" %>
-                </label>
-              </div>
-              <p class="mt-1 text-sm text-gray-500">Upload PDF, ZIP, or other digital files (Max 100MB)</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product Images -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Product Images</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div>
-            <%= form.label :images, "Product Images", class: "block text-sm font-medium text-gray-700" %>
-            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div class="space-y-1 text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <div class="flex text-sm text-gray-600">
-                  <label for="product_images" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                    <span>Upload images</span>
-                    <%= form.file_field :images, multiple: true, direct_upload: true, class: "py-2 px-3 sr-only" %>
-                  </label>
-                  <p class="pl-1">or drag and drop</p>
-                </div>
-                <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each</p>
-              </div>
-            </div>
-          </div>
-
-          <% if product.persisted? && product.product_images.any? %>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Current Images</h4>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                <% product.product_images.each do |image| %>
-                  <% if image.image.attached? %>
-                  <div class="relative group">
-                    <%= image_tag url_for(image.image), class: "h-24 w-full object-cover rounded-md" %>
-                    <div class="absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <%= link_to product_image_path(image),
-                                  method: :delete,
-                                  data: { confirm: "Remove this image?" },
-                                  class: "p-1 bg-white rounded-full" do %>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                      <% end %>
-                    </div>
-                  </div>
-                  <% end %>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- SEO Information -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">SEO Information</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div>
-            <%= form.label :meta_title, "Meta Title", class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_field :meta_title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Product title for search engines" %>
-            <p class="mt-1 text-xs text-gray-500"><span id="meta-title-counter">0</span>/60 characters (recommended: 50-60)</p>
-          </div>
-
-          <div>
-            <%= form.label :meta_description, "Meta Description", class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_area :meta_description, rows: 3, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Brief description for search results..." %>
-            <p class="mt-1 text-xs text-gray-500"><span id="meta-description-counter">0</span>/160 characters (recommended: 150-160)</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sidebar Information -->
-    <div class="md:col-span-1 space-y-6">
-      <!-- Publication Settings -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Publication</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div>
-            <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
-            <%= form.select :status,
-                           options_for_select([
-                             ["Draft", "inactive"],
-                             ["Active", "active"],
-                             ["Archived", "archived"]
-                           ], product.status || "inactive"),
-                           {},
-                           { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", data: { action: "change->form#toggleScheduleFields" } } %>
-          </div>
-
-          <div class="flex items-center">
-            <%= form.check_box :published, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
-            <%= form.label :published, "Publish on site", class: "ml-2 block text-sm text-gray-700" %>
-          </div>
-
-          <div id="schedule-fields" class="<%= product.published_at.present? ? '' : 'hidden' %>">
-            <%= form.label :published_at, "Schedule Publication", class: "block text-sm font-medium text-gray-700" %>
-            <%= form.datetime_field :published_at, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
-          </div>
-
-          <div class="flex items-center">
-            <%= form.check_box :featured, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
-            <%= form.label :featured, "Featured Product", class: "ml-2 block text-sm text-gray-700" %>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inventory Information -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Inventory</h3>
-        </div>
-        <div class="p-4 space-y-4">
-          <div>
-            <%= form.label :sku, "SKU (Stock Keeping Unit)", class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_field :sku, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "PROD12345" %>
-          </div>
-
-          <div>
-            <%= form.label :barcode, class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_field :barcode, class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "978020137962" %>
-          </div>
-        </div>
-      </div>
-
-      <!-- Seller Information -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-2 text-white">
-          <h3 class="font-bold text-lg">Seller Information</h3>
-        </div>
-        <div class="p-4">
-          <% if current_user&.seller? %>
-            <div class="text-center py-2">
-              <div class="font-medium text-gray-900"><%= current_user.seller.business_name %></div>
-              <div class="text-sm text-gray-500">
-                <% if current_user.seller.verified? %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    Verified Seller
-                  </span>
-                <% else %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    Pending Verification
-                  </span>
-                <% end %>
-              </div>
-            </div>
-            <%= form.hidden_field :seller_id, value: current_user.seller.id %>
-          <% else %>
-            <div>
-              <%= form.label :seller_id, "Seller", class: "block text-sm font-medium text-gray-700" %>
-              <%= form.collection_select :seller_id,
-                                        Seller.all,
-                                        :id,
-                                        :business_name,
-                                        { include_blank: "Select Seller" },
-                                        { class: "py-2 px-3 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Submission Buttons -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="p-4 space-y-3">
-          <%= form.submit "Save Product", class: "w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
-
-          <% if product.persisted? %>
-            <button type="button" class="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Preview Product
-            </button>
-          <% end %>
-
-          <%= link_to 'Cancel', products_path, class: "block w-full text-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-gray-700 hover:text-gray-500" %>
-        </div>
-      </div>
-    </div>
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
   </div>
 <% end %>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const statusSelect = document.getElementById('product_status');
-    const scheduleFields = document.getElementById('schedule-fields');
-    const publishedCheckbox = document.getElementById('product_published');
-
-    // Function to toggle schedule fields
-    function toggleScheduleFields() {
-      if (publishedCheckbox.checked) {
-        scheduleFields.classList.remove('hidden');
-      } else {
-        scheduleFields.classList.add('hidden');
-      }
-    }
-
-    // Add event listener to published checkbox
-    if (publishedCheckbox) {
-      publishedCheckbox.addEventListener('change', toggleScheduleFields);
-    }
-  });
-</script>

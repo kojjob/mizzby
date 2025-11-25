@@ -1,63 +1,114 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Simple, reliable dropdown controller
 export default class extends Controller {
   static targets = ["menu", "button", "arrow"]
 
   connect() {
-    this.clickOutside = this.clickOutside.bind(this)
-    this.closeOnEscape = this.closeOnEscape.bind(this)
+    console.log("🔵 Dropdown controller connected to:", this.element)
+    console.log("   Menu target:", this.hasMenuTarget ? "found" : "NOT FOUND")
+    console.log("   Button target:", this.hasButtonTarget ? "found" : "NOT FOUND")
+    this.isOpen = false
+    this.handleClickOutside = this.handleClickOutside.bind(this)
+    this.handleKeydown = this.handleKeydown.bind(this)
   }
 
   disconnect() {
-    this.removeListeners()
+    this.removeGlobalListeners()
   }
 
   toggle(event) {
-    // We do NOT stop propagation here. 
-    // This allows the click to bubble up to the document, 
-    // which lets OTHER open dropdowns close themselves via their clickOutside listener.
-    
-    if (this.menuTarget.classList.contains("hidden")) {
-      this.open()
-    } else {
+    console.log("🟡 Toggle called! isOpen:", this.isOpen)
+    if (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+
+    if (this.isOpen) {
+      console.log("📁 Closing dropdown...")
       this.close()
+    } else {
+      console.log("📂 Opening dropdown...")
+      this.open()
     }
   }
 
   open() {
-    this.menuTarget.classList.remove("hidden")
-    if (this.hasArrowTarget) this.arrowTarget.classList.add("rotate-180")
+    // Close other dropdowns first
+    this.closeOtherDropdowns()
     
-    // Add listeners
-    document.addEventListener("click", this.clickOutside)
-    document.addEventListener("keydown", this.closeOnEscape)
+    this.isOpen = true
+
+    if (this.hasMenuTarget) {
+      console.log("✅ Removing hidden class from menu")
+      this.menuTarget.classList.remove("hidden")
+      this.menuTarget.classList.remove("opacity-0", "scale-95")
+      this.menuTarget.classList.add("opacity-100", "scale-100")
+      console.log("Menu classes now:", this.menuTarget.className)
+    }
+
+    if (this.hasArrowTarget) {
+      this.arrowTarget.classList.add("rotate-180")
+    }
+
+    if (this.hasButtonTarget) {
+      this.buttonTarget.setAttribute("aria-expanded", "true")
+    }
+
+    // Delayed listener attachment to prevent immediate close
+    setTimeout(() => {
+      document.addEventListener("click", this.handleClickOutside)
+      document.addEventListener("keydown", this.handleKeydown)
+    }, 100)
   }
 
   close() {
-    this.menuTarget.classList.add("hidden")
-    if (this.hasArrowTarget) this.arrowTarget.classList.remove("rotate-180")
-    this.removeListeners()
+    console.log("📁 Close called")
+    this.isOpen = false
+
+    if (this.hasMenuTarget) {
+      this.menuTarget.classList.add("hidden")
+      this.menuTarget.classList.add("opacity-0", "scale-95")
+      this.menuTarget.classList.remove("opacity-100", "scale-100")
+    }
+
+    if (this.hasArrowTarget) {
+      this.arrowTarget.classList.remove("rotate-180")
+    }
+
+    if (this.hasButtonTarget) {
+      this.buttonTarget.setAttribute("aria-expanded", "false")
+    }
+
+    this.removeGlobalListeners()
   }
 
-  clickOutside(event) {
-    // If the click is inside this dropdown controller (button or menu), ignore it.
-    // The toggle action on the button handles the button click.
-    // Clicks inside the menu should keep it open.
-    if (this.element.contains(event.target)) {
-      return
-    }
-    
-    this.close()
+  closeOtherDropdowns() {
+    document.querySelectorAll('[data-controller~="dropdown"]').forEach((el) => {
+      if (el !== this.element) {
+        const ctrl = this.application.getControllerForElementAndIdentifier(el, "dropdown")
+        if (ctrl && ctrl.isOpen) ctrl.close()
+      }
+    })
   }
-  
-  closeOnEscape(event) {
-    if (event.key === "Escape") {
+
+  handleClickOutside(event) {
+    console.log("🔍 Click outside check:", event.target)
+    if (!this.element.contains(event.target)) {
+      console.log("❌ Click was outside, closing")
       this.close()
     }
   }
 
-  removeListeners() {
-    document.removeEventListener("click", this.clickOutside)
-    document.removeEventListener("keydown", this.closeOnEscape)
+  handleKeydown(event) {
+    if (event.key === "Escape") {
+      this.close()
+      if (this.hasButtonTarget) this.buttonTarget.focus()
+    }
+  }
+
+  removeGlobalListeners() {
+    document.removeEventListener("click", this.handleClickOutside)
+    document.removeEventListener("keydown", this.handleKeydown)
   }
 }

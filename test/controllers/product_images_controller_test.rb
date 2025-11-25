@@ -20,7 +20,7 @@ class ProductImagesControllerTest < ActionDispatch::IntegrationTest
       post product_images_url, params: { product_image: { alt_text: @product_image.alt_text, position: @product_image.position, product_id: @product_image.product_id } }
     end
 
-    assert_redirected_to product_image_url(ProductImage.last)
+    assert_redirected_to product_image_url(ProductImage.unscoped.last)
   end
 
   test "should show product_image" do

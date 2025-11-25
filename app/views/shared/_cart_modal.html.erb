@@ -46,13 +46,14 @@
         <% if @cart&.cart_items&.count&.positive? %>
           <div class="space-y-4">
             <% @cart.cart_items.each do |item| %>
-              <div 
+              <% next unless item.product.present? %>
+              <div
                 class="flex items-start border-b border-gray-100 pb-4 transition-opacity duration-300"
                 data-cart-item
               >
                 <!-- Product Image -->
                 <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-md overflow-hidden">
-                  <% if item.product.product_images.any? && item.product.product_images.first.image&.attached? %>
+                  <% if item.product&.product_images&.any? && item.product.product_images.first.image&.attached? %>
                     <%= image_tag item.product.product_images.first.image, class: "w-full h-full object-cover" %>
                   <% else %>
                     <div class="w-full h-full flex items-center justify-center bg-gray-200">
@@ -131,7 +132,7 @@
             <div class="border-t border-b py-4">
               <div class="flex justify-between text-sm text-gray-600 mb-2">
                 <span>Subtotal</span>
-                <span><%= number_to_currency(@cart.cart_items.sum { |item| item.product.discounted_price * (item.quantity || 1) }) %></span>
+                <span><%= number_to_currency(@cart.cart_items.select { |item| item.product.present? }.sum { |item| item.product.discounted_price * (item.quantity || 1) }) %></span>
               </div>
               <div class="flex justify-between text-sm text-gray-600 mb-2">
                 <span>Taxes</span>
@@ -139,7 +140,7 @@
               </div>
               <div class="flex justify-between font-semibold mt-4">
                 <span>Total</span>
-                <span class="text-indigo-600"><%= number_to_currency(@cart.cart_items.sum { |item| item.product.discounted_price * (item.quantity || 1) }) %></span>
+                <span class="text-indigo-600"><%= number_to_currency(@cart.cart_items.select { |item| item.product.present? }.sum { |item| item.product.discounted_price * (item.quantity || 1) }) %></span>
               </div>
             </div>
             

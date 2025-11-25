@@ -26,7 +26,17 @@ class User < ApplicationRecord
   delegate :present?, to: :seller, prefix: true, allow_nil: true
 
   # --- Methods ---
-  # Role checking methods
+  # Role checking methods - explicit definitions override Rails' auto-generated methods
+  def admin?
+    # Super admins are also admins
+    read_attribute(:admin) || super_admin?
+  end
+
+  def super_admin?
+    # Explicit check of the super_admin column
+    read_attribute(:super_admin) == true
+  end
+
   def has_role?(role_name)
     case role_name.to_s
     when "super_admin" then super_admin?
@@ -124,7 +134,7 @@ class User < ApplicationRecord
   def completed_profile?
     first_name.present? &&
     last_name.present? &&
-    profile_picture.attached?
+    profile_picture_attached?
   end
 
   # Permission system

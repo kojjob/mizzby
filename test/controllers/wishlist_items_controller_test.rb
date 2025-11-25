@@ -3,6 +3,8 @@ require "test_helper"
 class WishlistItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @wishlist_item = wishlist_items(:one)
+    @user = users(:seller)  # Use a user who doesn't have wishlist items already
+    sign_in @user
   end
 
   test "should get index" do
@@ -16,8 +18,9 @@ class WishlistItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create wishlist_item" do
+    # Use seller user (who doesn't have any wishlist items) and product one
     assert_difference("WishlistItem.count") do
-      post wishlist_items_url, params: { wishlist_item: { notes: @wishlist_item.notes, product_id: @wishlist_item.product_id, user_id: @wishlist_item.user_id } }
+      post wishlist_items_url, params: { wishlist_item: { notes: "Adding to my wishlist", product_id: products(:one).id, user_id: @user.id } }
     end
 
     assert_redirected_to wishlist_item_url(WishlistItem.last)
@@ -34,7 +37,7 @@ class WishlistItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update wishlist_item" do
-    patch wishlist_item_url(@wishlist_item), params: { wishlist_item: { notes: @wishlist_item.notes, product_id: @wishlist_item.product_id, user_id: @wishlist_item.user_id } }
+    patch wishlist_item_url(@wishlist_item), params: { wishlist_item: { notes: "Updated notes", product_id: @wishlist_item.product_id, user_id: @wishlist_item.user_id } }
     assert_redirected_to wishlist_item_url(@wishlist_item)
   end
 

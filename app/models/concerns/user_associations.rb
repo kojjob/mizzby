@@ -16,6 +16,7 @@ module UserAssociations
     has_many :payment_audit_logs, dependent: :nullify
     has_many :user_activities, dependent: :destroy
     has_many :action_items, dependent: :destroy
+    has_many :addresses, dependent: :destroy
 
     # Seller relationship
     has_one :seller, dependent: :destroy

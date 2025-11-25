@@ -289,4 +289,16 @@ def new_arrivals
   # Use pagination helper for safety
   @new_products = paginate_safely(@new_products, params[:page], 12)
 end
+
+def best_sellers
+  # Rank published products by number of orders (through order_items)
+  @best_sellers = Product.where(published: true)
+                         .left_joins(:orders)
+                         .group(:id)
+                         .includes(:category, :seller, :product_images)
+                         .order("COUNT(orders.id) DESC")
+
+  # Use pagination helper for safety
+  @best_sellers = paginate_safely(@best_sellers, params[:page], 12)
+end
 end

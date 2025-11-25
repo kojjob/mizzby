@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dropdown Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "@hotwired/stimulus": "https://unpkg.com/@hotwired/stimulus/dist/stimulus.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import { Application, Controller } from "@hotwired/stimulus"
+    
+    const application = Application.start()
+    application.debug = true
+    
+    // Dropdown Controller
+    application.register("dropdown", class extends Controller {
+      static targets = ["menu", "button", "arrow"]
+
+      connect() {
+        console.log("🔵 Dropdown connected!", this.element)
+        this.isOpen = false
+        this.handleClickOutside = this.handleClickOutside.bind(this)
+      }
+
+      toggle(event) {
+        console.log("🟡 Toggle clicked!")
+        event.preventDefault()
+        event.stopPropagation()
+        this.isOpen ? this.close() : this.open()
+      }
+
+      open() {
+        console.log("📂 Opening...")
+        this.isOpen = true
+        if (this.hasMenuTarget) {
+          this.menuTarget.classList.remove("hidden")
+        }
+        document.addEventListener("click", this.handleClickOutside)
+      }
+
+      close() {
+        console.log("📁 Closing...")
+        this.isOpen = false
+        if (this.hasMenuTarget) {
+          this.menuTarget.classList.add("hidden")
+        }
+        document.removeEventListener("click", this.handleClickOutside)
+      }
+
+      handleClickOutside(event) {
+        if (!this.element.contains(event.target)) {
+          this.close()
+        }
+      }
+    })
+    
+    console.log("✅ Stimulus loaded and dropdown registered")
+  </script>
+</head>
+<body class="bg-gray-900 p-8">
+  <h1 class="text-white text-2xl mb-8">Dropdown Test Page</h1>
+  
+  <div data-controller="dropdown" class="relative inline-block">
+    <button type="button" 
+            data-action="click->dropdown#toggle"
+            data-dropdown-target="button"
+            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+      Click Me ▼
+    </button>
+    
+    <div data-dropdown-target="menu" 
+         class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
+      <div class="py-2">
+        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Option 1</a>
+        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Option 2</a>
+        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Option 3</a>
+      </div>
+    </div>
+  </div>
+  
+  <p class="text-gray-400 mt-8">Open browser console (F12) to see debug messages</p>
+</body>
+</html>

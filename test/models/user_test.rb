@@ -21,13 +21,20 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "email should be unique" do
-    duplicate_user = @user.dup
-    @user.save
+    # Use fixture user which is already saved
+    existing_user = users(:regular_user)
+    duplicate_user = User.new(
+      email: existing_user.email,
+      password: "Password123!",
+      password_confirmation: "Password123!",
+      first_name: "Duplicate",
+      last_name: "User"
+    )
     assert_not duplicate_user.valid?
   end
 
   test "email validation should accept valid addresses" do
-    valid_addresses = %w[user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp alice+bob@baz.cn]
+    valid_addresses = %w[newuser@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp alice+bob@baz.cn]
     valid_addresses.each do |valid_address|
       @user.email = valid_address
       assert @user.valid?, "#{valid_address.inspect} should be valid"
@@ -95,36 +102,33 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "can_manage? works for admins and owners" do
+    # Use fixture users which are already saved
+    user = users(:regular_user)
+    other_user = users(:seller)
+
     # Create product, review, and order with associations
-    seller = Seller.new(user: @user)
+    seller = Seller.create!(user: user, business_name: "Test Seller")
     product = Product.new(seller: seller)
-    review = Review.new(user: @user)
-    order = Order.new(user: @user)
+    review = Review.new(user_id: user.id)
+    order = Order.new(user_id: user.id)
 
     # Admin can manage all resources
-    @user.admin = true
-    assert @user.can_manage?(product)
-    assert @user.can_manage?(review)
-    assert @user.can_manage?(order)
+    user.admin = true
+    assert user.can_manage?(product)
+    assert user.can_manage?(review)
+    assert user.can_manage?(order)
 
     # Non-admin can only manage their own resources
-    @user.admin = false
-    assert @user.can_manage?(review)
-    assert @user.can_manage?(order)
+    user.admin = false
+    assert user.can_manage?(review)
+    assert user.can_manage?(order)
 
-    # Test non-owners
-    other_user = User.new(
-      email: "other@example.com",
-      password: "Password123!",
-      password_confirmation: "Password123!",
-      first_name: "Other",
-      last_name: "User"
-    )
-    other_user_review = Review.new(user: other_user)
-    other_user_order = Order.new(user: other_user)
+    # Test non-owners - use user_id to ensure proper association
+    other_user_review = Review.new(user_id: other_user.id)
+    other_user_order = Order.new(user_id: other_user.id)
 
-    assert_not @user.can_manage?(other_user_review)
-    assert_not @user.can_manage?(other_user_order)
+    assert_not user.can_manage?(other_user_review)
+    assert_not user.can_manage?(other_user_order)
   end
 
   test "default preferences are set for new users" do
@@ -137,12 +141,17 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "seller? returns correct value" do
-    assert_not @user.seller?
+    # Use fixture users
+    regular_user = users(:regular_user)
+    seller_user = users(:seller)
 
-    # Create a seller for the user
-    @user.build_seller
-    @user.save
-    assert @user.seller?
+    # Regular user without seller profile should not be seller
+    regular_user.seller&.destroy
+    regular_user.reload
+    assert_not regular_user.seller?
+
+    # Seller user with seller profile should be seller  
+    assert seller_user.seller?
   end
 
   test "admin? returns correct value for admins" do

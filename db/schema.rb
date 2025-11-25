@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_25_025555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -55,6 +55,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "addresses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.string "street_address", null: false
+    t.string "street_address_2"
+    t.string "city", null: false
+    t.string "state"
+    t.string "postal_code", null: false
+    t.string "country", null: false
+    t.string "phone"
+    t.boolean "default", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "default"], name: "index_addresses_on_user_id_and_default"
+    t.index ["user_id"], name: "index_addresses_on_user_id"
   end
 
   create_table "application_settings", force: :cascade do |t|
@@ -489,6 +506,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
   add_foreign_key "action_items", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "addresses", "users"
   add_foreign_key "application_settings", "users", column: "updated_by_id"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
