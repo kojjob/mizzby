@@ -1,0 +1,43 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Recent Orders</h3>
+      <p class="text-3xl font-bold text-indigo-600"><%= @recent_orders.count %></p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Wishlist Items</h3>
+      <p class="text-3xl font-bold text-indigo-600"><%= @wishlist_count %></p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Recent Orders</h3>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @recent_orders.any? %>
+        <% @recent_orders.each do |order| %>
+          <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-indigo-600">Order #<%= order.id %></p>
+                <p class="text-sm text-gray-500"><%= order.created_at.strftime("%B %d, %Y") %></p>
+              </div>
+              <div>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  <%= order.status %>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-4 text-center text-gray-500">
+          No recent orders.
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

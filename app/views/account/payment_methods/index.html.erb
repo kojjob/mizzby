@@ -1,0 +1,32 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">Payment Methods</h1>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <% if @payment_methods.any? %>
+      <div class="space-y-4">
+        <% @payment_methods.each do |method| %>
+          <div class="flex items-center justify-between p-4 border rounded-lg">
+            <div class="flex items-center">
+              <div class="w-12 h-8 bg-gray-200 rounded flex items-center justify-center mr-4">
+                <span class="text-xs font-medium">CARD</span>
+              </div>
+              <div>
+                <p class="font-medium">•••• <%= method[:last4] %></p>
+                <p class="text-sm text-gray-500">Expires <%= method[:exp_month] %>/<%= method[:exp_year] %></p>
+              </div>
+            </div>
+            <%= link_to "Remove", account_payment_method_path(method[:id]), method: :delete, data: { confirm: "Remove this payment method?" }, class: "text-red-600 hover:text-red-800" %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-8">
+        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <p class="text-gray-500 mb-4">No payment methods saved.</p>
+        <p class="text-sm text-gray-400">Payment methods will be saved when you make a purchase.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
