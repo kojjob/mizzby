@@ -1,198 +1,305 @@
 <% content_for :page_title, "Store Settings" %>
 
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-800">Store Settings</h1>
-      <p class="text-gray-600">Customize your store appearance and settings</p>
-    </div>
-    <div class="flex space-x-2">
-      <% if @seller.store_enabled? %>
-        <%= link_to "View Your Store", @seller.store_url, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center", target: "_blank" %>
-      <% end %>
-      <%= link_to dashboard_sellers_path, class: "bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium flex items-center" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-        </svg>
-        Back to Dashboard
-      <% end %>
+<div class="min-h-screen bg-amber-50/30">
+  <!-- Header with warmth -->
+  <div class="bg-white border-b border-amber-200/60">
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-start gap-4">
+          <div class="p-3 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl -rotate-2 shadow-sm">
+            <svg class="w-7 h-7 text-orange-600 rotate-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-stone-800">Store Settings</h1>
+            <p class="text-stone-500 mt-0.5">Make your store uniquely yours</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <% if @seller.store_enabled? %>
+            <%= link_to @seller.store_url, target: "_blank", class: "inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors shadow-sm" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              View Store
+            <% end %>
+          <% end %>
+          <%= link_to dashboard_sellers_path, class: "inline-flex items-center gap-2 px-4 py-2.5 bg-stone-100 text-stone-600 rounded-xl font-medium hover:bg-stone-200 transition-colors" do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+            </svg>
+            Back
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 
-  <%= form_with(model: @seller, url: update_store_settings_sellers_path, method: :patch) do |form| %>
-    <% if @seller.errors.any? %>
-      <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="ml-3">
-            <h3 class="text-sm font-medium text-red-800">
-              <%= pluralize(@seller.errors.count, "error") %> prohibited this store from being saved:
-            </h3>
-            <div class="mt-2 text-sm text-red-700">
-              <ul class="list-disc pl-5 space-y-1">
+  <div class="max-w-4xl mx-auto px-6 py-10">
+    <%= form_with(model: @seller, url: update_store_settings_sellers_path, method: :patch) do |form| %>
+      
+      <% if @seller.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-5 mb-8">
+          <div class="flex gap-3">
+            <div class="p-1 bg-red-100 rounded-lg h-fit">
+              <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-medium text-red-800">Oops! Something's not right</p>
+              <ul class="mt-2 text-sm text-red-700 space-y-1">
                 <% @seller.errors.full_messages.each do |message| %>
-                  <li><%= message %></li>
+                  <li>→ <%= message %></li>
                 <% end %>
               </ul>
             </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
 
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
-      <div class="bg-indigo-600 px-4 py-2">
-        <h2 class="text-lg font-medium text-white">Store Information</h2>
-      </div>
-      <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <%= form.label :store_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= form.text_field :store_name, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-            <p class="mt-1 text-sm text-gray-500">This is the name of your store that will be displayed to customers.</p>
+      <!-- Section 1: The Basics -->
+      <div class="bg-white rounded-3xl shadow-sm border border-stone-200/60 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🏪</span>
+            <div>
+              <h2 class="font-bold text-white text-lg">The Basics</h2>
+              <p class="text-orange-100 text-sm">Your store's identity</p>
+            </div>
           </div>
-          
+        </div>
+        
+        <div class="p-6 space-y-6">
+          <!-- Store Name -->
           <div>
-            <%= form.label :store_slug, class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <div class="flex">
-              <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+            <label class="block text-sm font-semibold text-stone-700 mb-2">Store Name *</label>
+            <%= form.text_field :store_name, 
+                class: "w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-orange-400 focus:ring-0 transition-colors text-stone-800 placeholder-stone-400",
+                placeholder: "e.g., Sarah's Handmade Crafts" %>
+            <p class="mt-2 text-sm text-stone-500">This is what customers will see. Make it memorable!</p>
+          </div>
+
+          <!-- Store URL -->
+          <div>
+            <label class="block text-sm font-semibold text-stone-700 mb-2">Store URL</label>
+            <div class="flex rounded-xl overflow-hidden border-2 border-stone-200 focus-within:border-orange-400 transition-colors">
+              <span class="px-4 py-3 bg-stone-100 text-stone-500 text-sm border-r border-stone-200 whitespace-nowrap">
                 <%= request.base_url %>/stores/
               </span>
-              <%= form.text_field :store_slug, class: "flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 border-gray-300" %>
+              <%= form.text_field :store_slug, 
+                  class: "flex-1 px-4 py-3 border-0 focus:ring-0 text-stone-800",
+                  placeholder: "your-store-name" %>
             </div>
-            <p class="mt-1 text-sm text-gray-500">This is the URL path for your store. Use only lowercase letters, numbers, and hyphens.</p>
+            <p class="mt-2 text-sm text-stone-500">Lowercase letters, numbers, and hyphens only. Keep it short!</p>
           </div>
-        </div>
-        
-        <div class="mt-6">
-          <%= form.label :custom_domain, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.text_field :custom_domain, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-          <p class="mt-1 text-sm text-gray-500">
-            Optional. If you have your own domain, enter it here (e.g., mystore.com).
-            <% if @seller.custom_domain.present? && !@seller.domain_verified? %>
-              <span class="text-red-600 font-medium">Your domain is not verified yet.</span>
-              <%= link_to "Verify Domain", verify_domain_sellers_path, method: :post, class: "text-indigo-600 hover:text-indigo-800 ml-2" %>
-            <% elsif @seller.custom_domain.present? && @seller.domain_verified? %>
-              <span class="text-green-600 font-medium">Your domain is verified.</span>
+
+          <!-- Custom Domain -->
+          <div class="p-5 bg-amber-50/50 rounded-2xl border border-amber-200/50">
+            <div class="flex items-start gap-3 mb-3">
+              <span class="text-xl">✨</span>
+              <div>
+                <label class="block text-sm font-semibold text-stone-700">Custom Domain</label>
+                <p class="text-sm text-stone-500">Connect your own domain (optional)</p>
+              </div>
+            </div>
+            <%= form.text_field :custom_domain, 
+                class: "w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-amber-400 focus:ring-0 transition-colors text-stone-800 placeholder-stone-400",
+                placeholder: "myawesomestore.com" %>
+            <% if @seller.custom_domain.present? %>
+              <div class="mt-3 flex items-center gap-2">
+                <% if @seller.domain_verified? %>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Verified
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    Pending verification
+                  </span>
+                  <%= link_to "Verify now →", verify_domain_sellers_path, method: :post, class: "text-sm text-orange-600 hover:text-orange-700 font-medium" %>
+                <% end %>
+              </div>
             <% end %>
-          </p>
-        </div>
-        
-        <div class="mt-6">
-          <div class="flex items-center">
-            <%= form.check_box "store_settings[enabled]", { checked: @seller.store_settings["enabled"] == true }, "true", "false" %>
-            <%= form.label "store_settings[enabled]", "Enable Store", class: "ml-2 block text-sm text-gray-900" %>
           </div>
-          <p class="mt-1 text-sm text-gray-500">When enabled, your store will be publicly accessible.</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
-      <div class="bg-indigo-600 px-4 py-2">
-        <h2 class="text-lg font-medium text-white">Store Appearance</h2>
-      </div>
-      <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <%= form.label "store_settings[logo]", "Logo URL", class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= form.text_field "store_settings[logo]", value: @seller.store_settings["logo"], class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-            <p class="mt-1 text-sm text-gray-500">URL to your store logo image.</p>
-          </div>
-          
-          <div>
-            <%= form.label "store_settings[banner]", "Banner URL", class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= form.text_field "store_settings[banner]", value: @seller.store_settings["banner"], class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-            <p class="mt-1 text-sm text-gray-500">URL to your store banner image.</p>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div>
-            <%= form.label "store_settings[primary_color]", "Primary Color", class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <div class="flex">
-              <%= form.color_field "store_settings[primary_color]", value: @seller.store_settings["primary_color"] || "#4f46e5", class: "h-10 w-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-              <%= form.text_field "store_settings[primary_color]", value: @seller.store_settings["primary_color"] || "#4f46e5", class: "ml-2 flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+
+          <!-- Enable Store Toggle -->
+          <div class="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">🚀</span>
+              <div>
+                <p class="font-medium text-stone-800">Store is Live</p>
+                <p class="text-sm text-stone-500">Customers can visit your store</p>
+              </div>
             </div>
-            <p class="mt-1 text-sm text-gray-500">Main color for your store theme.</p>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <%= form.check_box "store_settings[enabled]", 
+                  { checked: @seller.store_settings["enabled"] == true, class: "sr-only peer" }, 
+                  "true", "false" %>
+              <div class="w-14 h-8 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:shadow-sm after:transition-all"></div>
+            </label>
           </div>
-          
-          <div>
-            <%= form.label "store_settings[secondary_color]", "Secondary Color", class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <div class="flex">
-              <%= form.color_field "store_settings[secondary_color]", value: @seller.store_settings["secondary_color"] || "#818cf8", class: "h-10 w-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-              <%= form.text_field "store_settings[secondary_color]", value: @seller.store_settings["secondary_color"] || "#818cf8", class: "ml-2 flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+      </div>
+
+      <!-- Section 2: Look & Feel -->
+      <div class="bg-white rounded-3xl shadow-sm border border-stone-200/60 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🎨</span>
+            <div>
+              <h2 class="font-bold text-white text-lg">Look & Feel</h2>
+              <p class="text-violet-100 text-sm">Customize your store's vibe</p>
             </div>
-            <p class="mt-1 text-sm text-gray-500">Accent color for your store theme.</p>
           </div>
         </div>
         
-        <div class="mt-6">
-          <%= form.label "store_settings[font]", "Font Family", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.select "store_settings[font]", 
-                         [
-                           ["Default", ""],
-                           ["Arial", "Arial, sans-serif"],
-                           ["Helvetica", "Helvetica, Arial, sans-serif"],
-                           ["Georgia", "Georgia, serif"],
-                           ["Times New Roman", "Times New Roman, serif"],
-                           ["Courier New", "Courier New, monospace"]
-                         ],
-                         { selected: @seller.store_settings["font"] },
-                         { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" } %>
-          <p class="mt-1 text-sm text-gray-500">Select a font family for your store.</p>
+        <div class="p-6 space-y-6">
+          <!-- Logo & Banner -->
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-stone-700 mb-2">Logo URL</label>
+              <%= form.text_field "store_settings[logo]", 
+                  value: @seller.store_settings["logo"],
+                  class: "w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-violet-400 focus:ring-0 transition-colors text-stone-800 placeholder-stone-400",
+                  placeholder: "https://..." %>
+              <p class="mt-2 text-sm text-stone-500">Square image works best (200x200px)</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-stone-700 mb-2">Banner URL</label>
+              <%= form.text_field "store_settings[banner]", 
+                  value: @seller.store_settings["banner"],
+                  class: "w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-violet-400 focus:ring-0 transition-colors text-stone-800 placeholder-stone-400",
+                  placeholder: "https://..." %>
+              <p class="mt-2 text-sm text-stone-500">Wide image (1200x400px recommended)</p>
+            </div>
+          </div>
+
+          <!-- Colors -->
+          <div>
+            <label class="block text-sm font-semibold text-stone-700 mb-3">Brand Colors</label>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="flex items-center gap-3 p-4 bg-stone-50 rounded-xl">
+                <%= form.color_field "store_settings[primary_color]", 
+                    value: @seller.store_settings["primary_color"] || "#4f46e5", 
+                    class: "w-12 h-12 rounded-xl cursor-pointer border-2 border-white shadow-md" %>
+                <div class="flex-1">
+                  <p class="font-medium text-stone-700">Primary</p>
+                  <%= form.text_field "store_settings[primary_color]", 
+                      value: @seller.store_settings["primary_color"] || "#4f46e5",
+                      class: "mt-1 w-full px-3 py-1.5 text-sm rounded-lg border border-stone-200 focus:border-violet-400 focus:ring-0 font-mono" %>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 p-4 bg-stone-50 rounded-xl">
+                <%= form.color_field "store_settings[secondary_color]", 
+                    value: @seller.store_settings["secondary_color"] || "#818cf8", 
+                    class: "w-12 h-12 rounded-xl cursor-pointer border-2 border-white shadow-md" %>
+                <div class="flex-1">
+                  <p class="font-medium text-stone-700">Accent</p>
+                  <%= form.text_field "store_settings[secondary_color]", 
+                      value: @seller.store_settings["secondary_color"] || "#818cf8",
+                      class: "mt-1 w-full px-3 py-1.5 text-sm rounded-lg border border-stone-200 focus:border-violet-400 focus:ring-0 font-mono" %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Font -->
+          <div>
+            <label class="block text-sm font-semibold text-stone-700 mb-2">Typography</label>
+            <%= form.select "store_settings[font]", 
+                [
+                  ["System Default (Clean & Modern)", ""],
+                  ["Inter (Friendly & Readable)", "Inter, sans-serif"],
+                  ["Georgia (Classic & Elegant)", "Georgia, serif"],
+                  ["Merriweather (Warm & Inviting)", "Merriweather, serif"],
+                  ["Roboto Mono (Technical & Precise)", "Roboto Mono, monospace"]
+                ],
+                { selected: @seller.store_settings["font"] },
+                { class: "w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-violet-400 focus:ring-0 transition-colors text-stone-800 bg-white" } %>
+          </div>
+
+          <!-- Custom CSS -->
+          <div class="p-5 bg-slate-900 rounded-2xl">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 bg-emerald-500 text-emerald-950 text-xs font-bold rounded">PRO</span>
+              <label class="text-sm font-semibold text-slate-300">Custom CSS</label>
+            </div>
+            <%= form.text_area "store_settings[custom_css]", 
+                value: @seller.store_settings["custom_css"],
+                rows: 6,
+                class: "w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 focus:border-violet-400 focus:ring-0 text-slate-200 font-mono text-sm placeholder-slate-500",
+                placeholder: "/* Your custom styles here */\n.my-class {\n  color: #ff6b6b;\n}" %>
+            <p class="mt-2 text-sm text-slate-500">For advanced users. Be careful – bad CSS can break things!</p>
+          </div>
         </div>
+      </div>
+
+      <!-- Section 3: Domain Setup Help -->
+      <details class="bg-white rounded-3xl shadow-sm border border-stone-200/60 overflow-hidden mb-8 group">
+        <summary class="px-6 py-5 cursor-pointer list-none">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">📖</span>
+              <div>
+                <h2 class="font-bold text-stone-800 text-lg">Domain Setup Guide</h2>
+                <p class="text-stone-500 text-sm">Click to expand instructions</p>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-stone-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </summary>
         
-        <div class="mt-6">
-          <%= form.label "store_settings[custom_css]", "Custom CSS", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.text_area "store_settings[custom_css]", value: @seller.store_settings["custom_css"], rows: 5, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 font-mono text-sm" %>
-          <p class="mt-1 text-sm text-gray-500">Advanced: Add custom CSS to further customize your store's appearance.</p>
+        <div class="px-6 pb-6 border-t border-stone-100">
+          <div class="prose prose-stone prose-sm max-w-none mt-4">
+            <p class="text-stone-600">Want to use your own domain? Here's how:</p>
+            
+            <div class="bg-stone-50 rounded-xl p-4 my-4">
+              <p class="font-semibold text-stone-700 mb-2">Step 1: Add a CNAME record</p>
+              <div class="bg-white rounded-lg p-3 font-mono text-sm border border-stone-200">
+                <p><span class="text-stone-500">Type:</span> CNAME</p>
+                <p><span class="text-stone-500">Name:</span> www</p>
+                <p><span class="text-stone-500">Value:</span> <%= request.host %></p>
+              </div>
+            </div>
+            
+            <div class="bg-stone-50 rounded-xl p-4 my-4">
+              <p class="font-semibold text-stone-700 mb-2">Step 2: Add an A record</p>
+              <div class="bg-white rounded-lg p-3 font-mono text-sm border border-stone-200">
+                <p><span class="text-stone-500">Type:</span> A</p>
+                <p><span class="text-stone-500">Name:</span> @</p>
+                <p><span class="text-stone-500">Value:</span> <span class="text-amber-600">Contact support for IP</span></p>
+              </div>
+            </div>
+            
+            <p class="text-stone-500 text-sm">
+              ⏱️ DNS changes can take up to 48 hours to propagate. Grab a coffee!
+            </p>
+          </div>
         </div>
+      </details>
+
+      <!-- Save Button -->
+      <div class="flex items-center justify-between pt-4">
+        <p class="text-sm text-stone-500">
+          Changes are saved immediately
+        </p>
+        <%= form.submit "Save Changes", 
+            class: "px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all cursor-pointer" %>
       </div>
-    </div>
-    
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
-      <div class="bg-indigo-600 px-4 py-2">
-        <h2 class="text-lg font-medium text-white">Domain Setup Instructions</h2>
-      </div>
-      <div class="p-6">
-        <div class="prose prose-indigo max-w-none">
-          <p>To use your custom domain with your store, you'll need to set up DNS records with your domain provider:</p>
-          
-          <ol>
-            <li>Log in to your domain provider's website (e.g., GoDaddy, Namecheap, etc.)</li>
-            <li>Find the DNS settings for your domain</li>
-            <li>Add a CNAME record with the following details:
-              <ul>
-                <li><strong>Type:</strong> CNAME</li>
-                <li><strong>Host/Name:</strong> www</li>
-                <li><strong>Value/Target:</strong> <%= request.host %></li>
-                <li><strong>TTL:</strong> Automatic or 3600</li>
-              </ul>
-            </li>
-            <li>Add an A record with the following details:
-              <ul>
-                <li><strong>Type:</strong> A</li>
-                <li><strong>Host/Name:</strong> @ (or leave blank)</li>
-                <li><strong>Value/Target:</strong> 123.45.67.89</li>
-                <li><strong>TTL:</strong> Automatic or 3600</li>
-              </ul>
-            </li>
-            <li>Save your changes and wait for DNS propagation (can take up to 48 hours)</li>
-            <li>Once your DNS is set up, click the "Verify Domain" button</li>
-          </ol>
-          
-          <p>Note: The IP address above is a placeholder. Please contact support for the actual IP address to use.</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="flex justify-end">
-      <%= form.submit "Save Settings", class: "py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
+  
+  <!-- Footer decoration -->
+  <div class="text-center pb-10">
+    <p class="text-stone-400 text-sm">Made with ☕ for sellers like you</p>
+  </div>
 </div>

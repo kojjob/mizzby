@@ -1,6 +1,7 @@
 class ProductsController < ApplicationController
   include PaginationHelper
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ show edit update destroy add_item_to_cart ]
+  before_action :authenticate_user!, only: [:add_item_to_cart]
 
   # GET /products or /products.json
   def index
@@ -20,11 +21,11 @@ class ProductsController < ApplicationController
 
     # Filter by price range
     if params[:min_price].present?
-      base_query = base_query.where('price >= ?', params[:min_price])
+      base_query = base_query.where("price >= ?", params[:min_price])
     end
 
     if params[:max_price].present?
-      base_query = base_query.where('price <= ?', params[:max_price])
+      base_query = base_query.where("price <= ?", params[:max_price])
     end
 
     # Filter by product type
@@ -52,7 +53,7 @@ class ProductsController < ApplicationController
     when "highest_rated"
       base_query = base_query.left_joins(:reviews)
                              .group(:id)
-                             .order('AVG(reviews.rating) DESC NULLS LAST')
+                             .order("AVG(reviews.rating) DESC NULLS LAST")
     else # default to newest
       base_query = base_query.order(created_at: :desc)
     end
@@ -206,6 +207,38 @@ class ProductsController < ApplicationController
 
   def safe_params_for_pagination
     params.permit(:category_id, :sort, :query, :page, :min_price, :max_price, :digital, :on_sale, :featured, category_ids: [])
+  end
+
+  # Add product to cart
+  def add_item_to_cart
+    # Find or create a cart for the current user
+    @cart = current_user.cart || current_user.create_cart
+
+    quantity = (params[:quantity] || 1).to_i
+    quantity = 1 if quantity < 1
+
+    # Check if product is already in cart
+    @cart_item = @cart.cart_items.find_by(product_id: @product.id)
+
+    if @cart_item
+      # Update quantity if already in cart
+      @cart_item.update(quantity: @cart_item.quantity + quantity)
+      flash[:notice] = "Updated quantity in your cart."
+    else
+      # Add new item to cart
+      @cart_item = @cart.cart_items.create(
+        product: @product,
+        quantity: quantity,
+        price: @product.discounted_price || @product.price
+      )
+      flash[:notice] = "#{@product.name} added to your cart."
+    end
+
+    respond_to do |format|
+      format.html { redirect_to cart_path(@cart) }
+      format.turbo_stream
+      format.json { render json: { success: true, cart_items_count: @cart.cart_items.count } }
+    end
   end
 
   private

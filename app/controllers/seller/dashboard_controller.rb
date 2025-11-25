@@ -112,36 +112,36 @@ class Seller::DashboardController < ApplicationController
                           .where(status: "completed")
                           .where("created_at >= ?", 30.days.ago)
                           .sum(:total_amount)
-    
+
     @weekly_sales = Order.where(product_id: seller_product_ids)
                          .where(status: "completed")
                          .where("created_at >= ?", 7.days.ago)
                          .sum(:total_amount)
-    
+
     @today_sales = Order.where(product_id: seller_product_ids)
                         .where(status: "completed")
                         .where("created_at >= ?", Time.current.beginning_of_day)
                         .sum(:total_amount)
-    
+
     # Order counts by status
     @total_orders = Order.where(product_id: seller_product_ids).count
-    @pending_orders = Order.where(product_id: seller_product_ids).where(status: ['pending', 'processing']).count
-    @completed_orders = Order.where(product_id: seller_product_ids).where(status: 'completed').count
-    @cancelled_orders = Order.where(product_id: seller_product_ids).where(status: 'cancelled').count
-    
+    @pending_orders = Order.where(product_id: seller_product_ids).where(status: [ "pending", "processing" ]).count
+    @completed_orders = Order.where(product_id: seller_product_ids).where(status: "completed").count
+    @cancelled_orders = Order.where(product_id: seller_product_ids).where(status: "cancelled").count
+
     # Average order value
     @average_order_value = @completed_orders > 0 ? (@total_sales / @completed_orders) : 0
-    
+
     # Sales by day for chart (last 14 days)
     @daily_sales = Order.where(product_id: seller_product_ids)
                         .where(status: "completed")
                         .where("created_at >= ?", 14.days.ago)
                         .group("DATE(created_at)")
                         .sum(:total_amount)
-    
+
     @chart_labels = (0..13).map { |i| (13 - i).days.ago.to_date }
     @chart_data = @chart_labels.map { |date| @daily_sales[date] || 0 }
-    
+
     # Top selling products this month
     @top_products = @seller.products
                            .joins(:orders)
@@ -150,7 +150,7 @@ class Seller::DashboardController < ApplicationController
                            .select("products.*, COUNT(orders.id) as order_count, SUM(orders.total_amount) as revenue")
                            .order("revenue DESC")
                            .limit(5)
-    
+
     # Growth calculation
     last_month_sales = Order.where(product_id: seller_product_ids)
                             .where(status: "completed")
@@ -162,9 +162,9 @@ class Seller::DashboardController < ApplicationController
   def earnings
     @seller = current_user.seller
     seller_product_ids = @seller.products.pluck(:id)
-    
+
     commission_rate = @seller.commission_rate || 10
-    
+
     # Total earnings
     total_gross = Order.where(product_id: seller_product_ids)
                        .where(status: "completed")
@@ -177,49 +177,50 @@ class Seller::DashboardController < ApplicationController
                          .where(status: [ "pending", "processing" ])
                          .sum(:total_amount)
     @pending_earnings = pending_gross * (1 - (commission_rate / 100.0))
-    
+
     # This month earnings
     this_month_gross = Order.where(product_id: seller_product_ids)
                             .where(status: "completed")
                             .where("created_at >= ?", Time.current.beginning_of_month)
                             .sum(:total_amount)
     @this_month_earnings = this_month_gross * (1 - (commission_rate / 100.0))
-    
+
     # Last month earnings
     last_month_gross = Order.where(product_id: seller_product_ids)
                             .where(status: "completed")
                             .where(created_at: Time.current.last_month.beginning_of_month..Time.current.last_month.end_of_month)
                             .sum(:total_amount)
     @last_month_earnings = last_month_gross * (1 - (commission_rate / 100.0))
-    
+
     # Earnings growth
     @earnings_growth = @last_month_earnings > 0 ? ((@this_month_earnings - @last_month_earnings) / @last_month_earnings * 100).round(1) : 0
-    
-    # Weekly earnings for chart (last 12 weeks)
-    @weekly_earnings_data = Order.where(product_id: seller_product_ids)
-                                 .where(status: "completed")
-                                 .where("created_at >= ?", 12.weeks.ago)
-                                 .group_by_week(:created_at)
-                                 .sum(:total_amount)
-                                 .transform_values { |v| v * (1 - (commission_rate / 100.0)) }
-    
-    # Monthly earnings for chart (last 6 months)
-    @monthly_earnings_data = Order.where(product_id: seller_product_ids)
-                                  .where(status: "completed")
-                                  .where("created_at >= ?", 6.months.ago)
-                                  .group("DATE_TRUNC('month', created_at)")
-                                  .sum(:total_amount)
-    
+
+    # Weekly earnings for chart (last 12 weeks) - using standard Ruby grouping
+    weekly_orders = Order.where(product_id: seller_product_ids)
+                         .where(status: "completed")
+                         .where("created_at >= ?", 12.weeks.ago)
+                         .select(:total_amount, :created_at)
+    @weekly_earnings_data = weekly_orders.group_by { |o| o.created_at.beginning_of_week }
+                                         .transform_values { |orders| orders.sum(&:total_amount) * (1 - (commission_rate / 100.0)) }
+
+    # Monthly earnings for chart (last 6 months) - using standard Ruby grouping
+    monthly_orders = Order.where(product_id: seller_product_ids)
+                          .where(status: "completed")
+                          .where("created_at >= ?", 6.months.ago)
+                          .select(:total_amount, :created_at)
+    monthly_earnings_hash = monthly_orders.group_by { |o| o.created_at.beginning_of_month }
+                                          .transform_values { |orders| orders.sum(&:total_amount) }
+
     @chart_labels = (0..5).map { |i| (5 - i).months.ago.strftime("%b %Y") }
     @chart_data = (0..5).map do |i|
-      month_start = (5 - i).months.ago.beginning_of_month
-      month_gross = @monthly_earnings_data.find { |k, _| k.to_date.beginning_of_month == month_start.to_date }&.last || 0
+      month_start = (5 - i).months.ago.beginning_of_month.to_date
+      month_gross = monthly_earnings_hash.find { |k, _| k.to_date == month_start }&.last || 0
       (month_gross * (1 - (commission_rate / 100.0))).round(2)
     end
-    
+
     # Recent payouts (if you have a payouts table)
     @recent_payouts = [] # Placeholder for payout history
-    
+
     # Earnings by product
     @earnings_by_product = @seller.products
                                   .joins(:orders)
@@ -231,7 +232,7 @@ class Seller::DashboardController < ApplicationController
                                   .map { |p| { id: p.id, name: p.name, earnings: (p.gross_revenue * (1 - (commission_rate / 100.0))).round(2) } }
 
     @commission_rate = commission_rate
-    
+
     # Available for withdrawal (total - pending)
     @available_balance = @total_earnings
   end

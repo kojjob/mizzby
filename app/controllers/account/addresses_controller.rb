@@ -1,5 +1,5 @@
 class Account::AddressesController < Account::BaseController
-  before_action :set_address, only: [:show, :edit, :update, :destroy]
+  before_action :set_address, only: [ :edit, :update, :destroy ]
 
   def index
     @addresses = current_user.addresses.order(default: :desc, created_at: :desc)
@@ -11,7 +11,7 @@ class Account::AddressesController < Account::BaseController
 
   def create
     @address = current_user.addresses.build(address_params)
-    
+
     if @address.save
       redirect_to account_addresses_path, notice: "Address added successfully."
     else

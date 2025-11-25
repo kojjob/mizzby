@@ -50,14 +50,24 @@ Rails.application.routes.draw do
 
   # Checkout Process
   get "checkout", to: "checkout#index", as: :checkout
+  post "checkout", to: "checkout#create", as: :checkout_create
+  get "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now_get
   post "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now
 
   # Orders & Downloads
   resources :orders
   resources :order_items
   resources :download_links
+  get "download/:token", to: "download_links#download", as: :download_file
 
   # Product Catalog
+  # Category aliases for cleaner URLs (must be before resources :categories)
+  get "categories/courses", to: redirect("/categories/courses-education")
+  get "categories/software", to: redirect("/categories/software-applications")
+  get "categories/digital", to: redirect("/categories/digital-content")
+  get "categories/tools", to: redirect("/categories/tools-services")
+  get "categories/physical", to: redirect("/categories/physical-products")
+  
   resources :categories
   resources :products do
     member do
@@ -75,6 +85,10 @@ Rails.application.routes.draw do
   # Product Discovery
   get "search", to: "products#search", as: :search
   get "deals", to: "deals#index", as: :deals
+  get "deals/flash-sales", to: "deals#flash_sales", as: :flash_sales
+  get "deals/clearance", to: "deals#clearance", as: :clearance
+  get "deals/bundles", to: "deals#bundles", as: :bundles
+  get "deals/weekly-offers", to: "deals#weekly_offers", as: :weekly_offers
   get "new-arrivals", to: "products#new_arrivals", as: :new_arrivals
   get "best-sellers", to: "products#best_sellers", as: :best_sellers
 

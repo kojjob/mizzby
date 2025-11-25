@@ -8,7 +8,7 @@ class Seller::ProductsController < ApplicationController
                   .includes(:category)
                   .with_attached_images
                   .order(created_at: :desc)
-    
+
     # Pre-calculate stats to avoid N+1 in view
     @total_count = @products.size
     @published_count = @products.count(&:published?)

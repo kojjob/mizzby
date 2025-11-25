@@ -1,17 +1,288 @@
-<% content_for :title, "Showing seller" %>
+<% content_for :title, @seller.business_name.presence || "Seller Profile" %>
 
-<div class="md:w-2/3 w-full">
+<%# Seller Profile - A warm, human-crafted storefront %>
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+  
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <div class="max-w-4xl mx-auto px-4 pt-6">
+      <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
+        <span class="text-xl">✨</span>
+        <p class="text-emerald-700 font-medium"><%= notice %></p>
+      </div>
+    </div>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing seller</h1>
+  <%# Hero Section with Cover %>
+  <div class="relative">
+    <%# Cover Image / Pattern %>
+    <div class="h-48 sm:h-64 bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-20">
+        <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#grid)"/>
+        </svg>
+      </div>
+      <%# Decorative elements %>
+      <div class="absolute top-8 left-8 w-20 h-20 bg-white/10 rounded-full blur-2xl"></div>
+      <div class="absolute bottom-12 right-16 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/2 left-1/4 text-6xl opacity-10 transform -rotate-12">🏪</div>
+      <div class="absolute top-1/3 right-1/4 text-4xl opacity-10 transform rotate-12">✨</div>
+    </div>
 
-  <%= render @seller %>
+    <%# Profile Card overlapping cover %>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 -mt-24 relative z-10">
+      <div class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row gap-6">
+          <%# Avatar %>
+          <div class="flex-shrink-0 mx-auto sm:mx-0">
+            <div class="w-28 h-28 sm:w-36 sm:h-36 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl shadow-lg flex items-center justify-center transform -rotate-3 border-4 border-white">
+              <% if @seller.user&.avatar&.attached? %>
+                <%= image_tag @seller.user.avatar, class: "w-full h-full object-cover rounded-xl" %>
+              <% else %>
+                <span class="text-5xl sm:text-6xl"><%= @seller.business_name.present? ? @seller.business_name[0].upcase : "🏪" %></span>
+              <% end %>
+            </div>
+          </div>
 
-  <%= link_to "Edit this seller", edit_seller_path(@seller), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to sellers", sellers_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <div class="sm:inline-block mt-2 sm:mt-0 sm:ml-2">
-    <%= button_to "Destroy this seller", @seller, method: :delete, class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+          <%# Main Info %>
+          <div class="flex-1 text-center sm:text-left">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-stone-800 mb-1">
+                  <%= @seller.business_name.presence || "Seller ##{@seller.id}" %>
+                </h1>
+                <div class="flex items-center justify-center sm:justify-start gap-2 text-stone-500">
+                  <span class="text-lg">📍</span>
+                  <span><%= [@seller.location, @seller.country].compact.reject(&:blank?).join(", ").presence || "Location not set" %></span>
+                </div>
+              </div>
+              
+              <%# Verification Badge %>
+              <% if @seller.verified? %>
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-full border border-emerald-200 self-center sm:self-start">
+                  <span class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  </span>
+                  <span class="text-emerald-700 font-medium text-sm">Verified Seller</span>
+                </div>
+              <% else %>
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-stone-100 rounded-full self-center sm:self-start">
+                  <span class="text-stone-500 text-sm">Pending verification</span>
+                </div>
+              <% end %>
+            </div>
+
+            <%# Description %>
+            <% if @seller.description.present? %>
+              <p class="mt-4 text-stone-600 leading-relaxed max-w-xl">
+                <%= @seller.description %>
+              </p>
+            <% end %>
+
+            <%# Quick Stats %>
+            <div class="flex flex-wrap justify-center sm:justify-start gap-4 mt-6">
+              <div class="px-4 py-2 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+                <span class="block text-2xl font-bold text-amber-700"><%= @seller.products.count %></span>
+                <span class="text-xs text-amber-600">Products</span>
+              </div>
+              <% if @seller.acceptance_rate.present? %>
+                <div class="px-4 py-2 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+                  <span class="block text-2xl font-bold text-emerald-700"><%= number_to_percentage(@seller.acceptance_rate, precision: 0) %></span>
+                  <span class="text-xs text-emerald-600">Acceptance</span>
+                </div>
+              <% end %>
+              <% if @seller.average_response_time.present? %>
+                <div class="px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                  <span class="block text-2xl font-bold text-blue-700"><%= @seller.average_response_time %>h</span>
+                  <span class="text-xs text-blue-600">Response</span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Main Content %>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="grid md:grid-cols-3 gap-6">
+      
+      <%# Left Column - Contact & Details %>
+      <div class="md:col-span-1 space-y-6">
+        
+        <%# Contact Card %>
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-stone-200/60 p-6">
+          <h3 class="flex items-center gap-2 text-lg font-semibold text-stone-800 mb-4">
+            <span class="text-xl">📞</span>
+            Get in Touch
+          </h3>
+          
+          <div class="space-y-3">
+            <% if @seller.phone_number.present? %>
+              <div class="flex items-center gap-3 p-3 bg-stone-50 rounded-xl">
+                <span class="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center text-lg">📱</span>
+                <div>
+                  <span class="text-xs text-stone-400 block">Phone</span>
+                  <span class="text-stone-700 font-medium"><%= @seller.phone_number %></span>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @seller.user&.email.present? %>
+              <div class="flex items-center gap-3 p-3 bg-stone-50 rounded-xl">
+                <span class="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center text-lg">✉️</span>
+                <div>
+                  <span class="text-xs text-stone-400 block">Email</span>
+                  <span class="text-stone-700 font-medium text-sm break-all"><%= @seller.user.email %></span>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @seller.store.present? %>
+              <%= link_to store_path(@seller.store.slug), class: "flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100 hover:border-amber-200 transition-colors group" do %>
+                <span class="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center text-lg group-hover:scale-110 transition-transform">🏪</span>
+                <div>
+                  <span class="text-xs text-amber-500 block">Visit Store</span>
+                  <span class="text-amber-700 font-medium"><%= @seller.store.name %></span>
+                </div>
+                <svg class="w-5 h-5 text-amber-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Business Details Card %>
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-stone-200/60 p-6">
+          <h3 class="flex items-center gap-2 text-lg font-semibold text-stone-800 mb-4">
+            <span class="text-xl">📋</span>
+            Business Details
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between items-center py-2 border-b border-stone-100">
+              <span class="text-stone-500 text-sm">Member since</span>
+              <span class="text-stone-700 font-medium"><%= @seller.created_at.strftime("%B %Y") %></span>
+            </div>
+            <% if @seller.commission_rate.present? %>
+              <div class="flex justify-between items-center py-2 border-b border-stone-100">
+                <span class="text-stone-500 text-sm">Commission rate</span>
+                <span class="text-stone-700 font-medium"><%= number_to_percentage(@seller.commission_rate, precision: 1) %></span>
+              </div>
+            <% end %>
+            <div class="flex justify-between items-center py-2">
+              <span class="text-stone-500 text-sm">Status</span>
+              <span class="px-2 py-1 text-xs font-medium rounded-full <%= @seller.verified? ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' %>">
+                <%= @seller.verified? ? "Active" : "Pending" %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Right Column - Products & Actions %>
+      <div class="md:col-span-2 space-y-6">
+        
+        <%# Products Preview %>
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-stone-200/60 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="flex items-center gap-2 text-lg font-semibold text-stone-800">
+              <span class="text-xl">🛍️</span>
+              Products by <%= @seller.business_name.presence || "this seller" %>
+            </h3>
+            <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">
+              <%= @seller.products.count %> items
+            </span>
+          </div>
+          
+          <% if @seller.products.any? %>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <% @seller.products.limit(6).each do |product| %>
+                <%= link_to product_path(product), class: "group" do %>
+                  <div class="aspect-square bg-gradient-to-br from-stone-100 to-stone-50 rounded-xl overflow-hidden shadow-sm border border-stone-100 group-hover:shadow-md group-hover:border-amber-200 transition-all">
+                    <% if product.images.attached? %>
+                      <%= image_tag product.images.first, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" %>
+                    <% else %>
+                      <div class="w-full h-full flex items-center justify-center">
+                        <span class="text-4xl opacity-50">📦</span>
+                      </div>
+                    <% end %>
+                  </div>
+                  <p class="mt-2 text-sm font-medium text-stone-700 truncate group-hover:text-amber-700"><%= product.name %></p>
+                  <p class="text-sm text-amber-600 font-semibold"><%= number_to_currency(product.price) %></p>
+                <% end %>
+              <% end %>
+            </div>
+            
+            <% if @seller.products.count > 6 %>
+              <div class="mt-6 text-center">
+                <%= link_to "View all #{@seller.products.count} products →", products_path(seller_id: @seller.id), 
+                    class: "inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 rounded-xl border border-amber-200 hover:border-amber-300 font-medium transition-colors" %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-center py-12">
+              <div class="w-20 h-20 bg-stone-100 rounded-full mx-auto flex items-center justify-center mb-4">
+                <span class="text-4xl">📦</span>
+              </div>
+              <p class="text-stone-500">No products yet</p>
+              <p class="text-stone-400 text-sm mt-1">Check back soon!</p>
+            </div>
+          <% end %>
+        </div>
+
+        <%# Admin/Owner Actions %>
+        <% if current_user&.admin? || current_user&.id == @seller.user_id %>
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl shadow-sm border border-stone-200/60 p-6">
+            <h3 class="flex items-center gap-2 text-lg font-semibold text-stone-800 mb-4">
+              <span class="text-xl">⚙️</span>
+              Manage Seller
+            </h3>
+            
+            <div class="flex flex-wrap gap-3">
+              <%= link_to edit_seller_path(@seller), 
+                  class: "inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium hover:from-amber-600 hover:to-orange-600 shadow-sm hover:shadow transition-all" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
+                Edit Profile
+              <% end %>
+              
+              <%= link_to sellers_path, 
+                  class: "inline-flex items-center gap-2 px-5 py-2.5 bg-white text-stone-600 rounded-xl font-medium border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                All Sellers
+              <% end %>
+              
+              <% if current_user&.admin? %>
+                <%= button_to @seller, method: :delete, 
+                    data: { turbo_confirm: "Are you sure you want to delete this seller? This action cannot be undone." },
+                    class: "inline-flex items-center gap-2 px-5 py-2.5 bg-white text-rose-600 rounded-xl font-medium border border-rose-200 hover:bg-rose-50 hover:border-rose-300 transition-colors cursor-pointer" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  Delete Seller
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Footer note %>
+  <div class="text-center pb-12 text-stone-400 text-sm">
+    <p>Made with care on Mizzby 💜</p>
   </div>
 </div>

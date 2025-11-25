@@ -1,17 +1,213 @@
-<% content_for :title, "Showing cart item" %>
+<% content_for :title, "Cart Item - #{@cart_item.product.name}" %>
 
-<div class="md:w-2/3 w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Flash Notice -->
+    <% if notice.present? %>
+      <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 animate-fade-in">
+        <div class="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <p class="text-emerald-800 font-medium"><%= notice %></p>
+      </div>
+    <% end %>
 
-  <h1 class="font-bold text-4xl">Showing cart item</h1>
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+      <ol class="flex items-center gap-2 text-sm text-gray-500">
+        <%= link_to root_path, class: "hover:text-gray-700 transition-colors" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        <% end %>
+        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+        </svg>
+        <%= link_to "Cart", current_cart_path, class: "hover:text-gray-700 transition-colors" %>
+        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="text-gray-900 font-medium">Item Details</span>
+      </ol>
+    </nav>
 
-  <%= render @cart_item %>
+    <!-- Main Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      
+      <!-- Product Section -->
+      <div class="p-6 sm:p-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+          
+          <!-- Product Image -->
+          <div class="flex-shrink-0">
+            <div class="w-full lg:w-72 h-72 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl overflow-hidden">
+              <% if @cart_item.product.product_images.any? %>
+                <%= image_tag @cart_item.product.product_images.first.image, class: "w-full h-full object-cover", alt: @cart_item.product.name %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg class="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                  </svg>
+                </div>
+              <% end %>
+            </div>
+          </div>
 
-  <%= link_to "Edit this cart item", edit_cart_item_path(@cart_item), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to cart items", cart_items_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <div class="sm:inline-block mt-2 sm:mt-0 sm:ml-2">
-    <%= button_to "Destroy this cart item", @cart_item, method: :delete, class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+          <!-- Product Details -->
+          <div class="flex-1 min-w-0">
+            <!-- Category Badge -->
+            <% if @cart_item.product.category %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 mb-3">
+                <%= @cart_item.product.category.name %>
+              </span>
+            <% end %>
+
+            <!-- Product Name -->
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              <%= link_to @cart_item.product.name, @cart_item.product, class: "hover:text-indigo-600 transition-colors" %>
+            </h1>
+
+            <!-- Seller Info -->
+            <% if @cart_item.product.seller %>
+              <p class="text-gray-500 mb-4">
+                Sold by 
+                <%= link_to @cart_item.product.seller.business_name, seller_path(@cart_item.product.seller), class: "text-indigo-600 hover:text-indigo-700 font-medium" %>
+              </p>
+            <% end %>
+
+            <!-- Digital Badge -->
+            <% if @cart_item.product.is_digital %>
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium mb-4">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                </svg>
+                Digital Download
+              </div>
+            <% end %>
+
+            <!-- Price Display -->
+            <div class="mb-6">
+              <% if @cart_item.product.discounted_price.present? && @cart_item.product.discounted_price < @cart_item.product.price %>
+                <div class="flex items-baseline gap-3">
+                  <span class="text-3xl font-bold text-gray-900"><%= number_to_currency(@cart_item.price) %></span>
+                  <span class="text-lg text-gray-400 line-through"><%= number_to_currency(@cart_item.product.price) %></span>
+                  <span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-sm font-semibold rounded">
+                    <%= number_to_percentage(((1 - @cart_item.product.discounted_price / @cart_item.product.price) * 100), precision: 0) %> OFF
+                  </span>
+                </div>
+              <% else %>
+                <span class="text-3xl font-bold text-gray-900"><%= number_to_currency(@cart_item.price) %></span>
+              <% end %>
+              <p class="text-sm text-gray-500 mt-1">per item</p>
+            </div>
+
+            <!-- Quantity & Subtotal Grid -->
+            <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl mb-6">
+              <div>
+                <p class="text-sm text-gray-500 mb-1">Quantity</p>
+                <p class="text-2xl font-bold text-gray-900"><%= @cart_item.quantity %></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 mb-1">Subtotal</p>
+                <p class="text-2xl font-bold text-indigo-600"><%= number_to_currency(@cart_item.subtotal) %></p>
+              </div>
+            </div>
+
+            <!-- Quick Update Form -->
+            <div class="mb-6">
+              <%= form_with model: @cart_item, class: "flex items-center gap-3" do |form| %>
+                <label class="text-sm font-medium text-gray-700">Update quantity:</label>
+                <div class="flex items-center">
+                  <%= form.number_field :quantity, 
+                      value: @cart_item.quantity, 
+                      min: 1, 
+                      max: @cart_item.product.is_digital ? 99 : (@cart_item.product.stock_quantity || 99),
+                      class: "w-20 px-3 py-2 border border-gray-200 rounded-lg text-center focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" %>
+                </div>
+                <%= form.submit "Update", class: "px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors cursor-pointer" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-100"></div>
+
+      <!-- Actions Section -->
+      <div class="p-6 sm:p-8 bg-gray-50/50">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          
+          <!-- Continue Shopping -->
+          <%= link_to products_path, class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-300 transition-all" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Continue Shopping
+          <% end %>
+
+          <!-- View Cart -->
+          <%= link_to current_cart_path, class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white bg-indigo-600 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm hover:shadow" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            View Cart
+          <% end %>
+
+          <!-- Checkout -->
+          <%= link_to checkout_path, class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl font-medium hover:from-emerald-600 hover:to-teal-700 transition-all shadow-sm hover:shadow" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Checkout
+          <% end %>
+
+          <!-- Spacer -->
+          <div class="flex-1 hidden sm:block"></div>
+
+          <!-- Remove Item -->
+          <%= button_to @cart_item, 
+              method: :delete, 
+              class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl font-medium hover:bg-rose-100 hover:border-rose-300 transition-all cursor-pointer",
+              data: { turbo_confirm: "Remove #{@cart_item.product.name} from your cart?" } do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Remove
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products Suggestion -->
+    <% related_products = @cart_item.product.category&.products&.where&.not(id: @cart_item.product.id)&.where(published: true)&.limit(4) %>
+    <% if related_products&.any? %>
+      <div class="mt-10">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">You might also like</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <% related_products.each do |product| %>
+            <%= link_to product, class: "group bg-white rounded-xl p-4 border border-gray-100 hover:border-indigo-200 hover:shadow-md transition-all" do %>
+              <div class="aspect-square bg-gray-50 rounded-lg mb-3 overflow-hidden">
+                <% if product.product_images.any? %>
+                  <%= image_tag product.product_images.first.image, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300", alt: product.name %>
+                <% else %>
+                  <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                  </div>
+                <% end %>
+              </div>
+              <h3 class="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors"><%= product.name %></h3>
+              <p class="text-sm font-bold text-gray-900 mt-1"><%= number_to_currency(product.discounted_price || product.price) %></p>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
   </div>
 </div>

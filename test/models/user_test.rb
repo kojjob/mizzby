@@ -150,7 +150,7 @@ class UserTest < ActiveSupport::TestCase
     regular_user.reload
     assert_not regular_user.seller?
 
-    # Seller user with seller profile should be seller  
+    # Seller user with seller profile should be seller
     assert seller_user.seller?
   end
 

@@ -17,15 +17,15 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create category" do
     assert_difference("Category.count") do
-      post categories_url, params: { category: { 
-        description: "A new test category description", 
-        icon_color: "#FF5733", 
-        icon_name: "new-icon", 
-        name: "New Test Category", 
-        parent_id: nil, 
-        position: 10, 
-        slug: "new-test-category-#{SecureRandom.hex(4)}", 
-        visible: true 
+      post categories_url, params: { category: {
+        description: "A new test category description",
+        icon_color: "#FF5733",
+        icon_name: "new-icon",
+        name: "New Test Category",
+        parent_id: nil,
+        position: 10,
+        slug: "new-test-category-#{SecureRandom.hex(4)}",
+        visible: true
       } }
     end
 

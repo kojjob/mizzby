@@ -1,0 +1,50 @@
+<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 relative">
+  <% if product.respond_to?(:discount_percentage) && product.discount_percentage.to_i > 0 %>
+    <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold">
+      <%= product.discount_percentage.to_i %>% OFF
+    </div>
+  <% end %>
+  
+  <div class="h-40 bg-gray-50 flex items-center justify-center p-4">
+    <% if product.images.attached? %>
+      <%= image_tag product.images.first, class: "h-full w-auto object-contain" %>
+    <% elsif product.product_images.any? %>
+      <%= image_tag product.product_images.first.image, class: "h-full w-auto object-contain" %>
+    <% else %>
+      <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
+        <svg class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="p-4">
+    <h3 class="text-sm font-medium text-gray-900 mb-1 truncate"><%= product.name %></h3>
+    
+    <div class="flex items-center space-x-2 mt-2">
+      <% if product.discounted_price.present? && product.discounted_price < product.price %>
+        <span class="text-lg font-bold text-indigo-600"><%= number_to_currency(product.discounted_price) %></span>
+        <span class="text-sm text-gray-500 line-through"><%= number_to_currency(product.price) %></span>
+      <% else %>
+        <span class="text-lg font-bold text-indigo-600"><%= number_to_currency(product.price) %></span>
+      <% end %>
+    </div>
+    
+    <div class="mt-4 flex space-x-2">
+      <%= link_to product_path(product), class: "flex-1 text-center py-2 px-3 rounded bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors" do %>
+        View
+      <% end %>
+      
+      <button 
+        class="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded transition-colors"
+        data-action="click->cart-modal#addToCart"
+        data-product-id="<%= product.id %>"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

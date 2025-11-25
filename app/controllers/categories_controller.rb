@@ -68,12 +68,28 @@ class CategoriesController < ApplicationController
     @category = find_category(params[:id])
   end
 
-  # Find category by ID or slug
+  # Find category by ID or slug with fuzzy matching
   def find_category(id_or_slug)
     if id_or_slug.to_s.match?(/\A\d+\z/)
       Category.find(id_or_slug)
     else
-      Category.find_by(slug: id_or_slug) || Category.find_by(name: id_or_slug.titleize) || raise(ActiveRecord::RecordNotFound, "Category not found")
+      # Try exact slug match first
+      category = Category.find_by(slug: id_or_slug)
+      return category if category
+      
+      # Try exact name match
+      category = Category.find_by(name: id_or_slug.titleize)
+      return category if category
+      
+      # Try partial/fuzzy slug match (e.g., "courses" matches "courses-education")
+      category = Category.where("slug ILIKE ?", "#{id_or_slug}%").first
+      return category if category
+      
+      # Try partial name match
+      category = Category.where("LOWER(name) ILIKE ?", "%#{id_or_slug.downcase}%").first
+      return category if category
+      
+      raise ActiveRecord::RecordNotFound, "Category not found"
     end
   end
 
