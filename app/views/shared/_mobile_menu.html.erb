@@ -141,28 +141,28 @@
 
       <%# Common footer links %>
       <div class="border-t border-indigo-700 my-2"></div>
-      <a href="/settings" class="block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700">
+      <%= link_to account_settings_path, class: "block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700" do %>
         Settings
-      </a>
-      <a href="/help-center" class="block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700">
+      <% end %>
+      <%= link_to help_center_path, class: "block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700" do %>
         Help & Support
-      </a>
-      <a href="/logout" data-method="delete" class="block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700">
+      <% end %>
+      <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700" do %>
         Logout
-      </a>
+      <% end %>
 
     <% else %>
       <%# Login/Register Section - for logged out users %>
       <div class="border-t border-indigo-700 my-2"></div>
-      <a href="/login" class="block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700">
+      <%= link_to new_user_session_path, class: "block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700" do %>
         Login
-      </a>
-      <a href="/register" class="block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700">
+      <% end %>
+      <%= link_to new_user_registration_path, class: "block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700" do %>
         Register
-      </a>
-      <a href="/help-center" class="block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700">
+      <% end %>
+      <%= link_to help_center_path, class: "block px-3 py-2 rounded-md text-white font-medium hover:bg-indigo-700" do %>
         Help & Support
-      </a>
+      <% end %>
     <% end %>
   </nav>
 </div>

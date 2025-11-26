@@ -77,10 +77,10 @@
       <!-- Pricing -->
       <div class="flex items-baseline space-x-3">
         <span class="text-3xl font-bold text-indigo-600"><%= number_to_currency(@product.price) %></span>
-        <% if @product.original_price.present? && @product.original_price > @product.price %>
-          <span class="text-lg text-gray-400 line-through"><%= number_to_currency(@product.original_price) %></span>
+        <% if @product.discounted_price.present? && @product.discounted_price > @product.price %>
+          <span class="text-lg text-gray-400 line-through"><%= number_to_currency(@product.discounted_price) %></span>
           <span class="text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
-            <%= number_to_percentage((((@product.original_price - @product.price) / @product.original_price) * 100), precision: 0) %> OFF
+            <%= number_to_percentage((((@product.discounted_price - @product.price) / @product.discounted_price) * 100), precision: 0) %> OFF
           </span>
         <% end %>
       </div>

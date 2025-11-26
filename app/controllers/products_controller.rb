@@ -1,7 +1,7 @@
 class ProductsController < ApplicationController
   include PaginationHelper
   before_action :set_product, only: %i[ show edit update destroy add_item_to_cart ]
-  before_action :authenticate_user!, only: [:add_item_to_cart]
+  before_action :authenticate_user!, only: [ :add_item_to_cart ]
 
   # GET /products or /products.json
   def index

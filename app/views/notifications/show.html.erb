@@ -1,17 +1,273 @@
-<% content_for :title, "Showing notification" %>
+<% content_for :title, @notification.title %>
 
-<div class="md:w-2/3 w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl mx-auto">
+    
+    <!-- Flash Notice -->
+    <% if notice.present? %>
+      <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 animate-fade-in">
+        <div class="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <p class="text-emerald-800 font-medium"><%= notice %></p>
+      </div>
+    <% end %>
 
-  <h1 class="font-bold text-4xl">Showing notification</h1>
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+      <ol class="flex items-center gap-2 text-sm text-gray-500">
+        <%= link_to root_path, class: "hover:text-gray-700 transition-colors" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        <% end %>
+        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+        </svg>
+        <%= link_to "Notifications", notifications_path, class: "hover:text-gray-700 transition-colors" %>
+        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="text-gray-900 font-medium line-clamp-1"><%= @notification.title.truncate(30) %></span>
+      </ol>
+    </nav>
 
-  <%= render @notification %>
+    <!-- Main Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      
+      <!-- Header -->
+      <div class="p-6 sm:p-8 border-b border-gray-100 <%= @notification.unread? ? 'bg-gradient-to-r from-indigo-50 to-purple-50' : 'bg-gray-50/50' %>">
+        <div class="flex items-start gap-4">
+          <!-- Icon -->
+          <% 
+            icon_colors = {
+              'info' => 'from-blue-500 to-blue-600',
+              'success' => 'from-emerald-500 to-emerald-600',
+              'warning' => 'from-amber-500 to-amber-600',
+              'error' => 'from-rose-500 to-rose-600',
+              'order' => 'from-indigo-500 to-indigo-600',
+              'payment' => 'from-purple-500 to-purple-600',
+              'product' => 'from-pink-500 to-pink-600',
+              'system' => 'from-gray-500 to-gray-600'
+            }
+            gradient_class = icon_colors[@notification.notification_type] || 'from-indigo-500 to-purple-600'
+          %>
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br <%= gradient_class %> flex items-center justify-center shadow-lg">
+            <% case @notification.notification_type %>
+            <% when 'info' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            <% when 'success' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            <% when 'warning' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            <% when 'error' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            <% when 'order' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+            <% when 'payment' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            <% when 'product' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+            <% when 'system' %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            <% else %>
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+            <% end %>
+          </div>
 
-  <%= link_to "Edit this notification", edit_notification_path(@notification), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to notifications", notifications_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <div class="sm:inline-block mt-2 sm:mt-0 sm:ml-2">
-    <%= button_to "Destroy this notification", @notification, method: :delete, class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900"><%= @notification.title %></h1>
+              <% if @notification.unread? %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                  Unread
+                </span>
+              <% else %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                  Read
+                </span>
+              <% end %>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+              <!-- Type -->
+              <% 
+                type_badge_colors = {
+                  'info' => 'bg-blue-50 text-blue-700 border-blue-100',
+                  'success' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                  'warning' => 'bg-amber-50 text-amber-700 border-amber-100',
+                  'error' => 'bg-rose-50 text-rose-700 border-rose-100',
+                  'order' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                  'payment' => 'bg-purple-50 text-purple-700 border-purple-100',
+                  'product' => 'bg-pink-50 text-pink-700 border-pink-100',
+                  'system' => 'bg-gray-100 text-gray-700 border-gray-200'
+                }
+                badge_color = type_badge_colors[@notification.notification_type] || 'bg-gray-100 text-gray-700 border-gray-200'
+              %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-lg border <%= badge_color %> capitalize font-medium">
+                <%= @notification.notification_type || 'general' %>
+              </span>
+              
+              <!-- Time -->
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <%= @notification.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message Content -->
+      <div class="p-6 sm:p-8">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Message</h3>
+        <div class="prose prose-gray max-w-none">
+          <p class="text-gray-700 leading-relaxed text-lg">
+            <%= @notification.message.presence || "No message content available." %>
+          </p>
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="p-6 sm:p-8 border-t border-gray-100 bg-gray-50/50">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Details</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <!-- Recipient -->
+          <div class="bg-white p-4 rounded-xl border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Recipient</p>
+                <p class="font-medium text-gray-900"><%= @notification.user&.email || "User ##{@notification.user_id}" %></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="bg-white p-4 rounded-xl border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 <%= @notification.read? ? 'bg-emerald-50' : 'bg-amber-50' %> rounded-lg flex items-center justify-center">
+                <% if @notification.read? %>
+                  <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                <% else %>
+                  <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  </svg>
+                <% end %>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Status</p>
+                <p class="font-medium text-gray-900 capitalize"><%= @notification.status %></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Read At -->
+          <% if @notification.read_at.present? %>
+            <div class="bg-white p-4 rounded-xl border border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500">Read At</p>
+                  <p class="font-medium text-gray-900"><%= @notification.read_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Related Item -->
+          <% if @notification.notifiable.present? %>
+            <div class="bg-white p-4 rounded-xl border border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500">Related To</p>
+                  <p class="font-medium text-gray-900"><%= @notification.notifiable_type %> #<%= @notification.notifiable_id %></p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="p-6 sm:p-8 border-t border-gray-100 bg-white">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <%= link_to notifications_path, class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-gray-700 bg-white border border-gray-200 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-300 transition-all" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Notifications
+          <% end %>
+
+          <% if @notification.unread? %>
+            <%= button_to @notification, method: :patch, params: { notification: { status: :read, read_at: Time.current } }, class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl font-medium hover:from-emerald-600 hover:to-teal-700 transition-all shadow-sm cursor-pointer" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Mark as Read
+            <% end %>
+          <% end %>
+
+          <% if current_user&.admin? %>
+            <%= link_to edit_notification_path(@notification), class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-amber-600 bg-amber-50 border border-amber-100 rounded-xl font-medium hover:bg-amber-100 transition-all" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+              </svg>
+              Edit
+            <% end %>
+          <% end %>
+
+          <div class="flex-1 hidden sm:block"></div>
+
+          <% if current_user&.admin? %>
+            <%= button_to @notification, method: :delete, class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl font-medium hover:bg-rose-100 hover:border-rose-300 transition-all cursor-pointer", data: { turbo_confirm: "Delete this notification permanently?" } do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Delete
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

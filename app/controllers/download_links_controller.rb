@@ -1,7 +1,7 @@
 class DownloadLinksController < ApplicationController
-  before_action :authenticate_user!, only: [:download]
+  before_action :authenticate_user!, only: [ :download ]
   before_action :set_download_link, only: %i[ show edit update destroy ]
-  before_action :set_download_link_by_token, only: [:download]
+  before_action :set_download_link_by_token, only: [ :download ]
 
   # GET /download/:token - Download the file
   def download
@@ -27,7 +27,7 @@ class DownloadLinksController < ApplicationController
 
     # Get the product's downloadable file
     product = @download_link.product
-    
+
     if product.respond_to?(:file) && product.file.attached?
       redirect_to rails_blob_path(product.file, disposition: "attachment"), allow_other_host: true
     elsif product.respond_to?(:download_file) && product.download_file.attached?

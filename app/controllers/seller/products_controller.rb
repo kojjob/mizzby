@@ -120,7 +120,7 @@ class Seller::ProductsController < ApplicationController
 
   def product_params
     params.require(:product).permit(
-      :name, :description, :price, :original_price, :category_id,
+      :name, :description, :price, :discounted_price, :category_id,
       :stock_quantity, :sku, :published, :featured, :digital,
       :file_url, :preview_url, images: []
     )

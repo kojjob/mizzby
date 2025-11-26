@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Refund Has Been Processed</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f5;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f5;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 40px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">💰 Refund Processed</h1>
+              <p style="margin: 10px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">We've processed your refund, <%= @user.first_name %></p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <!-- Refund Amount Box -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); border-radius: 12px; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 30px; text-align: center;">
+                    <p style="margin: 0 0 5px; color: #5b21b6; font-size: 14px; font-weight: 600;">REFUND AMOUNT</p>
+                    <p style="margin: 0 0 10px; color: #5b21b6; font-size: 36px; font-weight: 700;"><%= number_to_currency(@refund_amount) %></p>
+                    <p style="margin: 0; color: #7c3aed; font-size: 14px;">This amount will be credited to your original payment method</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Timeline Notice -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #fef3c7; border-radius: 8px; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td width="40" style="vertical-align: top;">
+                          <span style="font-size: 24px;">⏱️</span>
+                        </td>
+                        <td style="padding-left: 10px;">
+                          <p style="margin: 0 0 5px; color: #92400e; font-size: 14px; font-weight: 600;">When will I receive my refund?</p>
+                          <p style="margin: 0; color: #a16207; font-size: 13px;">Refunds typically take 5-10 business days to appear in your account, depending on your bank or card issuer.</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Order Details -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
+                    <h2 style="margin: 0; color: #1f2937; font-size: 18px; font-weight: 600;">Refund Details</h2>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 15px 0;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px;">Order Number:</td>
+                        <td style="color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;"><%= @order.payment_id %></td>
+                      </tr>
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px; padding-top: 10px;">Original Order Date:</td>
+                        <td style="color: #1f2937; font-size: 14px; text-align: right;"><%= @order.created_at.strftime("%B %d, %Y") %></td>
+                      </tr>
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px; padding-top: 10px;">Refund Processed:</td>
+                        <td style="color: #1f2937; font-size: 14px; text-align: right;"><%= Date.current.strftime("%B %d, %Y") %></td>
+                      </tr>
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px; padding-top: 10px;">Original Payment Method:</td>
+                        <td style="color: #1f2937; font-size: 14px; text-align: right;"><%= @order.payment_processor&.humanize || 'Credit Card' %></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Refunded Items -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top: 20px;">
+                <tr>
+                  <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="margin: 0; color: #1f2937; font-size: 16px; font-weight: 600;">Items Refunded</h3>
+                  </td>
+                </tr>
+                <% @orders.each do |order| %>
+                  <tr>
+                    <td style="padding: 20px 0; border-bottom: 1px solid #f3f4f6;">
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                          <td width="60" style="vertical-align: top;">
+                            <% if order.product&.images&.attached? && order.product.images.first.present? %>
+                              <img src="<%= url_for(order.product.images.first) %>" alt="<%= order.product.name %>" width="60" height="60" style="border-radius: 8px; object-fit: cover;">
+                            <% else %>
+                              <div style="width: 60px; height: 60px; background-color: #f3f4f6; border-radius: 8px;"></div>
+                            <% end %>
+                          </td>
+                          <td style="padding-left: 15px; vertical-align: top;">
+                            <p style="margin: 0 0 5px; color: #1f2937; font-size: 14px; font-weight: 600;"><%= order.product&.name %></p>
+                            <p style="margin: 0; color: #6b7280; font-size: 13px;">Qty: <%= order.quantity || 1 %></p>
+                          </td>
+                          <td style="vertical-align: top; text-align: right;">
+                            <p style="margin: 0; color: #1f2937; font-size: 14px; font-weight: 600;"><%= number_to_currency(order.total_amount) %></p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                <% end %>
+              </table>
+
+              <!-- Questions -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top: 30px; background-color: #f9fafb; border-radius: 8px;">
+                <tr>
+                  <td style="padding: 20px; text-align: center;">
+                    <p style="margin: 0 0 5px; color: #1f2937; font-size: 14px; font-weight: 600;">Questions about your refund?</p>
+                    <p style="margin: 0 0 15px; color: #6b7280; font-size: 13px;">Our support team is here to help.</p>
+                    <a href="<%= contact_url %>" style="color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 14px;">Contact Support →</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 15px; color: #6b7280; font-size: 14px;">We're sorry this purchase didn't work out. We hope to see you again!</p>
+              <a href="<%= root_url %>" style="display: inline-block; padding: 12px 25px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">Continue Shopping</a>
+              <p style="margin: 20px 0 0; color: #9ca3af; font-size: 12px;">© <%= Date.current.year %> Mizzby. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

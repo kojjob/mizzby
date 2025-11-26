@@ -51,6 +51,7 @@ Rails.application.routes.draw do
   # Checkout Process
   get "checkout", to: "checkout#index", as: :checkout
   post "checkout", to: "checkout#create", as: :checkout_create
+  get "checkout/confirmation", to: "checkout#confirmation", as: :checkout_confirmation
   get "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now_get
   post "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now
 
@@ -67,7 +68,7 @@ Rails.application.routes.draw do
   get "categories/digital", to: redirect("/categories/digital-content")
   get "categories/tools", to: redirect("/categories/tools-services")
   get "categories/physical", to: redirect("/categories/physical-products")
-  
+
   resources :categories
   resources :products do
     member do
@@ -128,6 +129,7 @@ Rails.application.routes.draw do
     get "payment-methods", to: "payment_methods#index", as: :payment_methods
     post "payment-methods", to: "payment_methods#create"
     delete "payment-methods/:id", to: "payment_methods#destroy", as: :payment_method
+    patch "payment-methods/:id/set-default", to: "payment_methods#set_default", as: :set_default_payment_method
     get :settings, to: "settings#index"
     patch :settings, to: "settings#update"
     resources :addresses

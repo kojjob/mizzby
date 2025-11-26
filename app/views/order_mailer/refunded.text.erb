@@ -1,0 +1,39 @@
+REFUND PROCESSED 💰
+==================
+
+We've processed your refund, <%= @user.first_name %>
+
+REFUND AMOUNT: <%= number_to_currency(@refund_amount) %>
+This amount will be credited to your original payment method.
+
+WHEN WILL I RECEIVE MY REFUND?
+------------------------------
+Refunds typically take 5-10 business days to appear in your account,
+depending on your bank or card issuer.
+
+REFUND DETAILS
+--------------
+Order Number: <%= @order.payment_id %>
+Original Order Date: <%= @order.created_at.strftime("%B %d, %Y") %>
+Refund Processed: <%= Date.current.strftime("%B %d, %Y") %>
+Original Payment Method: <%= @order.payment_processor&.humanize || 'Credit Card' %>
+
+ITEMS REFUNDED
+--------------
+<% @orders.each do |order| %>
+• <%= order.product&.name %> (Qty: <%= order.quantity || 1 %>) - <%= number_to_currency(order.total_amount) %>
+<% end %>
+
+---
+Total Refund: <%= number_to_currency(@refund_amount) %>
+
+QUESTIONS ABOUT YOUR REFUND?
+----------------------------
+Our support team is here to help.
+Contact Support: <%= contact_url %>
+
+---
+We're sorry this purchase didn't work out. We hope to see you again!
+Continue Shopping: <%= root_url %>
+
+© <%= Date.current.year %> Mizzby. All rights reserved.

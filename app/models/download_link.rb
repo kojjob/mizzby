@@ -23,7 +23,7 @@ class DownloadLink < ApplicationRecord
 
   def remaining_downloads
     return nil unless download_limit.present?
-    [download_limit - download_count.to_i, 0].max
+    [ download_limit - download_count.to_i, 0 ].max
   end
 
   def days_until_expiry

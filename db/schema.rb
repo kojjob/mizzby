@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_25_025555) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_26_102903) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -239,6 +239,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_25_025555) do
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_payment_audit_logs_on_order_id"
     t.index ["user_id"], name: "index_payment_audit_logs_on_user_id"
+  end
+
+  create_table "payment_methods", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "card_type", null: false
+    t.string "last_four", null: false
+    t.string "cardholder_name", null: false
+    t.integer "expiry_month", null: false
+    t.integer "expiry_year", null: false
+    t.boolean "is_default", default: false
+    t.string "token"
+    t.string "payment_processor", default: "stripe"
+    t.string "nickname"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_payment_methods_on_token", unique: true, where: "(token IS NOT NULL)"
+    t.index ["user_id", "active"], name: "index_payment_methods_on_user_and_active"
+    t.index ["user_id", "is_default"], name: "index_payment_methods_on_user_and_default"
+    t.index ["user_id"], name: "index_payment_methods_on_user_id"
   end
 
   create_table "product_images", force: :cascade do |t|
@@ -522,6 +542,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_25_025555) do
   add_foreign_key "orders", "users"
   add_foreign_key "payment_audit_logs", "orders"
   add_foreign_key "payment_audit_logs", "users"
+  add_foreign_key "payment_methods", "users"
   add_foreign_key "product_images", "products"
   add_foreign_key "product_questions", "products"
   add_foreign_key "product_questions", "users"
