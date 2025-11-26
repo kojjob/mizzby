@@ -140,7 +140,11 @@ Rails.application.routes.draw do
 
   # User Collections
   resources :wishlist_items do
-    collection { delete :clear }
+    member { post :move_to_cart }
+    collection { 
+      delete :clear
+      delete :remove_by_product
+    }
   end
   get "wishlist", to: "wishlist_items#index", as: :wishlist
 

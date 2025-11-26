@@ -254,7 +254,7 @@ class PaymentService
     end
 
     # Send confirmation email
-    OrderMailer.payment_confirmation(order).deliver_later if defined?(OrderMailer)
+    OrderMailer.confirmation([order.id], order.user_id).deliver_later if defined?(OrderMailer)
   end
 
   def handle_failed_payment(result)

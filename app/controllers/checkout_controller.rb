@@ -1,7 +1,6 @@
 class CheckoutController < ApplicationController
-  before_action :authenticate_user!, except: [:buy_now]
-  before_action :ensure_cart_not_empty, only: [:index, :create]
   before_action :set_cart, only: [:index, :create]
+  before_action :ensure_cart_not_empty, only: [:index, :create]
 
   def index
     @cart_items = @cart.cart_items.includes(:product)
@@ -13,6 +12,24 @@ class CheckoutController < ApplicationController
 
     if @cart_items.empty?
       redirect_to products_path, alert: "Your cart is empty."
+      return
+    end
+
+    # Handle guest checkout - require email
+    unless user_signed_in?
+      if params[:guest_email].blank?
+        redirect_to checkout_path, alert: "Please provide an email address for your order."
+        return
+      end
+      @checkout_user = find_or_create_guest_user(params[:guest_email])
+    else
+      @checkout_user = current_user
+    end
+
+    # Validate shipping address for physical products
+    has_physical = @cart_items.any? { |item| !item.product.is_digital }
+    if has_physical && params[:shipping_address].blank?
+      redirect_to checkout_path, alert: "Please provide a shipping address for physical products."
       return
     end
 
@@ -53,6 +70,9 @@ class CheckoutController < ApplicationController
 
       # Clear the cart after successful order creation
       @cart.cart_items.destroy_all if errors.empty?
+      
+      # Clear guest cart session
+      session.delete(:cart_id) if errors.empty? && !user_signed_in?
     end
 
     if errors.empty? && orders_created.any?
@@ -72,9 +92,15 @@ class CheckoutController < ApplicationController
       @orders = [Order.find(params[:order_id])]
     elsif params[:order_ids].present?
       order_ids = params[:order_ids].split(',')
-      @orders = Order.where(id: order_ids, user: current_user)
+      @orders = Order.where(id: order_ids)
+      # Filter by user if logged in
+      @orders = @orders.where(user: current_user) if user_signed_in?
     else
-      redirect_to account_orders_path and return
+      if user_signed_in?
+        redirect_to account_orders_path and return
+      else
+        redirect_to root_path, alert: "Order not found." and return
+      end
     end
 
     @order = @orders.first
@@ -132,11 +158,19 @@ class CheckoutController < ApplicationController
   private
 
   def set_cart
-    @cart = current_user.cart || current_user.create_cart
+    if user_signed_in?
+      @cart = current_user.cart || current_user.create_cart
+    elsif session[:cart_id].present?
+      @cart = Cart.find_by(id: session[:cart_id])
+    end
+    
+    unless @cart
+      redirect_to root_path, alert: "Your cart could not be found. Please add items to your cart."
+    end
   end
 
   def ensure_cart_not_empty
-    if user_signed_in? && (current_user.cart.nil? || current_user.cart.cart_items.empty?)
+    if @cart.nil? || @cart.cart_items.empty?
       redirect_to root_path, alert: "Your cart is empty. Please add items before proceeding to checkout."
     end
   end
@@ -167,7 +201,7 @@ class CheckoutController < ApplicationController
     item_total = unit_price * (item.quantity || 1)
     
     Order.new(
-      user: current_user,
+      user: @checkout_user,
       product: item.product,
       total_amount: item_total + (item_total * 0.05), # Including tax
       payment_processor: params[:payment_method] || 'credit_card',
@@ -203,8 +237,23 @@ class CheckoutController < ApplicationController
   end
 
   def format_shipping_address
-    address = current_user.addresses.first
-    address&.full_address || "Pending"
+    # Build address from form params
+    address_parts = [
+      params[:shipping_address],
+      params[:shipping_city],
+      params[:shipping_state],
+      params[:shipping_zip]
+    ].compact.reject(&:blank?)
+    
+    return address_parts.join(", ") if address_parts.any?
+    
+    # Fallback to user's saved address
+    if @checkout_user
+      address = @checkout_user.addresses.first
+      return address.full_address if address&.full_address.present?
+    end
+    
+    "Pending"
   end
 
   def process_payment_for_order(order)
@@ -217,7 +266,7 @@ class CheckoutController < ApplicationController
         card_last4: card_params[:card_number]&.last(4),
         phone_number: params[:phone_number]
       },
-      user: current_user
+      user: @checkout_user
     )
 
     payment_service.process_payment
@@ -229,5 +278,27 @@ class CheckoutController < ApplicationController
     params.require(:card_details).permit(
       :card_number, :exp_month, :exp_year, :cvv, :cardholder_name
     )
+  end
+
+  def find_or_create_guest_user(email)
+    # Find existing user or create a guest account
+    user = User.find_by(email: email.downcase.strip)
+    
+    unless user
+      # Create a guest user with a password that meets validation requirements
+      # Password must include: lowercase, uppercase, digit, special character, min 8 chars
+      random_password = "Guest#{SecureRandom.hex(4)}!#{SecureRandom.random_number(100)}"
+      
+      user = User.create!(
+        email: email.downcase.strip,
+        password: random_password,
+        first_name: params[:shipping_first_name] || "Guest",
+        last_name: params[:shipping_last_name] || "User",
+        phone_number: params[:shipping_phone],
+        guest: true
+      )
+    end
+    
+    user
   end
 end

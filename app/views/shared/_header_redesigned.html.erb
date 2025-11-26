@@ -154,13 +154,18 @@
           </svg>
         </button>
 
-        <!-- Wishlist -->
-        <a href="/wishlist" class="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Wishlist (Click to open slide-over) -->
+        <button 
+          type="button"
+          onclick="document.dispatchEvent(new CustomEvent('wishlist:toggle'))"
+          class="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition group wishlist-toggle-btn"
+          aria-label="Open wishlist"
+        >
+          <svg class="h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
           </svg>
-          <span class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-gray-900">3</span>
-        </a>
+          <%= render 'shared/wishlist_count_badge' %>
+        </button>
 
         <!-- Notifications -->
         <div data-controller="dropdown" class="relative hidden sm:block">
@@ -169,7 +174,12 @@
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
             </svg>
-            <span class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-yellow-500 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-gray-900">2</span>
+            <% notification_count = user_signed_in? ? current_user.notifications&.where(read_at: nil)&.count.to_i : 0 %>
+            <% if notification_count > 0 %>
+              <span class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-yellow-500 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-gray-900">
+                <%= notification_count > 9 ? '9+' : notification_count %>
+              </span>
+            <% end %>
           </button>
           
           <div data-dropdown-target="menu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden z-[100]">
@@ -195,13 +205,18 @@
           </div>
         </div>
 
-        <!-- Cart -->
-        <a href="/cart" class="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Cart (Click to open slide-over) -->
+        <button 
+          type="button"
+          onclick="document.dispatchEvent(new CustomEvent('cart:toggle'))"
+          class="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition group cart-toggle-btn"
+          aria-label="Open cart"
+        >
+          <svg class="h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
           </svg>
-          <span class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-gray-900">2</span>
-        </a>
+          <%= render 'shared/cart_count_badge' %>
+        </button>
 
         <!-- User Menu (Desktop) -->
         <div class="hidden md:block">

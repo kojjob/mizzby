@@ -13,6 +13,23 @@
       <% end %>
     <% end %>
     
+    <%# Wishlist Button %>
+    <div class="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <% in_wishlist = user_signed_in? && current_user.wishlist_items.exists?(product_id: product.id) %>
+      <div data-controller="wishlist-toggle" 
+           data-wishlist-toggle-product-id-value="<%= product.id %>"
+           data-wishlist-toggle-in-wishlist-value="<%= in_wishlist %>">
+        <button data-wishlist-toggle-target="button"
+                data-action="click->wishlist-toggle#toggle"
+                title="<%= in_wishlist ? 'Remove from Wishlist' : 'Add to Wishlist' %>" 
+                class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center <%= in_wishlist ? 'text-red-500' : 'text-gray-500' %> hover:text-red-500 transition-colors">
+          <svg data-wishlist-toggle-target="icon" class="w-4 h-4" fill="<%= in_wishlist ? 'currentColor' : 'none' %>" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    
     <%# Quick Add Button %>
     <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
       <%= button_to add_to_cart_product_path(product), method: :post,

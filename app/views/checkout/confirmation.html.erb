@@ -262,7 +262,7 @@
             </div>
             <div>
               <h3 class="font-medium text-gray-900">Confirmation Email Sent</h3>
-              <p class="text-sm text-gray-500 mt-1">We've sent a confirmation email to <strong><%= current_user.email %></strong> with your order details and receipt.</p>
+              <p class="text-sm text-gray-500 mt-1">We've sent a confirmation email to <strong><%= @order.user&.email || 'your email address' %></strong> with your order details and receipt.</p>
             </div>
           </div>
           

@@ -2,8 +2,8 @@ require "test_helper"
 
 class WishlistItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:regular_user)  # Use the user who owns the wishlist item
     @wishlist_item = wishlist_items(:one)
-    @user = users(:seller)  # Use a user who doesn't have wishlist items already
     sign_in @user
   end
 
@@ -18,12 +18,13 @@ class WishlistItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create wishlist_item" do
-    # Use seller user (who doesn't have any wishlist items) and product one
+    # Use a product that isn't already in the user's wishlist
     assert_difference("WishlistItem.count") do
-      post wishlist_items_url, params: { wishlist_item: { notes: "Adding to my wishlist", product_id: products(:one).id, user_id: @user.id } }
+      post wishlist_items_url, params: { wishlist_item: { notes: "Adding to my wishlist", product_id: products(:two).id } }
     end
 
-    assert_redirected_to wishlist_item_url(WishlistItem.last)
+    # Controller redirects back to products_path on success
+    assert_redirected_to products_path
   end
 
   test "should show wishlist_item" do
@@ -37,7 +38,7 @@ class WishlistItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update wishlist_item" do
-    patch wishlist_item_url(@wishlist_item), params: { wishlist_item: { notes: "Updated notes", product_id: @wishlist_item.product_id, user_id: @wishlist_item.user_id } }
+    patch wishlist_item_url(@wishlist_item), params: { wishlist_item: { notes: "Updated notes", product_id: @wishlist_item.product_id } }
     assert_redirected_to wishlist_item_url(@wishlist_item)
   end
 

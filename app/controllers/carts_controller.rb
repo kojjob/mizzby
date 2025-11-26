@@ -46,8 +46,26 @@ class CartsController < ApplicationController
     # Load cart items with their associated products to avoid N+1 queries
     @cart_items = @cart.cart_items.includes(:product)
 
-    # Render the cart view
-    render :show
+    respond_to do |format|
+      format.html { render :show }
+      format.json { 
+        render json: {
+          item_count: @cart.cart_items.sum(:quantity),
+          items_count: @cart.cart_items.count,
+          total: @cart.grand_total,
+          subtotal: @cart.total_price,
+          shipping: @cart.shipping_cost,
+          items: @cart_items.map { |item| {
+            id: item.id,
+            product_id: item.product_id,
+            product_name: item.product&.name,
+            quantity: item.quantity,
+            price: item.price,
+            subtotal: item.subtotal
+          }}
+        }
+      }
+    end
   end
 
   def show
