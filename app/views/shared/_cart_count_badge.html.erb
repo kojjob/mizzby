@@ -1,0 +1,6 @@
+<% cart_count = user_signed_in? ? current_user.cart&.cart_items&.sum(:quantity).to_i : 0 %>
+<span id="cart-count-badge" 
+      data-cart-count 
+      class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-gray-900 <%= cart_count > 0 ? '' : 'hidden' %>">
+  <%= cart_count > 99 ? '99+' : cart_count %>
+</span>

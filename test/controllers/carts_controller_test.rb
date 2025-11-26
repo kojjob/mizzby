@@ -3,6 +3,8 @@ require "test_helper"
 class CartsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @cart = carts(:one)
+    @user = users(:regular_user)
+    sign_in @user
   end
 
   test "should get index" do

@@ -1,0 +1,230 @@
+<%# Wishlist Slide-over Panel %>
+<div 
+  id="wishlist-slideover"
+  data-controller="wishlist-slideover"
+  data-wishlist-slideover-target="panel"
+  class="fixed inset-0 z-[9999] pointer-events-none"
+  aria-labelledby="wishlist-slide-over-title" 
+  role="dialog" 
+  aria-modal="true"
+>
+  <%# Backdrop %>
+  <div 
+    data-wishlist-slideover-target="backdrop"
+    data-action="click->wishlist-slideover#closeOnBackdrop"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-300 ease-out opacity-0"
+  ></div>
+
+  <%# Slide-over panel %>
+  <div class="fixed inset-y-0 right-0 flex max-w-full pl-10">
+    <div 
+      data-wishlist-slideover-target="content"
+      class="w-screen max-w-md transform transition-transform duration-300 ease-out translate-x-full"
+    >
+      <div class="flex h-full flex-col bg-white shadow-2xl">
+        <%# Header %>
+        <div class="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 px-4 py-6 sm:px-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                </svg>
+              </div>
+              <div>
+                <h2 id="wishlist-slide-over-title" class="text-lg font-semibold text-white">My Wishlist</h2>
+                <% if user_signed_in? && current_user.wishlist_items&.any? %>
+                  <p data-slideover-count class="text-sm text-pink-100"><%= current_user.wishlist_items.count %> <%= 'item'.pluralize(current_user.wishlist_items.count) %></p>
+                <% else %>
+                  <p class="text-sm text-pink-100">Your wishlist is empty</p>
+                <% end %>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              data-action="click->wishlist-slideover#close"
+              class="rounded-full p-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+            >
+              <span class="sr-only">Close panel</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <%# Wishlist Items %>
+        <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+          <% if user_signed_in? && current_user.wishlist_items&.any? %>
+            <div class="flow-root">
+              <ul role="list" class="-my-6 divide-y divide-gray-200">
+                <% current_user.wishlist_items.includes(:product).order(created_at: :desc).each do |item| %>
+                  <% next unless item.product.present? %>
+                  <li 
+                    class="flex py-6 transition-all duration-300"
+                    data-wishlist-item
+                    data-item-id="<%= item.id %>"
+                  >
+                    <%# Product Image %>
+                    <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
+                      <% if item.product.product_images.any? && item.product.product_images.first.image.attached? %>
+                        <%= link_to product_path(item.product), onclick: "document.dispatchEvent(new CustomEvent('wishlist:toggle'))" do %>
+                          <%= image_tag item.product.product_images.first.image, class: "h-full w-full object-cover object-center hover:scale-105 transition-transform" %>
+                        <% end %>
+                      <% else %>
+                        <div class="h-full w-full flex items-center justify-center">
+                          <svg class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      <% end %>
+                    </div>
+
+                    <%# Product Details %>
+                    <div class="ml-4 flex flex-1 flex-col">
+                      <div>
+                        <div class="flex justify-between text-base font-medium text-gray-900">
+                          <h3 class="line-clamp-2">
+                            <%= link_to item.product.name, product_path(item.product), 
+                                onclick: "document.dispatchEvent(new CustomEvent('wishlist:toggle'))",
+                                class: "hover:text-pink-600 transition-colors" %>
+                          </h3>
+                        </div>
+                        
+                        <%# Price %>
+                        <div class="mt-1">
+                          <% if item.product.on_sale? %>
+                            <span class="text-gray-400 line-through text-sm"><%= number_to_currency(item.product.price) %></span>
+                            <span class="text-pink-600 font-bold ml-1"><%= number_to_currency(item.product.discounted_price) %></span>
+                            <span class="ml-2 inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
+                              <%= item.product.discount_percentage.to_i %>% OFF
+                            </span>
+                          <% else %>
+                            <span class="text-gray-900 font-bold"><%= number_to_currency(item.product.price) %></span>
+                          <% end %>
+                        </div>
+                        
+                        <%# Product badges %>
+                        <div class="mt-2 flex flex-wrap gap-1">
+                          <% if item.product.is_digital %>
+                            <span class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                              <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              </svg>
+                              Digital
+                            </span>
+                          <% end %>
+                          <% if item.product.stock_quantity && item.product.stock_quantity < 10 && item.product.stock_quantity > 0 %>
+                            <span class="inline-flex items-center rounded-full bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700">
+                              Only <%= item.product.stock_quantity %> left
+                            </span>
+                          <% end %>
+                          <% if item.product.average_rating && item.product.average_rating > 0 %>
+                            <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                              <svg class="h-3 w-3 mr-0.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                              </svg>
+                              <%= number_with_precision(item.product.average_rating, precision: 1) %>
+                            </span>
+                          <% end %>
+                        </div>
+
+                        <%# Added date %>
+                        <p class="mt-2 text-xs text-gray-400">
+                          Added <%= time_ago_in_words(item.created_at) %> ago
+                        </p>
+                      </div>
+                      
+                      <%# Actions %>
+                      <div class="flex flex-1 items-end justify-between mt-3">
+                        <button 
+                          type="button"
+                          data-product-id="<%= item.product.id %>"
+                          data-item-id="<%= item.id %>"
+                          data-action="click->wishlist-slideover#moveToCart"
+                          class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-sm hover:shadow"
+                        >
+                          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                          </svg>
+                          Add to Cart
+                        </button>
+
+                        <button 
+                          type="button" 
+                          data-item-id="<%= item.id %>"
+                          data-action="click->wishlist-slideover#removeItem"
+                          class="flex items-center text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% else %>
+            <%# Empty State %>
+            <div class="flex flex-col items-center justify-center h-full text-center py-12">
+              <div class="w-24 h-24 bg-gradient-to-br from-pink-100 to-rose-100 rounded-full flex items-center justify-center mb-6">
+                <svg class="h-12 w-12 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Your wishlist is empty</h3>
+              <p class="text-gray-500 mb-6 max-w-xs">Save items you love to your wishlist. Review them anytime and easily move them to your cart.</p>
+              <%= link_to products_path, 
+                  onclick: "document.dispatchEvent(new CustomEvent('wishlist:toggle'))",
+                  class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-medium rounded-xl hover:from-pink-600 hover:to-rose-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" do %>
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Discover Products
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <%# Footer %>
+        <% if user_signed_in? && current_user.wishlist_items&.any? %>
+          <div class="border-t border-gray-200 bg-gray-50 px-4 py-6 sm:px-6">
+            <%# View Full Wishlist %>
+            <%= link_to account_wishlist_path, 
+                onclick: "document.dispatchEvent(new CustomEvent('wishlist:toggle'))",
+                class: "w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold rounded-xl hover:from-pink-600 hover:to-rose-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" do %>
+              <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              View Full Wishlist
+            <% end %>
+
+            <%# Continue Shopping %>
+            <button 
+              type="button"
+              data-action="click->wishlist-slideover#close"
+              class="mt-3 w-full flex items-center justify-center px-6 py-3 text-gray-700 font-medium bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Continue Shopping
+            </button>
+
+            <%# Clear wishlist link %>
+            <div class="mt-4 text-center">
+              <%= link_to clear_wishlist_items_path, 
+                  method: :delete,
+                  data: { confirm: "Are you sure you want to clear your entire wishlist?" },
+                  class: "text-sm text-gray-400 hover:text-red-500 transition-colors" do %>
+                Clear entire wishlist
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -16,11 +16,19 @@
   
   <!-- Quick Actions -->
   <div class="absolute top-2 right-2 z-10 flex flex-col gap-2 transform translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-    <button title="Add to Wishlist" class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-600 hover:text-red-500 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
-    </button>
+    <% in_wishlist = user_signed_in? && current_user.wishlist_items.exists?(product_id: product.id) %>
+    <div data-controller="wishlist-toggle" 
+         data-wishlist-toggle-product-id-value="<%= product.id %>"
+         data-wishlist-toggle-in-wishlist-value="<%= in_wishlist %>">
+      <button data-wishlist-toggle-target="button"
+              data-action="click->wishlist-toggle#toggle"
+              title="<%= in_wishlist ? 'Remove from Wishlist' : 'Add to Wishlist' %>" 
+              class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center <%= in_wishlist ? 'text-red-500' : 'text-gray-600' %> hover:text-red-500 transition-colors">
+        <svg data-wishlist-toggle-target="icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="<%= in_wishlist ? 'currentColor' : 'none' %>" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      </button>
+    </div>
     <button title="Quick View" class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-500 transition-colors">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -50,7 +58,7 @@
     
     <!-- Overlay Add to Cart -->
     <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <%= button_to add_to_cart_path(product), class: "px-4 py-2 bg-white text-indigo-600 font-medium rounded-lg hover:bg-indigo-600 hover:text-white transition-colors transform -translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center" do %>
+      <%= button_to add_to_cart_product_path(product), class: "px-4 py-2 bg-white text-indigo-600 font-medium rounded-lg hover:bg-indigo-600 hover:text-white transition-colors transform -translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>

@@ -1,0 +1,37 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">My Wishlist</h1>
+    <% if @wishlist_items.any? %>
+      <%= link_to "Clear All", account_clear_wishlist_path, method: :delete, data: { confirm: "Clear your entire wishlist?" }, class: "text-red-600 hover:text-red-800" %>
+    <% end %>
+  </div>
+
+  <% if @wishlist_items.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @wishlist_items.each do |item| %>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <% if item.product&.images&.attached? %>
+            <%= image_tag item.product.images.first, class: "w-full h-48 object-cover" %>
+          <% else %>
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-400">No image</span>
+            </div>
+          <% end %>
+          <div class="p-4">
+            <h3 class="font-medium text-gray-900"><%= item.product&.name %></h3>
+            <p class="text-indigo-600 font-bold mt-2"><%= number_to_currency(item.product&.price) %></p>
+            <div class="mt-4 flex space-x-2">
+              <%= link_to "View", product_path(item.product), class: "flex-1 text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition" %>
+              <%= link_to "Remove", wishlist_item_path(item), method: :delete, class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-lg shadow p-12 text-center">
+      <p class="text-gray-500 mb-4">Your wishlist is empty.</p>
+      <%= link_to "Browse Products", products_path, class: "text-indigo-600 hover:text-indigo-800" %>
+    </div>
+  <% end %>
+</div>

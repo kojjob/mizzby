@@ -1,0 +1,59 @@
+ORDER CONFIRMED! 🎉
+==================
+
+Thank you for your purchase, <%= @user.first_name %>!
+
+ORDER DETAILS
+-------------
+Order Number: <%= @order.payment_id %>
+Order Date: <%= @order.created_at.strftime("%B %d, %Y") %>
+
+ORDER ITEMS
+-----------
+<% @orders.each do |order| %>
+• <%= order.product&.name %>
+  <% if order.product&.is_digital? %>Digital Download<% else %>Physical Product<% end %>
+  Price: <%= number_to_currency(order.total_amount) %>
+
+<% end %>
+
+ORDER SUMMARY
+-------------
+<% subtotal = @orders.sum { |o| o.total_amount - (o.shipping_cost || 0) } %>
+<% shipping = @orders.sum { |o| o.shipping_cost || 0 } %>
+Subtotal: <%= number_to_currency(subtotal) %>
+<% if shipping > 0 %>Shipping: <%= number_to_currency(shipping) %><% end %>
+Tax: <%= number_to_currency(@total * 0.05 / 1.05) %>
+-------------------
+Total: <%= number_to_currency(@total) %>
+
+PAYMENT INFORMATION
+-------------------
+Payment Method: <%= @order.payment_processor&.humanize || 'Credit Card' %>
+Payment Status: <%= @order.payment_status&.humanize || 'Paid' %>
+
+<% if @digital_orders.any? %>
+YOUR DOWNLOADS ARE READY!
+-------------------------
+Access your digital products now:
+<% @digital_orders.each do |order| %>
+• <%= order.product&.name %>
+<% if order.download_links.any? %>
+  Download: <%= download_file_url(order.download_links.first.token) %>
+<% end %>
+<% end %>
+<% end %>
+
+<% if @physical_orders.any? %>
+WHAT'S NEXT?
+------------
+Your order is being prepared. You'll receive a shipping confirmation email with tracking information once it's on its way!
+<% end %>
+
+View your order details: <%= account_orders_url %>
+
+---
+Questions about your order?
+Contact our support team: <%= contact_url %>
+
+© <%= Date.current.year %> Mizzby. All rights reserved.

@@ -1,0 +1,6 @@
+<% wishlist_count = user_signed_in? ? current_user.wishlist_items&.count.to_i : 0 %>
+<span id="wishlist-count-badge" 
+      data-wishlist-count 
+      class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-pink-500 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-gray-900 <%= wishlist_count > 0 ? '' : 'hidden' %>">
+  <%= wishlist_count > 99 ? '99+' : wishlist_count %>
+</span>

@@ -1,4 +1,4 @@
-<header class="bg-gradient-to-r from-indigo-600 to-indigo-700 shadow-lg">
+<header class="bg-gradient-to-r from-indigo-600 to-indigo-700 shadow-lg" data-controller="mobile-menu">
   <!-- Top notification bar (optional) -->
   <div class="bg-yellow-400 py-2 px-4 text-xs sm:text-sm text-indigo-900 font-medium text-center">
     <p>🎁 Special discount on all digital products today! Use code <span class="font-bold">DIGITAL25</span></p>
@@ -39,10 +39,11 @@
       <!-- Navigation for medium screens and above -->
       <nav class="hidden md:flex items-center space-x-6">
         <!-- Categories dropdown -->
-        <div class="relative dropdown">
+        <div data-controller="dropdown" class="relative group">
           <button type="button"
-                  class="group text-white hover:text-yellow-200 font-medium flex items-center space-x-1 transition"
-                  data-dropdown-toggle="categories-dropdown">
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="group text-white hover:text-yellow-200 font-medium flex items-center space-x-1 transition">
             <span>Categories</span>
             <svg class="h-5 w-5 text-white group-hover:text-yellow-200 transition"
                  data-dropdown-target="arrow"
@@ -52,7 +53,7 @@
           </button>
 
           <!-- Mega dropdown -->
-          <div id="categories-dropdown" class="absolute z-50 left-0 mt-2 w-screen max-w-5xl bg-white rounded-lg shadow-xl hidden dropdown-menu">
+          <div data-dropdown-target="menu" class="hidden absolute z-50 left-0 mt-2 w-screen max-w-5xl bg-white rounded-lg shadow-xl">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-6">
               <!-- Category columns - dynamically generated in production -->
               <div>
@@ -197,10 +198,11 @@
         <a href="<%= stores_path %>" class="text-white hover:text-yellow-200 font-medium transition">Stores</a>
 
         <!-- Deals dropdown -->
-        <div class="relative dropdown">
+        <div data-controller="dropdown" class="relative group">
           <button type="button"
-                  class="group text-white hover:text-yellow-200 font-medium flex items-center space-x-1 transition"
-                  data-dropdown-toggle="shop-dropdown">
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="group text-white hover:text-yellow-200 font-medium flex items-center space-x-1 transition">
             <span>Deals</span>
             <svg class="h-5 w-5 text-white group-hover:text-yellow-200 transition"
                  data-dropdown-target="arrow"
@@ -209,7 +211,7 @@
             </svg>
           </button>
 
-          <div id="shop-dropdown" class="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-white shadow-lg hidden dropdown-menu">
+          <div data-dropdown-target="menu" class="hidden absolute z-50 left-0 mt-2 w-48 rounded-lg bg-white shadow-lg">
             <div class="py-2">
               <a href="/deals/flash-sales" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
                 Flash Sales
@@ -234,10 +236,11 @@
         </div>
 
         <!-- Resources dropdown -->
-        <div class="relative dropdown">
+        <div data-controller="dropdown" class="relative">
           <button type="button"
-                  class="group text-white hover:text-yellow-200 font-medium flex items-center space-x-1 transition"
-                  data-dropdown-toggle="resources-dropdown">
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="group text-white hover:text-yellow-200 font-medium flex items-center space-x-1 transition">
             <span>Resources</span>
             <svg class="h-5 w-5 text-white group-hover:text-yellow-200 transition"
                  data-dropdown-target="arrow"
@@ -246,7 +249,7 @@
             </svg>
           </button>
 
-          <div id="resources-dropdown" class="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-white shadow-lg hidden dropdown-menu">
+          <div data-dropdown-target="menu" class="hidden absolute z-50 left-0 mt-2 w-48 rounded-lg bg-white shadow-lg">
             <div class="py-2">
               <a href="/blog" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
                 Blog
@@ -271,17 +274,18 @@
         <a href="/sellers/dashboard" class="text-white hover:text-yellow-200 font-medium transition">Sell</a>
 
         <!-- Notification icon -->
-        <div class="relative dropdown">
+        <div data-controller="dropdown" class="relative">
           <button type="button"
-                  class="text-white hover:text-yellow-200 flex items-center group transition relative"
-                  data-dropdown-toggle="notifications-dropdown">
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  class="text-white hover:text-yellow-200 flex items-center group transition relative">
             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             <span class="absolute -top-2 -right-2 bg-yellow-400 text-indigo-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">2</span>
           </button>
 
-          <div id="notifications-dropdown" class="absolute z-50 right-0 mt-2 w-80 rounded-lg bg-white shadow-lg hidden dropdown-menu">
+          <div data-dropdown-target="menu" class="hidden absolute z-50 right-0 mt-2 w-80 rounded-lg bg-white shadow-lg">
             <div class="p-3 border-b">
               <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-gray-900">Notifications</h3>
@@ -359,7 +363,7 @@
           <span class="absolute -top-2 -right-2 bg-yellow-400 text-indigo-900 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">3</span>
         </a>
 
-        <button type="button" class="text-white" data-controller="mobile-menu" data-action="click->mobile-menu#toggle">
+        <button type="button" class="text-white" data-action="click->mobile-menu#toggle" data-mobile-menu-target="button">
           <svg class="h-6 w-6" data-mobile-menu-target="openIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
@@ -387,7 +391,5 @@
   </div>
 
   <!-- Mobile menu (hidden by default) -->
-  <div class="hidden bg-indigo-800 border-t border-indigo-500 md:hidden" data-mobile-menu-target="menu">
-    <%= render 'shared/mobile_menu' %>
-  </div>
+  <%= render 'shared/mobile_menu' %>
 </header>

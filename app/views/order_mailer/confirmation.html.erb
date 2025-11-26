@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f3f4f6;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%;">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); padding: 32px 40px; border-radius: 16px 16px 0 0; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Order Confirmed! 🎉</h1>
+              <p style="margin: 12px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">Thank you for your purchase, <%= @user.first_name %>!</p>
+            </td>
+          </tr>
+          
+          <!-- Main Content -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 32px 40px;">
+              
+              <!-- Order Info -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td>
+                          <p style="margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Order Number</p>
+                          <p style="margin: 4px 0 0; color: #1e293b; font-size: 18px; font-weight: bold; font-family: monospace;"><%= @order.payment_id %></p>
+                        </td>
+                        <td style="text-align: right;">
+                          <p style="margin: 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Order Date</p>
+                          <p style="margin: 4px 0 0; color: #1e293b; font-size: 16px; font-weight: 600;"><%= @order.created_at.strftime("%B %d, %Y") %></p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Order Items -->
+              <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 18px; font-weight: 600;">Order Items</h2>
+              
+              <% @orders.each do |order| %>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 16px; padding-bottom: 16px;">
+                  <tr>
+                    <td width="80" style="vertical-align: top;">
+                      <div style="width: 72px; height: 72px; background-color: #f1f5f9; border-radius: 12px; overflow: hidden;">
+                        <% if order.product&.cover_image&.attached? %>
+                          <%= image_tag url_for(order.product.cover_image), style: "width: 72px; height: 72px; object-fit: cover;" %>
+                        <% else %>
+                          <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #94a3b8; font-size: 24px;">📦</span>
+                          </div>
+                        <% end %>
+                      </div>
+                    </td>
+                    <td style="padding-left: 16px; vertical-align: top;">
+                      <p style="margin: 0; color: #1e293b; font-size: 16px; font-weight: 600;"><%= order.product&.name %></p>
+                      <% if order.product&.is_digital? %>
+                        <span style="display: inline-block; margin-top: 6px; padding: 4px 10px; background-color: #ede9fe; color: #7c3aed; font-size: 12px; font-weight: 500; border-radius: 20px;">Digital Download</span>
+                      <% else %>
+                        <span style="display: inline-block; margin-top: 6px; padding: 4px 10px; background-color: #dbeafe; color: #2563eb; font-size: 12px; font-weight: 500; border-radius: 20px;">Physical Product</span>
+                      <% end %>
+                    </td>
+                    <td style="text-align: right; vertical-align: top;">
+                      <p style="margin: 0; color: #1e293b; font-size: 18px; font-weight: bold;"><%= number_to_currency(order.total_amount) %></p>
+                    </td>
+                  </tr>
+                </table>
+              <% end %>
+              
+              <!-- Order Summary -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; margin-top: 24px;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <% subtotal = @orders.sum { |o| o.total_amount - (o.shipping_cost || 0) } %>
+                    <% shipping = @orders.sum { |o| o.shipping_cost || 0 } %>
+                    
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 4px 0; color: #64748b; font-size: 14px;">Subtotal</td>
+                        <td style="padding: 4px 0; color: #1e293b; font-size: 14px; text-align: right;"><%= number_to_currency(subtotal) %></td>
+                      </tr>
+                      <% if shipping > 0 %>
+                        <tr>
+                          <td style="padding: 4px 0; color: #64748b; font-size: 14px;">Shipping</td>
+                          <td style="padding: 4px 0; color: #1e293b; font-size: 14px; text-align: right;"><%= number_to_currency(shipping) %></td>
+                        </tr>
+                      <% end %>
+                      <tr>
+                        <td style="padding: 4px 0; color: #64748b; font-size: 14px;">Tax</td>
+                        <td style="padding: 4px 0; color: #1e293b; font-size: 14px; text-align: right;"><%= number_to_currency(@total * 0.05 / 1.05) %></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" style="padding-top: 12px; border-top: 2px dashed #e2e8f0;"></td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: #1e293b; font-size: 18px; font-weight: bold;">Total</td>
+                        <td style="padding: 8px 0; color: #6366f1; font-size: 24px; font-weight: bold; text-align: right;"><%= number_to_currency(@total) %></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Payment Info -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 24px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <tr>
+                  <td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background-color: #f8fafc;">
+                    <p style="margin: 0; color: #1e293b; font-size: 14px; font-weight: 600;">Payment Information</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px 20px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="50%">
+                          <p style="margin: 0; color: #64748b; font-size: 12px;">Payment Method</p>
+                          <p style="margin: 4px 0 0; color: #1e293b; font-size: 14px; font-weight: 500;"><%= @order.payment_processor&.humanize || 'Credit Card' %></p>
+                        </td>
+                        <td width="50%">
+                          <p style="margin: 0; color: #64748b; font-size: 12px;">Payment Status</p>
+                          <p style="margin: 4px 0 0;">
+                            <span style="display: inline-block; padding: 4px 12px; background-color: #dcfce7; color: #16a34a; font-size: 12px; font-weight: 600; border-radius: 20px;"><%= @order.payment_status&.humanize || 'Paid' %></span>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <% if @digital_orders.any? %>
+                <!-- Digital Downloads Section -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 24px; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-radius: 12px; border: 1px solid #c4b5fd;">
+                  <tr>
+                    <td style="padding: 24px;">
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td>
+                            <h3 style="margin: 0 0 8px; color: #6d28d9; font-size: 18px; font-weight: bold;">📥 Your Downloads Are Ready!</h3>
+                            <p style="margin: 0 0 16px; color: #7c3aed; font-size: 14px;">Access your digital products now:</p>
+                          </td>
+                        </tr>
+                        <% @digital_orders.each do |order| %>
+                          <tr>
+                            <td style="padding: 12px 16px; background-color: #ffffff; border-radius: 8px; margin-bottom: 8px;">
+                              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                  <td>
+                                    <p style="margin: 0; color: #1e293b; font-size: 14px; font-weight: 600;"><%= order.product&.name %></p>
+                                  </td>
+                                  <td style="text-align: right;">
+                                    <% if order.download_links.any? %>
+                                      <a href="<%= download_file_url(order.download_links.first.token) %>" style="display: inline-block; padding: 8px 16px; background-color: #7c3aed; color: #ffffff; font-size: 12px; font-weight: 600; text-decoration: none; border-radius: 6px;">Download Now</a>
+                                    <% end %>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              <% end %>
+              
+              <% if @physical_orders.any? %>
+                <!-- Shipping Info -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 24px; background-color: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0;">
+                  <tr>
+                    <td style="padding: 24px;">
+                      <h3 style="margin: 0 0 8px; color: #166534; font-size: 16px; font-weight: bold;">🚚 What's Next?</h3>
+                      <p style="margin: 0; color: #15803d; font-size: 14px;">Your order is being prepared. You'll receive a shipping confirmation email with tracking information once it's on its way!</p>
+                    </td>
+                  </tr>
+                </table>
+              <% end %>
+              
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 32px;">
+                <tr>
+                  <td align="center">
+                    <a href="<%= account_orders_url %>" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 12px;">View Order Details</a>
+                  </td>
+                </tr>
+              </table>
+              
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 24px 40px; border-radius: 0 0 16px 16px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0 0 8px; color: #64748b; font-size: 14px;">Questions about your order?</p>
+              <a href="<%= contact_url %>" style="color: #6366f1; font-size: 14px; text-decoration: none; font-weight: 500;">Contact our support team</a>
+              <p style="margin: 16px 0 0; color: #94a3b8; font-size: 12px;">© <%= Date.current.year %> Mizzby. All rights reserved.</p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

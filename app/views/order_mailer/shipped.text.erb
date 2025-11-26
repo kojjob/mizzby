@@ -1,0 +1,45 @@
+YOUR ORDER HAS SHIPPED! 📦
+=========================
+
+Great news, <%= @user.first_name %>! Your order is on its way!
+
+TRACKING INFORMATION
+--------------------
+Tracking Number: <%= @tracking_info[:tracking_number] %>
+Carrier: <%= @tracking_info[:carrier] %>
+<% if @tracking_info[:estimated_delivery] %>
+Estimated Delivery: <%= @tracking_info[:estimated_delivery] %>
+<% end %>
+<% if @tracking_info[:tracking_url] %>
+Track your package: <%= @tracking_info[:tracking_url] %>
+<% end %>
+
+ORDER DETAILS
+-------------
+Order Number: <%= @order.payment_id %>
+Order Date: <%= @order.created_at.strftime("%B %d, %Y") %>
+
+<% if @order.shipping_address.present? %>
+SHIPPING TO
+-----------
+<% address = @order.shipping_address %>
+<%= address['name'] || @user.full_name %>
+<%= address['street'] || address['line1'] %>
+<% if address['line2'].present? %><%= address['line2'] %><% end %>
+<%= address['city'] %>, <%= address['state'] %> <%= address['postal_code'] || address['zip'] %>
+<%= address['country'] %>
+<% end %>
+
+ITEMS IN THIS SHIPMENT
+----------------------
+<% @orders.reject { |o| o.product&.is_digital? }.each do |order| %>
+• <%= order.product&.name %> (Qty: <%= order.quantity || 1 %>)
+<% end %>
+
+View your order details: <%= account_orders_url %>
+
+---
+Questions about your shipment?
+Contact our support team: <%= contact_url %>
+
+© <%= Date.current.year %> Mizzby. All rights reserved.

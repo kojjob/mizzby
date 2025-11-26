@@ -3,17 +3,17 @@
 one:
   product: one
   user: regular_user
-  asked_by: MyString
-  question: MyText
-  answer: MyText
-  answered_by: MyString
+  asked_by: John Customer
+  question: What is the battery life of this product? I need it to last at least 8 hours.
+  answer: The battery life is approximately 10 hours under normal usage conditions.
+  answered_by: Store Owner
   answered_at: 2025-04-01 03:59:13
 
 two:
   product: two
   user: admin
-  asked_by: MyString
-  question: MyText
-  answer: MyText
-  answered_by: MyString
+  asked_by: Jane Buyer
+  question: Does this product come with a warranty? I want to make sure it's covered.
+  answer: Yes, this product comes with a 1-year manufacturer warranty.
+  answered_by: Store Support
   answered_at: 2025-04-01 03:59:13

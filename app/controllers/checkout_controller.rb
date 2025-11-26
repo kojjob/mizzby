@@ -1,39 +1,152 @@
 class CheckoutController < ApplicationController
-  before_action :authenticate_user!, except: [ :buy_now ]
-  before_action :ensure_cart_not_empty, only: [ :index ]
+  before_action :set_cart, only: [:index, :create]
+  before_action :ensure_cart_not_empty, only: [:index, :create]
 
   def index
-    @cart = current_user.cart || Cart.new
     @cart_items = @cart.cart_items.includes(:product)
+    calculate_totals
+  end
+
+  def create
+    @cart_items = @cart.cart_items.includes(:product)
+
+    if @cart_items.empty?
+      redirect_to products_path, alert: "Your cart is empty."
+      return
+    end
+
+    # Handle guest checkout - require email
+    unless user_signed_in?
+      if params[:guest_email].blank?
+        redirect_to checkout_path, alert: "Please provide an email address for your order."
+        return
+      end
+      @checkout_user = find_or_create_guest_user(params[:guest_email])
+    else
+      @checkout_user = current_user
+    end
+
+    # Validate shipping address for physical products
+    has_physical = @cart_items.any? { |item| !item.product.is_digital }
+    if has_physical && params[:shipping_address].blank?
+      redirect_to checkout_path, alert: "Please provide a shipping address for physical products."
+      return
+    end
+
+    # Validate payment details if credit card
+    if params[:payment_method] == 'credit_card' && params[:card_details].present?
+      validation = PaymentService.validate_card_details(card_params)
+      unless validation[:valid]
+        redirect_to checkout_path, alert: validation[:errors].join(', ')
+        return
+      end
+    end
+
+    calculate_totals
+    orders_created = []
+    errors = []
+
+    ActiveRecord::Base.transaction do
+      @cart_items.each do |item|
+        order = build_order_from_cart_item(item)
+
+        if order.save
+          create_order_item(order, item)
+          
+          # Process payment
+          payment_result = process_payment_for_order(order)
+          
+          if payment_result[:success]
+            orders_created << order
+          else
+            errors << "Payment failed for #{item.product.name}: #{payment_result[:error]}"
+            raise ActiveRecord::Rollback
+          end
+        else
+          errors << "Order creation failed: #{order.errors.full_messages.join(', ')}"
+          raise ActiveRecord::Rollback
+        end
+      end
+
+      # Clear the cart after successful order creation
+      @cart.cart_items.destroy_all if errors.empty?
+      
+      # Clear guest cart session
+      session.delete(:cart_id) if errors.empty? && !user_signed_in?
+    end
+
+    if errors.empty? && orders_created.any?
+      # Redirect to confirmation page
+      if orders_created.size == 1
+        redirect_to checkout_confirmation_path(order_id: orders_created.first.id)
+      else
+        redirect_to checkout_confirmation_path(order_ids: orders_created.map(&:id).join(','))
+      end
+    else
+      redirect_to checkout_path, alert: errors.first || "Failed to process your order. Please try again."
+    end
+  end
+
+  def confirmation
+    if params[:order_id].present?
+      @orders = [Order.find(params[:order_id])]
+    elsif params[:order_ids].present?
+      order_ids = params[:order_ids].split(',')
+      @orders = Order.where(id: order_ids)
+      # Filter by user if logged in
+      @orders = @orders.where(user: current_user) if user_signed_in?
+    else
+      if user_signed_in?
+        redirect_to account_orders_path and return
+      else
+        redirect_to root_path, alert: "Order not found." and return
+      end
+    end
+
+    @order = @orders.first
+    @total = @orders.sum(&:total_amount)
+  end
+
+  def processing
+    # This view shows a payment processing animation
+    # In a real implementation, this would be handled via JavaScript/AJAX
+    @total = session[:checkout_total] || 0
+  end
+
+  def failed
+    @error_message = params[:error] || session[:payment_error] || "Your payment could not be processed."
+    @error_code = params[:code] || session[:payment_error_code]
+    
+    # Clear session payment error
+    session.delete(:payment_error)
+    session.delete(:payment_error_code)
   end
 
   def buy_now
     product_id = params[:product_id]
-    quantity = params[:quantity] || 1
+    quantity = (params[:quantity] || 1).to_i
 
-    # Find the product
     product = Product.find(product_id)
 
-    if !product || (product.stock_quantity && product.stock_quantity < quantity.to_i && !product.is_digital?)
+    if !product || (product.stock_quantity && product.stock_quantity < quantity && !product.is_digital?)
       redirect_to product_path(product), alert: "Sorry, this product is out of stock or doesn't have enough inventory."
       return
     end
 
-    # Create a temporary cart or get current user's cart
     if user_signed_in?
       cart = current_user.cart || current_user.create_cart
-
-      # Clear existing items if it's a direct buy
       cart.cart_items.destroy_all if params[:direct_checkout]
     else
-      # For guest users, use a session-based cart
-      session[:cart_id] = nil # Force a new cart for buy now
+      session[:cart_id] = nil
       cart = create_guest_cart
     end
 
-    # Add the product to the cart
-    price = product.discounted_price.present? ? product.discounted_price : product.price
-    cart_item = cart.cart_items.build(product_id: product_id, quantity: quantity, price: price)
+    price = product.discounted_price.presence || product.price
+    cart_item = cart.cart_items.build(
+      product_id: product_id, 
+      quantity: quantity, 
+      price: price
+    )
 
     if cart_item.save
       redirect_to checkout_path, notice: "Proceeding to checkout for #{product.name}"
@@ -44,8 +157,20 @@ class CheckoutController < ApplicationController
 
   private
 
+  def set_cart
+    if user_signed_in?
+      @cart = current_user.cart || current_user.create_cart
+    elsif session[:cart_id].present?
+      @cart = Cart.find_by(id: session[:cart_id])
+    end
+    
+    unless @cart
+      redirect_to root_path, alert: "Your cart could not be found. Please add items to your cart."
+    end
+  end
+
   def ensure_cart_not_empty
-    if user_signed_in? && (current_user.cart.nil? || current_user.cart.cart_items.empty?)
+    if @cart.nil? || @cart.cart_items.empty?
       redirect_to root_path, alert: "Your cart is empty. Please add items before proceeding to checkout."
     end
   end
@@ -54,5 +179,126 @@ class CheckoutController < ApplicationController
     cart = Cart.create
     session[:cart_id] = cart.id
     cart
+  end
+
+  def calculate_totals
+    @subtotal = @cart_items.sum { |item| 
+      (item.product.discounted_price || item.product.price) * (item.quantity || 1) 
+    }
+    @tax = @subtotal * 0.05
+    @shipping = calculate_shipping
+    @total = @subtotal + @tax + @shipping
+  end
+
+  def calculate_shipping
+    # Free shipping for digital products only orders
+    has_physical = @cart_items.any? { |item| !item.product.is_digital? }
+    has_physical ? 5.00 : 0
+  end
+
+  def build_order_from_cart_item(item)
+    unit_price = item.product.discounted_price || item.product.price
+    item_total = unit_price * (item.quantity || 1)
+    
+    Order.new(
+      user: @checkout_user,
+      product: item.product,
+      total_amount: item_total + (item_total * 0.05), # Including tax
+      payment_processor: params[:payment_method] || 'credit_card',
+      payment_method: params[:payment_method] || 'credit_card',
+      payment_id: "PAY-#{SecureRandom.hex(8).upcase}",
+      payment_status: 'pending',
+      status: 'pending',
+      shipping_cost: item.product.is_digital? ? 0 : 5.00,
+      notes: params[:notes].presence || "Order placed via checkout"
+    )
+  end
+
+  def create_order_item(order, cart_item)
+    unit_price = cart_item.product.discounted_price || cart_item.product.price
+    quantity = cart_item.quantity || 1
+
+    order.order_items.create!(
+      product: cart_item.product,
+      quantity: quantity,
+      unit_price: unit_price,
+      total_price: unit_price * quantity,
+      product_name: cart_item.product.name,
+      product_sku: cart_item.product.sku || "SKU-#{cart_item.product.id}",
+      product_description: cart_item.product.description&.truncate(500),
+      shipping_address: cart_item.product.is_digital ? "Digital Delivery" : format_shipping_address,
+      shipping_method: cart_item.product.is_digital ? "digital" : "standard",
+      shipping_cost: cart_item.product.is_digital ? 0 : 5.00,
+      payment_method: params[:payment_method] || "credit_card",
+      payment_status: "pending",
+      tax_rate: 5.0,
+      tax_amount: unit_price * quantity * 0.05
+    )
+  end
+
+  def format_shipping_address
+    # Build address from form params
+    address_parts = [
+      params[:shipping_address],
+      params[:shipping_city],
+      params[:shipping_state],
+      params[:shipping_zip]
+    ].compact.reject(&:blank?)
+    
+    return address_parts.join(", ") if address_parts.any?
+    
+    # Fallback to user's saved address
+    if @checkout_user
+      address = @checkout_user.addresses.first
+      return address.full_address if address&.full_address.present?
+    end
+    
+    "Pending"
+  end
+
+  def process_payment_for_order(order)
+    payment_service = PaymentService.new(
+      order: order,
+      payment_method: params[:payment_method] || 'credit_card',
+      payment_details: {
+        ip_address: request.remote_ip,
+        user_agent: request.user_agent,
+        card_last4: card_params[:card_number]&.last(4),
+        phone_number: params[:phone_number]
+      },
+      user: @checkout_user
+    )
+
+    payment_service.process_payment
+  end
+
+  def card_params
+    return {} unless params[:card_details].present?
+    
+    params.require(:card_details).permit(
+      :card_number, :exp_month, :exp_year, :cvv, :cardholder_name
+    )
+  end
+
+  def find_or_create_guest_user(email)
+    # Find existing user or create a guest account
+    user = User.find_by(email: email.downcase.strip)
+    
+    unless user
+      # Create a guest user with a password that meets validation requirements
+      # Password must include: lowercase, uppercase, digit, special character, min 8 chars
+      random_password = "Guest#{SecureRandom.hex(4)}!#{SecureRandom.random_number(100)}"
+      
+      user = User.create!(
+        email: email.downcase.strip,
+        password: random_password,
+        first_name: params[:shipping_first_name] || "Guest",
+        last_name: params[:shipping_last_name] || "User",
+        phone_number: params[:shipping_phone],
+        guest: true
+      )
+    end
+    
+    user
   end
 end

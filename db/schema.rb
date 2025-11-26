@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_26_115420) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "addresses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.string "street_address", null: false
+    t.string "street_address_2"
+    t.string "city", null: false
+    t.string "state"
+    t.string "postal_code", null: false
+    t.string "country", null: false
+    t.string "phone"
+    t.boolean "default", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "default"], name: "index_addresses_on_user_id_and_default"
+    t.index ["user_id"], name: "index_addresses_on_user_id"
+  end
+
   create_table "application_settings", force: :cascade do |t|
     t.string "key", null: false
     t.text "value"
@@ -83,7 +100,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
   end
 
   create_table "carts", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "total_price"
@@ -222,6 +239,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_payment_audit_logs_on_order_id"
     t.index ["user_id"], name: "index_payment_audit_logs_on_user_id"
+  end
+
+  create_table "payment_methods", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "card_type", null: false
+    t.string "last_four", null: false
+    t.string "cardholder_name", null: false
+    t.integer "expiry_month", null: false
+    t.integer "expiry_year", null: false
+    t.boolean "is_default", default: false
+    t.string "token"
+    t.string "payment_processor", default: "stripe"
+    t.string "nickname"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_payment_methods_on_token", unique: true, where: "(token IS NOT NULL)"
+    t.index ["user_id", "active"], name: "index_payment_methods_on_user_and_active"
+    t.index ["user_id", "is_default"], name: "index_payment_methods_on_user_and_default"
+    t.index ["user_id"], name: "index_payment_methods_on_user_id"
   end
 
   create_table "product_images", force: :cascade do |t|
@@ -464,6 +501,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
     t.text "bio"
     t.datetime "last_activity_at"
     t.jsonb "address", default: {}
+    t.boolean "guest", default: false, null: false
     t.index ["active"], name: "index_users_on_active"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["country"], name: "index_users_on_country"
@@ -489,6 +527,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
   add_foreign_key "action_items", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "addresses", "users"
   add_foreign_key "application_settings", "users", column: "updated_by_id"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
@@ -504,6 +543,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_120131) do
   add_foreign_key "orders", "users"
   add_foreign_key "payment_audit_logs", "orders"
   add_foreign_key "payment_audit_logs", "users"
+  add_foreign_key "payment_methods", "users"
   add_foreign_key "product_images", "products"
   add_foreign_key "product_questions", "products"
   add_foreign_key "product_questions", "users"

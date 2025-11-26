@@ -1,27 +1,59 @@
 class ProductsController < ApplicationController
   include PaginationHelper
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ show edit update destroy add_item_to_cart ]
+  before_action :authenticate_user!, only: [ :add_item_to_cart ]
 
   # GET /products or /products.json
   def index
     # Base query with comprehensive includes to avoid N+1 queries
     base_query = Product.where(published: true)
-                       .includes(:category, :seller)
+                       .includes(:category, :seller, :product_images, :reviews)
 
-    # Filter by category if requested
+    # Filter by category (single)
     if params[:category_id].present?
       base_query = base_query.where(category_id: params[:category_id])
     end
 
+    # Filter by categories (multiple)
+    if params[:category_ids].present?
+      base_query = base_query.where(category_id: params[:category_ids])
+    end
+
+    # Filter by price range
+    if params[:min_price].present?
+      base_query = base_query.where("price >= ?", params[:min_price])
+    end
+
+    if params[:max_price].present?
+      base_query = base_query.where("price <= ?", params[:max_price])
+    end
+
+    # Filter by product type
+    if params[:digital] == "1"
+      base_query = base_query.where(is_digital: true)
+    end
+
+    if params[:on_sale] == "1"
+      base_query = base_query.where("discounted_price < price")
+    end
+
+    if params[:featured] == "1"
+      base_query = base_query.where(featured: true)
+    end
+
     # Apply sorting
     case params[:sort]
-    when "price-low"
+    when "price_asc", "price-low"
       base_query = base_query.order(price: :asc)
-    when "price-high"
+    when "price_desc", "price-high"
       base_query = base_query.order(price: :desc)
-    when "popular"
+    when "popular", "best_selling"
       # Assuming you have a way to track popularity - adjust as needed
       base_query = base_query.order(created_at: :desc) # Fallback to newest
+    when "highest_rated"
+      base_query = base_query.left_joins(:reviews)
+                             .group(:id)
+                             .order("AVG(reviews.rating) DESC NULLS LAST")
     else # default to newest
       base_query = base_query.order(created_at: :desc)
     end
@@ -174,7 +206,39 @@ class ProductsController < ApplicationController
   helper_method :safe_params_for_pagination
 
   def safe_params_for_pagination
-    params.permit(:category_id, :sort, :query, :page)
+    params.permit(:category_id, :sort, :query, :page, :min_price, :max_price, :digital, :on_sale, :featured, category_ids: [])
+  end
+
+  # Add product to cart
+  def add_item_to_cart
+    # Find or create a cart for the current user
+    @cart = current_user.cart || current_user.create_cart
+
+    quantity = (params[:quantity] || 1).to_i
+    quantity = 1 if quantity < 1
+
+    # Check if product is already in cart
+    @cart_item = @cart.cart_items.find_by(product_id: @product.id)
+
+    if @cart_item
+      # Update quantity if already in cart
+      @cart_item.update(quantity: @cart_item.quantity + quantity)
+      flash[:notice] = "Updated quantity in your cart."
+    else
+      # Add new item to cart
+      @cart_item = @cart.cart_items.create(
+        product: @product,
+        quantity: quantity,
+        price: @product.discounted_price || @product.price
+      )
+      flash[:notice] = "#{@product.name} added to your cart."
+    end
+
+    respond_to do |format|
+      format.html { redirect_to cart_path(@cart) }
+      format.turbo_stream
+      format.json { render json: { success: true, cart_items_count: @cart.cart_items.count } }
+    end
   end
 
   private
@@ -257,5 +321,17 @@ def new_arrivals
 
   # Use pagination helper for safety
   @new_products = paginate_safely(@new_products, params[:page], 12)
+end
+
+def best_sellers
+  # Rank published products by number of orders (through order_items)
+  @best_sellers = Product.where(published: true)
+                         .left_joins(:orders)
+                         .group(:id)
+                         .includes(:category, :seller, :product_images)
+                         .order("COUNT(orders.id) DESC")
+
+  # Use pagination helper for safety
+  @best_sellers = paginate_safely(@best_sellers, params[:page], 12)
 end
 end

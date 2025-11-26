@@ -1,30 +1,151 @@
-<div id="<%= dom_id notification %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">User:</strong>
-    <%= notification.user_id %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Title:</strong>
-    <%= notification.title %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Message:</strong>
-    <%= notification.message %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Status:</strong>
-    <%= notification.status %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Notification type:</strong>
-    <%= notification.notification_type %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Notifiable:</strong>
-    <%= notification.notifiable_id %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Read at:</strong>
-    <%= notification.read_at %>
+<div id="<%= dom_id notification %>" class="group p-4 sm:p-6 hover:bg-gray-50/50 transition-colors <%= notification.unread? ? 'bg-indigo-50/30 border-l-4 border-indigo-500' : '' %>">
+  <div class="flex items-start gap-4">
+    
+    <!-- Icon based on notification type -->
+    <div class="flex-shrink-0">
+      <% 
+        icon_colors = {
+          'info' => 'bg-blue-100 text-blue-600',
+          'success' => 'bg-emerald-100 text-emerald-600',
+          'warning' => 'bg-amber-100 text-amber-600',
+          'error' => 'bg-rose-100 text-rose-600',
+          'order' => 'bg-indigo-100 text-indigo-600',
+          'payment' => 'bg-purple-100 text-purple-600',
+          'product' => 'bg-pink-100 text-pink-600',
+          'system' => 'bg-gray-100 text-gray-600'
+        }
+        color_class = icon_colors[notification.notification_type] || 'bg-blue-100 text-blue-600'
+      %>
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center <%= color_class %>">
+        <% case notification.notification_type %>
+        <% when 'info' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        <% when 'success' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        <% when 'warning' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        <% when 'error' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        <% when 'order' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+        <% when 'payment' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+        <% when 'product' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+        <% when 'system' %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+        <% else %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <!-- Header Row -->
+          <div class="flex items-center gap-2 mb-1">
+            <%= link_to notification, class: "text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-1" do %>
+              <%= notification.title %>
+            <% end %>
+            
+            <% if notification.unread? %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                New
+              </span>
+            <% end %>
+          </div>
+
+          <!-- Message Preview -->
+          <p class="text-gray-600 text-sm line-clamp-2 mb-2">
+            <%= notification.message.presence || "No message content" %>
+          </p>
+
+          <!-- Meta Info -->
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+            <!-- Type Badge -->
+            <span class="inline-flex items-center gap-1">
+              <% 
+                type_colors = {
+                  'info' => 'bg-blue-50 text-blue-700',
+                  'success' => 'bg-emerald-50 text-emerald-700',
+                  'warning' => 'bg-amber-50 text-amber-700',
+                  'error' => 'bg-rose-50 text-rose-700',
+                  'order' => 'bg-indigo-50 text-indigo-700',
+                  'payment' => 'bg-purple-50 text-purple-700',
+                  'product' => 'bg-pink-50 text-pink-700',
+                  'system' => 'bg-gray-100 text-gray-700'
+                }
+                type_color = type_colors[notification.notification_type] || 'bg-gray-100 text-gray-700'
+              %>
+              <span class="px-2 py-0.5 rounded-md <%= type_color %> capitalize">
+                <%= notification.notification_type || 'general' %>
+              </span>
+            </span>
+
+            <!-- Time -->
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <%= time_ago_in_words(notification.created_at) %> ago
+            </span>
+
+            <% if notification.read_at.present? %>
+              <span class="flex items-center gap-1 text-emerald-600">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Read <%= time_ago_in_words(notification.read_at) %> ago
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <%= link_to notification, class: "p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors", title: "View" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          <% end %>
+          
+          <% if current_user&.admin? %>
+            <%= link_to edit_notification_path(notification), class: "p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors", title: "Edit" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+              </svg>
+            <% end %>
+            
+            <%= button_to notification, method: :delete, class: "p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer", title: "Delete", data: { turbo_confirm: "Delete this notification?" } do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

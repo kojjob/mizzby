@@ -1,0 +1,40 @@
+<% content_for :title, @page_title %>
+
+<div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-12">
+  <div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span class="font-semibold">Updated Every Week</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4"><%= @page_title %></h1>
+      <p class="text-xl opacity-90"><%= @page_description %></p>
+    </div>
+  </div>
+</div>
+
+<div class="py-12 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold text-gray-900">This Week's Offers</h2>
+      <%= link_to deals_path, class: "text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        All Deals
+      <% end %>
+    </div>
+
+    <% if @products.any? %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <% @products.each do |product| %>
+          <%= render "deals/product_card", product: product %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= render "deals/empty_state", message: "No weekly offers right now. Check back soon!" %>
+    <% end %>
+  </div>
+</div>

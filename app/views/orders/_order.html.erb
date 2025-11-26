@@ -1,38 +1,80 @@
-<div id="<%= dom_id order %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">User:</strong>
-    <%= order.user_id %>
+<div id="<%= dom_id order %>" class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+  <!-- Order Header -->
+  <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-semibold text-slate-900">Order #<%= order.id %></p>
+        <p class="text-xs text-slate-500"><%= order.created_at.strftime("%b %d, %Y at %I:%M %p") %></p>
+      </div>
+    </div>
+    <% status_config = case order.status
+      when 'completed' then { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' }
+      when 'processing' then { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' }
+      when 'paid' then { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' }
+      when 'pending' then { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' }
+      when 'cancelled' then { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' }
+      else { bg: 'bg-slate-50', text: 'text-slate-600', border: 'border-slate-200' }
+    end %>
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border <%= status_config[:bg] %> <%= status_config[:text] %> <%= status_config[:border] %>">
+      <%= order.status&.titleize || 'Unknown' %>
+    </span>
   </div>
-  <div>
-    <strong class="block font-medium mb-1">Product:</strong>
-    <%= order.product_id %>
+
+  <!-- Order Details Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div>
+      <p class="text-xs text-slate-500 mb-1">Customer</p>
+      <% if order.user.present? %>
+        <div class="flex items-center gap-2">
+          <% if order.user.respond_to?(:avatar) && order.user.avatar.attached? %>
+            <%= image_tag order.user.avatar, class: "w-6 h-6 rounded-full object-cover" %>
+          <% else %>
+            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-semibold">
+              <%= order.user.email.first.upcase %>
+            </div>
+          <% end %>
+          <span class="text-sm text-slate-900 truncate"><%= order.user.email.split('@').first %></span>
+        </div>
+      <% else %>
+        <span class="text-sm text-slate-400">ID: <%= order.user_id %></span>
+      <% end %>
+    </div>
+    
+    <div>
+      <p class="text-xs text-slate-500 mb-1">Product</p>
+      <% if order.product.present? %>
+        <p class="text-sm text-slate-900 truncate"><%= order.product.name %></p>
+      <% else %>
+        <span class="text-sm text-slate-400">ID: <%= order.product_id %></span>
+      <% end %>
+    </div>
+    
+    <div>
+      <p class="text-xs text-slate-500 mb-1">Total</p>
+      <p class="text-sm font-semibold text-slate-900"><%= number_to_currency(order.total_amount) %></p>
+    </div>
+    
+    <div>
+      <p class="text-xs text-slate-500 mb-1">Payment</p>
+      <% payment_classes = case order.payment_status
+        when 'paid' then 'text-emerald-600'
+        when 'pending' then 'text-amber-600'
+        when 'failed' then 'text-red-600'
+        else 'text-slate-600'
+      end %>
+      <p class="text-sm font-medium <%= payment_classes %> capitalize"><%= order.payment_status || 'N/A' %></p>
+    </div>
   </div>
-  <div>
-    <strong class="block font-medium mb-1">Status:</strong>
-    <%= order.status %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Total amount:</strong>
-    <%= order.total_amount %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Payment processor:</strong>
-    <%= order.payment_processor %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Payment:</strong>
-    <%= order.payment_id %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Payment status:</strong>
-    <%= order.payment_status %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Payment details:</strong>
-    <%= order.payment_details %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Notes:</strong>
-    <%= order.notes %>
-  </div>
+
+  <% if order.notes.present? %>
+    <div class="mt-4 pt-4 border-t border-slate-100">
+      <p class="text-xs text-slate-500 mb-1">Notes</p>
+      <p class="text-sm text-slate-700"><%= truncate(order.notes, length: 100) %></p>
+    </div>
+  <% end %>
 </div>

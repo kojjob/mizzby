@@ -1,0 +1,390 @@
+<%= content_for :title, "Payment Methods" %>
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/30">
+  <!-- Header with gradient -->
+  <div class="bg-white border-b border-gray-100 shadow-sm">
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Payment Methods</h1>
+            <p class="text-gray-500 mt-0.5">Manage your saved cards and payment options</p>
+          </div>
+        </div>
+        
+        <!-- Add Card Button (Desktop) -->
+        <button type="button" 
+                onclick="document.getElementById('add-card-modal').classList.remove('hidden')"
+                class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Add New Card
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Flash Messages -->
+    <% if flash[:notice] %>
+      <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3">
+        <svg class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <p class="text-emerald-700"><%= flash[:notice] %></p>
+      </div>
+    <% end %>
+    
+    <% if flash[:alert] %>
+      <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+        <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-red-700"><%= flash[:alert] %></p>
+      </div>
+    <% end %>
+    
+    <!-- Security Info Banner -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 mb-8">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-blue-900">Your cards are secure</h3>
+          <p class="text-sm text-blue-700 mt-1">We use bank-level encryption and never store your full card number. Your payment information is tokenized and protected.</p>
+        </div>
+      </div>
+    </div>
+
+    <% if @payment_methods.any? %>
+      <!-- Payment Methods List -->
+      <div class="space-y-4">
+        <% @payment_methods.each do |method| %>
+          <div class="group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-indigo-300 hover:shadow-lg transition-all duration-200">
+            <div class="p-5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <!-- Card Visual -->
+                  <div class="relative w-20 h-14 rounded-xl overflow-hidden shadow-md <%= method.expired? ? 'opacity-60' : '' %>">
+                    <% card_info = method.card_icon_info %>
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900">
+                      <!-- Card brand badge -->
+                      <div class="absolute top-2 right-2 px-1.5 py-0.5 <%= card_info[:color] %> rounded text-white text-[8px] font-bold">
+                        <%= card_info[:label] %>
+                      </div>
+                      <!-- Chip -->
+                      <div class="absolute bottom-3 left-3 w-6 h-4 rounded-sm bg-amber-300/80"></div>
+                      <!-- Last 4 digits -->
+                      <div class="absolute bottom-2 right-2 text-white/60 text-[9px] font-mono">
+                        •••• <%= method.last_four %>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Card Details -->
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <p class="font-medium text-gray-900"><%= method.display_name %></p>
+                      <% if method.is_default? %>
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">Default</span>
+                      <% end %>
+                      <% if method.expired? %>
+                        <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded-full">Expired</span>
+                      <% elsif method.expires_soon? %>
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">Expires Soon</span>
+                      <% end %>
+                    </div>
+                    <div class="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                      <span><%= method.card_type.titleize %> •••• <%= method.last_four %></span>
+                      <span>Expires <%= method.expiry_display %></span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1"><%= method.cardholder_name %></p>
+                  </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex items-center gap-2">
+                  <% unless method.is_default? || method.expired? %>
+                    <%= link_to set_default_account_payment_method_path(method), 
+                        method: :patch, 
+                        class: "p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors",
+                        title: "Set as default" do %>
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                      </svg>
+                    <% end %>
+                  <% end %>
+                  
+                  <%= link_to account_payment_method_path(method), 
+                      method: :delete, 
+                      data: { turbo_confirm: "Remove this #{method.card_type.titleize} card ending in #{method.last_four}?" }, 
+                      class: "p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors",
+                      title: "Remove card" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Mobile Add Card Button -->
+      <button type="button" 
+              onclick="document.getElementById('add-card-modal').classList.remove('hidden')"
+              class="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-colors flex items-center justify-center z-40">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+      </button>
+      
+    <% else %>
+      <!-- Empty State -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-10 text-center">
+        <div class="relative inline-flex mb-6">
+          <!-- Wallet Illustration -->
+          <div class="w-24 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center">
+            <svg class="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <!-- Decorative sparkle -->
+          <div class="absolute -top-2 -right-2 text-amber-400">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
+            </svg>
+          </div>
+        </div>
+        
+        <h3 class="text-xl font-bold text-gray-900 mb-2">No payment methods yet</h3>
+        <p class="text-gray-500 max-w-md mx-auto mb-8">
+          Add a card to make future checkouts faster and easier. Your payment information is encrypted and secure.
+        </p>
+        
+        <button type="button" 
+                onclick="document.getElementById('add-card-modal').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Add Your First Card
+        </button>
+      </div>
+    <% end %>
+    
+    <!-- Security Footer -->
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <span>256-bit SSL Encryption</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 2L3 7v6c0 5.55 3.84 9.74 7 10 3.16-.26 7-4.45 7-10V7l-7-5zM9 12.41l-2.29-2.3L5.3 11.5l3.7 3.71 6-6.01-1.41-1.41L9 12.41z"/>
+        </svg>
+        <span>PCI DSS Compliant</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+        </svg>
+        <span>Tokenized Storage</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Card Modal -->
+<div id="add-card-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+  <div class="flex min-h-screen items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('add-card-modal').classList.add('hidden')"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 z-10">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Add Payment Method</h2>
+        <button type="button" onclick="document.getElementById('add-card-modal').classList.add('hidden')" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <%= form_with url: account_payment_methods_path, method: :post, local: true, class: "space-y-5" do |form| %>
+        <!-- Card Preview -->
+        <div class="relative h-44 rounded-xl bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 p-5 shadow-lg overflow-hidden">
+          <!-- Card chip -->
+          <div class="absolute top-5 left-5 w-10 h-7 rounded-md bg-amber-300/80 shadow-inner"></div>
+          <!-- Card brand area -->
+          <div id="modal-card-type" class="absolute top-4 right-5 px-2 py-1 bg-blue-600 rounded text-white text-xs font-bold">CARD</div>
+          <!-- Card number display -->
+          <div class="absolute bottom-16 left-5 right-5">
+            <p id="modal-card-display" class="font-mono text-lg text-white tracking-widest">•••• •••• •••• ••••</p>
+          </div>
+          <!-- Cardholder & expiry -->
+          <div class="absolute bottom-5 left-5 right-5 flex justify-between">
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase tracking-wider">Card Holder</p>
+              <p id="modal-cardholder-display" class="text-sm text-white font-medium tracking-wide">YOUR NAME</p>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] text-gray-400 uppercase tracking-wider">Expires</p>
+              <p id="modal-expiry-display" class="text-sm text-white font-medium">MM/YY</p>
+            </div>
+          </div>
+          <!-- Decorative circles -->
+          <div class="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white/5"></div>
+          <div class="absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-white/5"></div>
+        </div>
+        
+        <!-- Form Fields -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+          <%= form.text_field :cardholder_name, 
+              class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors",
+              placeholder: "John Doe",
+              autocomplete: "cc-name",
+              required: true,
+              id: "modal-cardholder-input" %>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+          <%= form.text_field :card_number, 
+              class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono",
+              placeholder: "1234 5678 9012 3456",
+              autocomplete: "cc-number",
+              maxlength: 19,
+              required: true,
+              id: "modal-card-input" %>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+            <%= form.text_field :expiry_date, 
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors",
+                placeholder: "MM/YY",
+                autocomplete: "cc-exp",
+                maxlength: 5,
+                required: true,
+                id: "modal-expiry-input" %>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+            <%= form.password_field :cvv, 
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors",
+                placeholder: "123",
+                autocomplete: "cc-csc",
+                maxlength: 4,
+                required: true %>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nickname (optional)</label>
+          <%= form.text_field :nickname, 
+              class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors",
+              placeholder: "e.g., Personal Card" %>
+        </div>
+        
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+          <%= form.check_box :set_default, class: "w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+          <span class="text-sm text-gray-700">Set as default payment method</span>
+        </label>
+        
+        <div class="flex gap-3 pt-2">
+          <button type="button" 
+                  onclick="document.getElementById('add-card-modal').classList.add('hidden')"
+                  class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors">
+            Cancel
+          </button>
+          <%= form.submit "Add Card", class: "flex-1 px-4 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Card number formatting and type detection
+  const cardInput = document.getElementById('modal-card-input');
+  const cardDisplay = document.getElementById('modal-card-display');
+  const cardType = document.getElementById('modal-card-type');
+  
+  if (cardInput) {
+    cardInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+      let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+      e.target.value = formattedValue;
+      
+      // Update display
+      let displayValue = formattedValue.padEnd(19, '•').replace(/\s/g, ' ');
+      while (displayValue.length < 19) {
+        displayValue += ' ';
+      }
+      displayValue = displayValue.substring(0, 4) + ' ' + displayValue.substring(4, 8) + ' ' + displayValue.substring(8, 12) + ' ' + displayValue.substring(12, 16);
+      displayValue = displayValue.replace(/ +/g, ' ').replace(/(\d{4})/g, '$1 ').trim();
+      cardDisplay.textContent = formattedValue || '•••• •••• •••• ••••';
+      
+      // Detect card type
+      if (value.startsWith('4')) {
+        cardType.textContent = 'VISA';
+        cardType.className = 'absolute top-4 right-5 px-2 py-1 bg-blue-600 rounded text-white text-xs font-bold';
+      } else if (value.startsWith('5') || value.startsWith('2')) {
+        cardType.textContent = 'MC';
+        cardType.className = 'absolute top-4 right-5 px-2 py-1 bg-red-500 rounded text-white text-xs font-bold';
+      } else if (value.startsWith('3')) {
+        cardType.textContent = 'AMEX';
+        cardType.className = 'absolute top-4 right-5 px-2 py-1 bg-blue-400 rounded text-white text-xs font-bold';
+      } else if (value.startsWith('6')) {
+        cardType.textContent = 'DISC';
+        cardType.className = 'absolute top-4 right-5 px-2 py-1 bg-orange-500 rounded text-white text-xs font-bold';
+      } else {
+        cardType.textContent = 'CARD';
+        cardType.className = 'absolute top-4 right-5 px-2 py-1 bg-gray-600 rounded text-white text-xs font-bold';
+      }
+    });
+  }
+  
+  // Cardholder name
+  const cardholderInput = document.getElementById('modal-cardholder-input');
+  const cardholderDisplay = document.getElementById('modal-cardholder-display');
+  
+  if (cardholderInput) {
+    cardholderInput.addEventListener('input', function(e) {
+      cardholderDisplay.textContent = e.target.value.toUpperCase() || 'YOUR NAME';
+    });
+  }
+  
+  // Expiry date
+  const expiryInput = document.getElementById('modal-expiry-input');
+  const expiryDisplay = document.getElementById('modal-expiry-display');
+  
+  if (expiryInput) {
+    expiryInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+      }
+      e.target.value = value;
+      expiryDisplay.textContent = value || 'MM/YY';
+    });
+  }
+});
+</script>

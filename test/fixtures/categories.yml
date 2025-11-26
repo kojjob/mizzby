@@ -4,7 +4,7 @@ one:
   name: Category One
   description: First test category
   slug: category-one
-  parent: one
+  parent:
   position: 1
   visible: false
   icon_name: MyString
@@ -14,7 +14,7 @@ two:
   name: Category Two
   description: Second test category
   slug: category-two
-  parent: two
+  parent: one
   position: 1
   visible: false
   icon_name: MyString

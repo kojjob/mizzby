@@ -1,5 +1,5 @@
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[ show edit update destroy ]
+  before_action :set_category, only: %i[ edit update destroy ]
 
   # GET /categories or /categories.json
   def index
@@ -8,9 +8,11 @@ class CategoriesController < ApplicationController
 
   # GET /categories/1 or /categories/1.json
   def show
-    @category = Category.find(params[:id])
+    @category = find_category(params[:id])
     # Initialize products to at least an empty array
     @products = @category.products.where(published: true) rescue []
+  rescue ActiveRecord::RecordNotFound
+    redirect_to categories_path, alert: "Category not found"
   end
 
   # GET /categories/new
@@ -63,7 +65,32 @@ class CategoriesController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_category
-    @category = Category.find(params.expect(:id))
+    @category = find_category(params[:id])
+  end
+
+  # Find category by ID or slug with fuzzy matching
+  def find_category(id_or_slug)
+    if id_or_slug.to_s.match?(/\A\d+\z/)
+      Category.find(id_or_slug)
+    else
+      # Try exact slug match first
+      category = Category.find_by(slug: id_or_slug)
+      return category if category
+
+      # Try exact name match
+      category = Category.find_by(name: id_or_slug.titleize)
+      return category if category
+
+      # Try partial/fuzzy slug match (e.g., "courses" matches "courses-education")
+      category = Category.where("slug ILIKE ?", "#{id_or_slug}%").first
+      return category if category
+
+      # Try partial name match
+      category = Category.where("LOWER(name) ILIKE ?", "%#{id_or_slug.downcase}%").first
+      return category if category
+
+      raise ActiveRecord::RecordNotFound, "Category not found"
+    end
   end
 
   # Only allow a list of trusted parameters through.

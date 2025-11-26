@@ -1,0 +1,35 @@
+YOUR ORDER HAS BEEN DELIVERED! ✓
+================================
+
+Great news, <%= @user.first_name %>! Your order has been delivered!
+
+DELIVERY CONFIRMATION
+---------------------
+Delivered on: <%= Date.current.strftime("%B %d, %Y") %>
+
+ORDER DETAILS
+-------------
+Order Number: <%= @order.payment_id %>
+Order Date: <%= @order.created_at.strftime("%B %d, %Y") %>
+
+ITEMS DELIVERED
+---------------
+<% @orders.reject { |o| o.product&.is_digital? }.each do |order| %>
+• <%= order.product&.name %> (Qty: <%= order.quantity || 1 %>)
+<% end %>
+
+HOW WAS YOUR EXPERIENCE? 💬
+---------------------------
+Your feedback helps other shoppers make informed decisions.
+Write a review: <%= account_orders_url %>
+
+SOMETHING NOT RIGHT?
+--------------------
+If there's an issue with your delivery, we're here to help.
+Contact Support: <%= contact_url %>
+
+---
+Thank you for shopping with us!
+Continue Shopping: <%= root_url %>
+
+© <%= Date.current.year %> Mizzby. All rights reserved.

@@ -1,29 +1,46 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+# Seller profile linked to the seller user
+seller_profile:
+  user: seller
+  business_name: "Test Seller Business"
+  description: "A test seller description"
+  location: "Test City"
+  country: "Ghana"
+  phone_number: "+233123456789"
+  verified: true
+  commission_rate: 10.00
+  acceptance_rate: 95.00
+  average_response_time: 24
+  bank_account_details: "Test Bank Account"
+  mobile_money_details: "Test Mobile Money"
+  store_name: "Test Store"
+  store_slug: "test-store"
+
 one:
   user: regular_user
-  business_name: MyString
-  description: MyText
-  location: MyString
-  country: MyString
-  phone_number: MyString
+  business_name: "Regular User Business"
+  description: "Another test seller"
+  location: "Accra"
+  country: "Ghana"
+  phone_number: "+233987654321"
   verified: false
   commission_rate: 9.99
   acceptance_rate: 9.99
   average_response_time: 1
-  bank_account_details: MyText
-  mobile_money_details: MyText
+  bank_account_details: "Bank Details"
+  mobile_money_details: "Mobile Money Details"
 
 two:
   user: admin
-  business_name: MyString
-  description: MyText
-  location: MyString
-  country: MyString
-  phone_number: MyString
-  verified: false
+  business_name: "Admin Business"
+  description: "Admin seller profile"
+  location: "Lagos"
+  country: "Nigeria"
+  phone_number: "+234123456789"
+  verified: true
   commission_rate: 9.99
   acceptance_rate: 9.99
   average_response_time: 1
-  bank_account_details: MyText
-  mobile_money_details: MyText
+  bank_account_details: "Admin Bank"
+  mobile_money_details: "Admin Mobile Money"

@@ -43,23 +43,40 @@ Rails.application.routes.draw do
   # Shopping Cart System
   resources :carts do
     collection { get :current }
+    member { delete :empty }
   end
   resources :cart_items
   get "cart", to: "carts#current", as: :current_cart
 
   # Checkout Process
   get "checkout", to: "checkout#index", as: :checkout
+  post "checkout", to: "checkout#create", as: :checkout_create
+  get "checkout/confirmation", to: "checkout#confirmation", as: :checkout_confirmation
+  get "checkout/processing", to: "checkout#processing", as: :checkout_processing
+  get "checkout/failed", to: "checkout#failed", as: :checkout_failed
+  get "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now_get
   post "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now
 
   # Orders & Downloads
   resources :orders
   resources :order_items
   resources :download_links
+  get "download/:token", to: "download_links#download", as: :download_file
 
   # Product Catalog
+  # Category aliases for cleaner URLs (must be before resources :categories)
+  get "categories/courses", to: redirect("/categories/courses-education")
+  get "categories/software", to: redirect("/categories/software-applications")
+  get "categories/digital", to: redirect("/categories/digital-content")
+  get "categories/tools", to: redirect("/categories/tools-services")
+  get "categories/physical", to: redirect("/categories/physical-products")
+
   resources :categories
   resources :products do
-    member { post "add_item_to_cart", as: :add_item_to }
+    member do
+      post "add_item_to_cart", as: :add_item_to
+      post "add_to_cart", to: "cart_items#create"  # Route for add_to_cart_path(product)
+    end
     collection { get :new_arrivals }
     resources :reviews, only: [ :index, :new, :create ]
     resources :product_questions, only: [ :index, :new, :create ]
@@ -71,6 +88,12 @@ Rails.application.routes.draw do
   # Product Discovery
   get "search", to: "products#search", as: :search
   get "deals", to: "deals#index", as: :deals
+  get "deals/flash-sales", to: "deals#flash_sales", as: :flash_sales
+  get "deals/clearance", to: "deals#clearance", as: :clearance
+  get "deals/bundles", to: "deals#bundles", as: :bundles
+  get "deals/weekly-offers", to: "deals#weekly_offers", as: :weekly_offers
+  get "new-arrivals", to: "products#new_arrivals", as: :new_arrivals
+  get "best-sellers", to: "products#best_sellers", as: :best_sellers
 
   # Seller Area
   resources :sellers, except: [ :destroy ] do
@@ -81,10 +104,49 @@ Rails.application.routes.draw do
     end
   end
 
+  # Seller Dashboard (singular namespace for /seller/products, /seller/sales, etc.)
+  namespace :seller do
+    get "/", to: "dashboard#index", as: :root
+    resources :products do
+      collection do
+        get :bulk_new
+        post :bulk_create
+        get :bulk_template
+      end
+    end
+    get :sales, to: "dashboard#sales"
+    get :earnings, to: "dashboard#earnings"
+  end
+
+  # User Account Area
+  namespace :account do
+    get "/", to: "dashboard#index", as: :root
+    get :profile, to: "profile#show"
+    patch :profile, to: "profile#update"
+    get :orders, to: "orders#index"
+    get "orders/:id", to: "orders#show", as: :order
+    get "orders/:id/invoice", to: "orders#invoice", as: :order_invoice
+    get :downloads, to: "downloads#index"
+    get :wishlist, to: "wishlist#index"
+    delete "wishlist/clear", to: "wishlist#clear", as: :clear_wishlist
+    get "payment-methods", to: "payment_methods#index", as: :payment_methods
+    post "payment-methods", to: "payment_methods#create"
+    delete "payment-methods/:id", to: "payment_methods#destroy", as: :payment_method
+    patch "payment-methods/:id/set-default", to: "payment_methods#set_default", as: :set_default_payment_method
+    get :settings, to: "settings#index"
+    patch :settings, to: "settings#update"
+    resources :addresses
+  end
+
   # User Collections
   resources :wishlist_items do
-    collection { delete :clear }
+    member { post :move_to_cart }
+    collection { 
+      delete :clear
+      delete :remove_by_product
+    }
   end
+  get "wishlist", to: "wishlist_items#index", as: :wishlist
 
   # User Activity & Notifications
   resources :notifications, :user_activities, :action_items, :payment_audit_logs

@@ -11,7 +11,7 @@ class CartItem < ApplicationRecord
 
   # Calculate subtotal for this item
   def subtotal
-    quantity * price
+    (quantity || 0) * (price || 0)
   end
 
   private
