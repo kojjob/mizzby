@@ -81,6 +81,21 @@ class CheckoutController < ApplicationController
     @total = @orders.sum(&:total_amount)
   end
 
+  def processing
+    # This view shows a payment processing animation
+    # In a real implementation, this would be handled via JavaScript/AJAX
+    @total = session[:checkout_total] || 0
+  end
+
+  def failed
+    @error_message = params[:error] || session[:payment_error] || "Your payment could not be processed."
+    @error_code = params[:code] || session[:payment_error_code]
+    
+    # Clear session payment error
+    session.delete(:payment_error)
+    session.delete(:payment_error_code)
+  end
+
   def buy_now
     product_id = params[:product_id]
     quantity = (params[:quantity] || 1).to_i

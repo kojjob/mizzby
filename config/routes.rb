@@ -52,6 +52,8 @@ Rails.application.routes.draw do
   get "checkout", to: "checkout#index", as: :checkout
   post "checkout", to: "checkout#create", as: :checkout_create
   get "checkout/confirmation", to: "checkout#confirmation", as: :checkout_confirmation
+  get "checkout/processing", to: "checkout#processing", as: :checkout_processing
+  get "checkout/failed", to: "checkout#failed", as: :checkout_failed
   get "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now_get
   post "buy_now/:product_id", to: "checkout#buy_now", as: :buy_now
 
@@ -123,6 +125,7 @@ Rails.application.routes.draw do
     patch :profile, to: "profile#update"
     get :orders, to: "orders#index"
     get "orders/:id", to: "orders#show", as: :order
+    get "orders/:id/invoice", to: "orders#invoice", as: :order_invoice
     get :downloads, to: "downloads#index"
     get :wishlist, to: "wishlist#index"
     delete "wishlist/clear", to: "wishlist#clear", as: :clear_wishlist

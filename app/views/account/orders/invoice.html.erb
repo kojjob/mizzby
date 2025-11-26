@@ -1,0 +1,304 @@
+<%= content_for :title, "Invoice ##{@order.payment_id}" %>
+
+<div class="min-h-screen bg-gray-100 py-8 print:bg-white print:py-0">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Print Button (hidden on print) -->
+    <div class="mb-6 flex items-center justify-between print:hidden">
+      <%= link_to account_order_path(@order), class: "inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Order
+      <% end %>
+      
+      <div class="flex items-center gap-3">
+        <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+          </svg>
+          Print Invoice
+        </button>
+        <button onclick="downloadInvoice()" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+    
+    <!-- Invoice Document -->
+    <div class="bg-white rounded-lg shadow-lg print:shadow-none print:rounded-none" id="invoice-content">
+      <!-- Header -->
+      <div class="p-8 border-b border-gray-200">
+        <div class="flex justify-between items-start">
+          <!-- Company Info -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <span class="text-white font-bold text-xl">M</span>
+              </div>
+              <div>
+                <h1 class="text-2xl font-bold text-gray-900">Mizzby</h1>
+                <p class="text-sm text-gray-500">Digital Marketplace</p>
+              </div>
+            </div>
+            <div class="text-sm text-gray-600 space-y-1">
+              <p>123 Commerce Street</p>
+              <p>Accra, Ghana</p>
+              <p>support@mizzby.com</p>
+            </div>
+          </div>
+          
+          <!-- Invoice Details -->
+          <div class="text-right">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">INVOICE</h2>
+            <div class="text-sm space-y-1">
+              <p class="text-gray-600">Invoice Number</p>
+              <p class="font-semibold text-gray-900 font-mono"><%= @order.payment_id %></p>
+            </div>
+            <div class="mt-4 text-sm space-y-1">
+              <p class="text-gray-600">Date Issued</p>
+              <p class="font-semibold text-gray-900"><%= @order.created_at.strftime("%B %d, %Y") %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bill To / Ship To -->
+      <div class="p-8 bg-gray-50 grid grid-cols-1 sm:grid-cols-2 gap-8 print:bg-white">
+        <!-- Bill To -->
+        <div>
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Bill To</h3>
+          <div class="text-sm text-gray-900">
+            <p class="font-semibold text-lg"><%= @order.user.full_name %></p>
+            <p><%= @order.user.email %></p>
+            <% if @order.user.phone.present? %>
+              <p><%= @order.user.phone %></p>
+            <% end %>
+            <% if @order.user.addresses.any? %>
+              <% address = @order.user.addresses.first %>
+              <p class="mt-2">
+                <%= address.street %><br>
+                <%= address.city %>, <%= address.state %> <%= address.postal_code %><br>
+                <%= address.country %>
+              </p>
+            <% end %>
+          </div>
+        </div>
+        
+        <!-- Payment Info -->
+        <div>
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Payment Details</h3>
+          <div class="text-sm text-gray-900 space-y-2">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Method:</span>
+              <span class="font-medium capitalize"><%= @order.payment_processor&.humanize || 'Credit Card' %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Status:</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= @order.payment_status == 'paid' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800' %>">
+                <%= @order.payment_status&.humanize %>
+              </span>
+            </div>
+            <% if @order.paid_at.present? %>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Paid On:</span>
+                <span class="font-medium"><%= @order.paid_at.strftime("%B %d, %Y") %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Line Items -->
+      <div class="p-8">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b-2 border-gray-200">
+              <th class="text-left py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+              <th class="text-center py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Qty</th>
+              <th class="text-right py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit Price</th>
+              <th class="text-right py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <% if @order.order_items.any? %>
+              <% @order.order_items.each do |item| %>
+                <tr>
+                  <td class="py-4">
+                    <div>
+                      <p class="font-medium text-gray-900"><%= item.product_name %></p>
+                      <p class="text-sm text-gray-500">SKU: <%= item.product_sku %></p>
+                      <% if item.product&.is_digital? %>
+                        <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">
+                          Digital Product
+                        </span>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td class="py-4 text-center text-gray-900"><%= item.quantity %></td>
+                  <td class="py-4 text-right text-gray-900"><%= number_to_currency(item.unit_price) %></td>
+                  <td class="py-4 text-right font-medium text-gray-900"><%= number_to_currency(item.total_price) %></td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td class="py-4">
+                  <div>
+                    <p class="font-medium text-gray-900"><%= @order.product&.name %></p>
+                    <% if @order.product&.sku.present? %>
+                      <p class="text-sm text-gray-500">SKU: <%= @order.product.sku %></p>
+                    <% end %>
+                    <% if @order.product&.is_digital? %>
+                      <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">
+                        Digital Product
+                      </span>
+                    <% end %>
+                  </div>
+                </td>
+                <td class="py-4 text-center text-gray-900">1</td>
+                <td class="py-4 text-right text-gray-900"><%= number_to_currency(@order.total_amount - (@order.shipping_cost || 0)) %></td>
+                <td class="py-4 text-right font-medium text-gray-900"><%= number_to_currency(@order.total_amount - (@order.shipping_cost || 0)) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        
+        <!-- Totals -->
+        <div class="mt-8 flex justify-end">
+          <div class="w-64">
+            <div class="space-y-3">
+              <% subtotal = @order.order_items.any? ? @order.order_items.sum(&:total_price) : (@order.total_amount - (@order.shipping_cost || 0)) %>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Subtotal</span>
+                <span class="text-gray-900"><%= number_to_currency(subtotal) %></span>
+              </div>
+              
+              <% if @order.shipping_cost.present? && @order.shipping_cost > 0 %>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Shipping</span>
+                  <span class="text-gray-900"><%= number_to_currency(@order.shipping_cost) %></span>
+                </div>
+              <% end %>
+              
+              <% tax_amount = @order.order_items.any? ? @order.order_items.sum { |i| i.tax_amount || 0 } : (subtotal * 0.05) %>
+              <% if tax_amount > 0 %>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Tax (5%)</span>
+                  <span class="text-gray-900"><%= number_to_currency(tax_amount) %></span>
+                </div>
+              <% end %>
+              
+              <% if @order.discount.present? && @order.discount > 0 %>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Discount</span>
+                  <span class="text-green-600">-<%= number_to_currency(@order.discount) %></span>
+                </div>
+              <% end %>
+              
+              <div class="border-t-2 border-gray-200 pt-3">
+                <div class="flex justify-between">
+                  <span class="text-lg font-semibold text-gray-900">Total</span>
+                  <span class="text-lg font-bold text-gray-900"><%= number_to_currency(@order.total_amount) %></span>
+                </div>
+              </div>
+              
+              <% if @order.payment_status == 'paid' %>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Amount Paid</span>
+                  <span class="text-green-600 font-medium"><%= number_to_currency(@order.total_amount) %></span>
+                </div>
+                <div class="flex justify-between text-sm font-semibold">
+                  <span class="text-gray-900">Balance Due</span>
+                  <span class="text-gray-900">$0.00</span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="px-8 py-6 bg-gray-50 border-t border-gray-200 print:bg-white">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- Notes -->
+          <div>
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Notes</h4>
+            <p class="text-sm text-gray-600">
+              <% if @order.notes.present? %>
+                <%= @order.notes %>
+              <% else %>
+                Thank you for your purchase! If you have any questions about this invoice, please contact our support team.
+              <% end %>
+            </p>
+          </div>
+          
+          <!-- Terms -->
+          <div>
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Terms & Conditions</h4>
+            <p class="text-sm text-gray-600">
+              All purchases are subject to our Terms of Service. Digital products are non-refundable after download.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Paid Stamp (if paid) -->
+        <% if @order.payment_status == 'paid' %>
+          <div class="mt-6 flex justify-center">
+            <div class="inline-flex items-center gap-2 px-6 py-3 bg-green-100 text-green-800 rounded-full font-bold text-lg uppercase tracking-wider transform -rotate-3">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Paid
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Very Bottom -->
+      <div class="px-8 py-4 border-t border-gray-100 text-center text-xs text-gray-500">
+        <p>This invoice was generated electronically and is valid without signature.</p>
+        <p class="mt-1">© <%= Date.current.year %> Mizzby. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function downloadInvoice() {
+  // This would typically use a PDF generation library
+  // For now, we'll just trigger print
+  window.print();
+}
+</script>
+
+<style>
+@media print {
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+  
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .print\\:hidden {
+    display: none !important;
+  }
+  
+  .print\\:bg-white {
+    background-color: white !important;
+  }
+  
+  .print\\:shadow-none {
+    box-shadow: none !important;
+  }
+  
+  .print\\:rounded-none {
+    border-radius: 0 !important;
+  }
+}
+</style>

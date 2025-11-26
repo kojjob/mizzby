@@ -1,0 +1,143 @@
+<%= content_for :title, "Payment Failed" %>
+
+<div class="min-h-screen bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 flex items-center justify-center py-12 px-4">
+  <div class="max-w-md w-full">
+    <!-- Failed Card -->
+    <div class="bg-white rounded-3xl shadow-2xl shadow-red-200/50 overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 px-8 py-10 text-center relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+          <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="1" fill="white"/>
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#pattern)"/>
+          </svg>
+        </div>
+        
+        <div class="relative">
+          <!-- Error Icon -->
+          <div class="w-24 h-24 mx-auto mb-6 relative">
+            <div class="absolute inset-0 rounded-full bg-white/20"></div>
+            <div class="absolute inset-2 rounded-full bg-white/30 flex items-center justify-center">
+              <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </div>
+          </div>
+          
+          <h1 class="text-2xl font-bold text-white mb-2">Payment Failed</h1>
+          <p class="text-white/80 text-sm">We couldn't process your payment</p>
+        </div>
+      </div>
+      
+      <!-- Error Details -->
+      <div class="px-8 py-8">
+        <!-- Error Message -->
+        <div class="p-4 bg-red-50 rounded-xl border border-red-100 mb-6">
+          <div class="flex gap-3">
+            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-red-800">
+                <%= @error_message || "Your payment could not be processed at this time." %>
+              </p>
+              <% if @error_code.present? %>
+                <p class="text-xs text-red-600 mt-1">Error code: <%= @error_code %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Common Issues -->
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">Common reasons for payment failure:</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+              <span>Insufficient funds in your account</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+              <span>Incorrect card details entered</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+              <span>Card expired or blocked</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+              <span>Transaction declined by your bank</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="space-y-3">
+          <%= link_to checkout_path, class: "flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Try Again
+          <% end %>
+          
+          <%= link_to account_payment_methods_path, class: "flex items-center justify-center gap-2 w-full py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+            Update Payment Method
+          <% end %>
+          
+          <%= link_to current_cart_path, class: "flex items-center justify-center gap-2 w-full py-3 px-4 text-gray-500 hover:text-gray-700 font-medium transition-colors" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Return to Cart
+          <% end %>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <div class="text-center">
+            <p class="text-sm text-gray-600 mb-3">Still having trouble?</p>
+            <div class="flex items-center justify-center gap-4">
+              <%= link_to contact_path, class: "inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700 font-medium" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                Contact Support
+              <% end %>
+              <span class="text-gray-300">|</span>
+              <%= link_to help_center_path, class: "inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700 font-medium" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Help Center
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Security Notice -->
+    <div class="mt-6 text-center">
+      <p class="text-xs text-gray-500 flex items-center justify-center gap-1">
+        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        Your payment information is secure and was not stored
+      </p>
+    </div>
+  </div>
+</div>
