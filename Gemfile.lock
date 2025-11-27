@@ -98,10 +98,10 @@ GEM
       xpath (~> 3.2)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.0)
-    countries (5.7.2)
+    countries (8.0.4)
       unaccent (~> 0.3)
-    country_select (8.0.3)
-      countries (~> 5.0)
+    country_select (11.0.0)
+      countries (> 6.0, < 9.0)
     crass (1.0.6)
     database_cleaner-active_record (2.2.2)
       activerecord (>= 5.a)
@@ -456,7 +456,7 @@ DEPENDENCIES
   brakeman
   cancancan
   capybara
-  country_select (~> 8.0)
+  country_select (~> 11.0)
   database_cleaner-active_record (~> 2.1)
   debug
   devise (~> 4.9)

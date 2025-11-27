@@ -76,7 +76,7 @@ gem "devise", "~> 4.9"
 gem "view_component", "~> 3.0"
 gem "cancancan"
 # Add this line to your Gemfile
-gem "country_select", "~> 8.0"
+gem "country_select", "~> 11.0"
 
 # Faker for generating sample data
 gem "faker", "~> 3.2"
